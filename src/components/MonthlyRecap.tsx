@@ -172,9 +172,12 @@ export default function MonthlyRecap() {
 
       const dataUrl = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
       const link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link);
       link.download = `Rekap_${selectedMonth}_${selectedHalaqoh}.${format}`;
       link.href = dataUrl;
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Image Generation Error:', error);
       alert('Gagal mengunduh gambar.');

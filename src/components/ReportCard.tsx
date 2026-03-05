@@ -134,9 +134,12 @@ export default function ReportCard() {
 
       const dataUrl = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
       const link = document.createElement('a');
+      link.style.display = 'none';
+      document.body.appendChild(link);
       link.download = `Rapor_${selectedStudent.name}.${format}`;
       link.href = dataUrl;
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Image Generation Error:', error);
       alert('Gagal mengunduh gambar.');
