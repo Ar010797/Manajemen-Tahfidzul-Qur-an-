@@ -17,6 +17,7 @@ export default function ExamHafalan() {
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [surahs, setSurahs] = useState<any[]>([{ name: '', grade: 'A+', predicate: 'MUMTAAZ' }]);
   const [daysProgress, setDaysProgress] = useState<Record<number, string>>({});
+  const [target, setTarget] = useState('');
   const [semester, setSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,12 +63,14 @@ export default function ExamHafalan() {
       setSurahs(active.surahs);
       setDaysProgress(active.days_progress);
       setNote(active.note);
+      setTarget(active.target || '');
       setSemester(active.semester || 'Ganjil');
     } else {
       setActiveExamId(null);
       setSurahs([{ name: '', grade: 'A+', predicate: 'MUMTAAZ' }]);
       setDaysProgress({});
       setNote('');
+      setTarget('');
     }
   };
 
@@ -105,7 +108,8 @@ export default function ExamHafalan() {
       date: format(new Date(), 'yyyy-MM-dd'),
       days_progress: daysProgress,
       status,
-      semester
+      semester,
+      target
     };
 
     try {
@@ -223,26 +227,40 @@ export default function ExamHafalan() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 bg-stone-100 p-1.5 rounded-xl">
-                <button
-                  onClick={() => setSemester('Ganjil')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Ganjil' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Ganjil
-                </button>
-                <button
-                  onClick={() => setSemester('Genap')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Genap' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Genap
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Target Hafalan</label>
+                <input 
+                  type="text"
+                  placeholder="Contoh: Juz 30 / An-Naba - An-Naziat"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  value={target}
+                  onChange={e => setTarget(e.target.value)}
+                />
               </div>
+              <div className="flex items-end">
+                <div className="flex items-center gap-2 bg-stone-100 p-1.5 rounded-xl w-full">
+                  <button
+                    onClick={() => setSemester('Ganjil')}
+                    className={cn(
+                      "flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                      semester === 'Ganjil' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    )}
+                  >
+                    Ganjil
+                  </button>
+                  <button
+                    onClick={() => setSemester('Genap')}
+                    className={cn(
+                      "flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                      semester === 'Genap' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    )}
+                  >
+                    Genap
+                  </button>
+                </div>
+              </div>
+            </div>
 
               <div className="flex gap-2 w-full sm:w-auto">
                 <button 

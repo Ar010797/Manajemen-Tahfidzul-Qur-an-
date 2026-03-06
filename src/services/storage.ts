@@ -24,8 +24,8 @@ export interface DataSchema {
   halaqoh: Array<{ id: string; name: string }>;
   students: Array<{ id: string; name: string; halaqoh_id: string | null; order_index: number }>;
   daily_deposits: Array<{ student_id: string; type: string; date: string; details: any }>;
-  exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string }>;
-  exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string }>;
+  exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string; target?: string }>;
+  exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string; target?: string }>;
   monthly_recaps: Array<{ student_id: string; month: string; total_hafalan: string; notes: string }>;
 }
 

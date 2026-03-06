@@ -18,6 +18,7 @@ export default function ExamUmmi() {
   const [students, setStudents] = useState<any[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [level, setLevel] = useState<number>(1);
+  const [target, setTarget] = useState('');
   const [semester, setSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [allScores, setAllScores] = useState<Record<number, Record<string, string>>>({});
   const [search, setSearch] = useState('');
@@ -71,7 +72,8 @@ export default function ExamUmmi() {
           level: l,
           scores: allScores[l],
           date: format(new Date(), 'yyyy-MM-dd'),
-          semester
+          semester,
+          target
         });
       }
       
@@ -176,26 +178,40 @@ export default function ExamUmmi() {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 bg-stone-100 p-1.5 rounded-xl">
-                <button
-                  onClick={() => setSemester('Ganjil')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Ganjil' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Ganjil
-                </button>
-                <button
-                  onClick={() => setSemester('Genap')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Genap' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Genap
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Target Ummi / Tajwid</label>
+                <input 
+                  type="text"
+                  placeholder="Contoh: Ummi Jilid 4"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  value={target}
+                  onChange={e => setTarget(e.target.value)}
+                />
               </div>
+              <div className="flex items-end">
+                <div className="flex items-center gap-2 bg-stone-100 p-1.5 rounded-xl w-full">
+                  <button
+                    onClick={() => setSemester('Ganjil')}
+                    className={cn(
+                      "flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                      semester === 'Ganjil' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    )}
+                  >
+                    Ganjil
+                  </button>
+                  <button
+                    onClick={() => setSemester('Genap')}
+                    className={cn(
+                      "flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                      semester === 'Genap' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    )}
+                  >
+                    Genap
+                  </button>
+                </div>
+              </div>
+            </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mb-8 bg-stone-50 p-2 rounded-2xl border border-stone-100">
