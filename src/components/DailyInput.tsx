@@ -3,6 +3,7 @@ import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft } from 'lucide-
 import { format } from 'date-fns';
 import { motion, Reorder } from 'motion/react';
 import { cn } from '../lib/utils';
+import { storage } from '../services/storage';
 
 export default function DailyInput() {
   const [students, setStudents] = useState<any[]>([]);
@@ -13,13 +14,9 @@ export default function DailyInput() {
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
 
-  const fetchExistingDeposit = async () => {
+  const fetchExistingDeposit = () => {
     if (!selectedStudent || !date || !type) return;
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/deposits/single?student_id=${selectedStudent.id}&type=${type}&date=${date}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
+    const data = storage.getDeposit(selectedStudent.id, type, date);
     if (data && data.details) {
       setDetails(data.details);
     } else {
@@ -31,54 +28,37 @@ export default function DailyInput() {
     fetchExistingDeposit();
   }, [selectedStudent, date, type]);
 
-  const fetchStudents = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/students', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (Array.isArray(data)) {
-      setStudents(data);
-    } else {
-      console.error('Expected array of students, got:', data);
-      setStudents([]);
-    }
+  const fetchStudents = () => {
+    const data = storage.getStudents();
+    setStudents(data);
   };
 
   useEffect(() => {
     fetchStudents();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedStudent) return;
+    if (!selectedStudent || isSaving) return;
     
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/deposits', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        student_id: selectedStudent.id,
-        type,
-        date,
-        details
-      })
-    });
-    
-    if (res.ok) {
+    setIsSaving(true);
+    try {
+      storage.saveDeposit(selectedStudent.id, type, date, details);
       alert('Setoran berhasil disimpan!');
-      // Don't clear details so user can continue editing
-    } else {
-      alert('Gagal menyimpan setoran.');
+      // setDetails({}); // Keep details for quick editing if needed
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Terjadi kesalahan saat menyimpan.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const [isSavingOrder, setIsSavingOrder] = useState(false);
 
-  const handleReorder = async (halaqohName: string, newOrder: any[]) => {
+  const handleReorder = (halaqohName: string, newOrder: any[]) => {
     setIsSavingOrder(true);
     // Update local state first for responsiveness
     setStudents(prev => {
@@ -86,23 +66,14 @@ export default function DailyInput() {
       return [...otherStudents, ...newOrder];
     });
 
-    // Prepare API call
-    const token = localStorage.getItem('token');
     const orders = newOrder.map((s, index) => ({
       id: s.id,
       order_index: index
     }));
 
     try {
-      await fetch('/api/students/reorder', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ orders })
-      });
-      setTimeout(() => setIsSavingOrder(false), 1000);
+      storage.reorderStudents(orders);
+      setTimeout(() => setIsSavingOrder(false), 500);
     } catch (error) {
       console.error('Failed to save order:', error);
       setIsSavingOrder(false);
@@ -411,10 +382,11 @@ export default function DailyInput() {
 
               <button 
                 type="submit"
-                className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10"
+                disabled={isSaving}
+                className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10 disabled:opacity-50"
               >
                 <Save size={20} />
-                Simpan Setoran
+                {isSaving ? 'Menyimpan...' : 'Simpan Setoran'}
               </button>
             </form>
           </div>

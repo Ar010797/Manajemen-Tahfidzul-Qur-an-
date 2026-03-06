@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { cn } from '../lib/utils';
-import socket from '../lib/socket';
+import { storage } from '../services/storage';
 
 export default function MonthlyRecap() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
@@ -16,54 +16,22 @@ export default function MonthlyRecap() {
   const [recapSettings, setRecapSettings] = useState<Record<string, any>>({});
   const [institution, setInstitution] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-      const [hRes, iRes] = await Promise.all([
-        fetch('/api/halaqoh', { headers }),
-        fetch('/api/institution')
-      ]);
-      const hData = await hRes.json();
-      if (Array.isArray(hData)) {
-        setHalaqohs(hData);
-      } else {
-        console.error('Halaqoh error:', hData);
-        setHalaqohs([]);
-      }
-      setInstitution(await iRes.json());
+    const fetchData = () => {
+      const hData = storage.getHalaqoh();
+      setHalaqohs(hData);
+      setInstitution(storage.getInstitution());
     };
     fetchData();
-
-    socket.on('deposit-added', () => {
-      if (selectedHalaqoh) fetchRecap();
-    });
-
-    socket.on('recap-updated', () => {
-      if (selectedHalaqoh) fetchRecap();
-    });
-
-    return () => {
-      socket.off('deposit-added');
-      socket.off('recap-updated');
-    };
   }, [selectedHalaqoh, selectedMonth]);
 
-  const fetchRecap = async () => {
+  const fetchRecap = () => {
     if (!selectedHalaqoh) return;
     setLoading(true);
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/deposits/recap?month=${selectedMonth}&halaqoh_id=${selectedHalaqoh}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (!Array.isArray(data)) {
-      console.error('Recap data error:', data);
-      setRecapData([]);
-      setLoading(false);
-      return;
-    }
+    
+    const data = storage.getMonthlyRecapData(selectedMonth, selectedHalaqoh);
     
     // Group by student
     const grouped = data.reduce((acc: any, curr: any) => {
@@ -76,21 +44,25 @@ export default function MonthlyRecap() {
           tilawah: { awl: '-', akh: '-', jml: 0 }
         };
       }
-      const details = JSON.parse(curr.details);
+      const details = curr.details;
       const target = acc[curr.student_id][curr.type];
       
       if (curr.type === 'hafalan') {
-        const label = `${details.surah} ${details.verse_start}-${details.verse_end}`;
+        const label = `${details.surah} ${details.verse_start || ''}-${details.verse_end || ''}`;
         if (target.awl === '-') target.awl = label;
         target.akh = label;
-        const verses = (parseInt(details.verse_end) || 0) - (parseInt(details.verse_start) || 0) + 1;
+        const start = parseInt(details.verse_start) || 0;
+        const end = parseInt(details.verse_end) || 0;
+        const verses = start && end ? end - start + 1 : 0;
         target.jml += Math.max(0, verses);
       } else if (curr.type === 'ummi') {
-        const label = details.page_start ? `J${details.level} H${details.page_start}-${details.page_end}` : `J${details.level} H${details.page}`;
+        const label = details.page_start ? `J${details.level} H${details.page_start}-${details.page_end}` : `J${details.level} H${details.page || ''}`;
         if (target.awl === '-') target.awl = label;
         target.akh = label;
         if (details.page_start && details.page_end) {
-          const pages = (parseInt(details.page_end) || 0) - (parseInt(details.page_start) || 0) + 1;
+          const start = parseInt(details.page_start) || 0;
+          const end = parseInt(details.page_end) || 0;
+          const pages = end - start + 1;
           target.jml += Math.max(0, pages);
         } else {
           target.jml += 1;
@@ -100,7 +72,9 @@ export default function MonthlyRecap() {
         if (target.awl === '-') target.awl = label;
         target.akh = label;
         if (details.verse_start && details.verse_end) {
-          const verses = (parseInt(details.verse_end) || 0) - (parseInt(details.verse_start) || 0) + 1;
+          const start = parseInt(details.verse_start) || 0;
+          const end = parseInt(details.verse_end) || 0;
+          const verses = end - start + 1;
           target.jml += Math.max(0, verses);
         } else {
           target.jml += 1;
@@ -116,10 +90,7 @@ export default function MonthlyRecap() {
     // Fetch settings for each student
     const settings: Record<string, any> = {};
     for (const student of studentList as any[]) {
-      const sRes = await fetch(`/api/monthly-recap/settings?student_id=${student.id}&month=${selectedMonth}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      settings[student.id] = await sRes.json();
+      settings[student.id] = storage.getRecapSettings(student.id, selectedMonth);
     }
     setRecapSettings(settings);
     setLoading(false);
@@ -129,152 +100,174 @@ export default function MonthlyRecap() {
     fetchRecap();
   }, [selectedHalaqoh, selectedMonth]);
 
-  const updateSettings = async (studentId: string, field: string, value: string) => {
-    const token = localStorage.getItem('token');
+  const updateSettings = (studentId: string, field: string, value: string) => {
     const current = recapSettings[studentId] || { total_hafalan: '', notes: '' };
     const newSettings = { ...current, [field]: value };
     setRecapSettings({ ...recapSettings, [studentId]: newSettings });
 
-    await fetch('/api/monthly-recap/settings', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        student_id: studentId,
-        month: selectedMonth,
-        total_hafalan: newSettings.total_hafalan,
-        notes: newSettings.notes
-      })
-    });
+    storage.saveRecapSettings(
+      studentId,
+      selectedMonth,
+      newSettings.total_hafalan,
+      newSettings.notes
+    );
   };
 
   const generateImage = async (format: 'jpg' | 'png') => {
-    if (!selectedHalaqoh || recapData.length === 0) return;
+    if (!selectedHalaqoh || recapData.length === 0 || isGenerating) return;
 
     const element = document.getElementById('recap-capture');
     if (!element) return;
 
+    setIsGenerating(true);
     try {
+      // Ensure element is visible for capture
       element.style.display = 'block';
       element.style.visibility = 'visible';
-      element.style.position = 'static';
+      element.style.position = 'fixed';
+      element.style.top = '0';
+      element.style.left = '0';
+      element.style.zIndex = '-1';
       
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
+        logging: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
       });
       
       element.style.display = 'none';
-      element.style.position = 'absolute';
 
-      const dataUrl = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.download = `Rekap_${selectedMonth}_${selectedHalaqoh}.${format}`;
-      link.href = dataUrl;
-      link.click();
-      document.body.removeChild(link);
+      canvas.toBlob((blob) => {
+        if (!blob) throw new Error('Blob generation failed');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.download = `Rekap_${selectedMonth}_${selectedHalaqoh}.${format}`;
+        link.href = url;
+        
+        // Trigger download
+        link.click();
+        
+        // Fallback for some browsers
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }, `image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
     } catch (error) {
       console.error('Image Generation Error:', error);
-      alert('Gagal mengunduh gambar.');
+      alert('Gagal mengunduh gambar. Silakan coba lagi.');
       element.style.display = 'none';
-      element.style.position = 'absolute';
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF('l', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
+  const generatePDF = async () => {
+    if (!selectedHalaqoh || recapData.length === 0 || isGenerating) return;
     
-    // Add Watermark
-    if (institution?.watermark) {
-      doc.saveGraphicsState();
-      doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
-      doc.addImage(institution.watermark, 'PNG', pageWidth / 2 - 50, pageHeight / 2 - 50, 100, 100);
-      doc.restoreGraphicsState();
-    }
+    setIsGenerating(true);
+    try {
+      const doc = new jsPDF('l', 'mm', 'a4');
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      // Add Watermark
+      if (institution?.watermark) {
+        doc.saveGraphicsState();
+        doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
+        doc.addImage(institution.watermark, 'PNG', pageWidth / 2 - 50, pageHeight / 2 - 50, 100, 100);
+        doc.restoreGraphicsState();
+      }
 
-    // Logo
-    if (institution?.logo) {
-      doc.addImage(institution.logo, 'PNG', 20, 10, 20, 20);
-    }
+      // Logo
+      if (institution?.logo) {
+        doc.addImage(institution.logo, 'PNG', 20, 10, 20, 20);
+      }
 
-    doc.setFont('times', 'bold');
-    doc.setFontSize(16);
-    doc.text('REKAPITULASI BULANAN TAHFIDZUL QUR\'AN', pageWidth / 2, 18, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text(institution?.name?.toUpperCase() || 'SEKOLAH ISLAM MIFTAHUSSALAM', pageWidth / 2, 25, { align: 'center' });
-    
-    doc.setFontSize(9);
-    doc.setFont('times', 'normal');
-    doc.text(institution?.address || '', pageWidth / 2, 30, { align: 'center' });
-    doc.setLineWidth(0.5);
-    doc.line(20, 33, pageWidth - 20, 33);
+      doc.setFont('times', 'bold');
+      doc.setFontSize(16);
+      doc.text('REKAPITULASI BULANAN TAHFIDZUL QUR\'AN', pageWidth / 2, 18, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.text(institution?.name?.toUpperCase() || 'SEKOLAH ISLAM MIFTAHUSSALAM', pageWidth / 2, 25, { align: 'center' });
+      
+      doc.setFontSize(9);
+      doc.setFont('times', 'normal');
+      doc.text(institution?.address || '', pageWidth / 2, 30, { align: 'center' });
+      doc.setLineWidth(0.5);
+      doc.line(20, 33, pageWidth - 20, 33);
 
-    doc.setFontSize(10);
-    doc.text(`Bulan: ${format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}`, 20, 40);
-    doc.text(`Halaqoh: ${halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}`, 20, 45);
-    doc.text(`Pengampu: ${institution?.halaqoh_teacher_name || '-'}`, pageWidth - 60, 45);
+      doc.setFontSize(10);
+      doc.text(`Bulan: ${format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}`, 20, 40);
+      doc.text(`Halaqoh: ${halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}`, 20, 45);
+      doc.text(`Pengampu: ${institution?.halaqoh_teacher_name || '-'}`, pageWidth - 60, 45);
 
-    const rows = recapData.map((s, i) => {
-      const settings = recapSettings[s.id] || {};
-      return [
-        i + 1,
-        s.name,
-        s.hafalan.awl, s.hafalan.akh, s.hafalan.jml,
-        s.tilawah.awl, s.tilawah.akh, s.tilawah.jml,
-        s.ummi.awl, s.ummi.akh, s.ummi.jml,
-        settings.total_hafalan || '-',
-        settings.notes || '-'
-      ];
-    });
+      const rows = recapData.map((s, i) => {
+        const settings = recapSettings[s.id] || {};
+        return [
+          i + 1,
+          s.name,
+          s.hafalan.awl, s.hafalan.akh, s.hafalan.jml,
+          s.tilawah.awl, s.tilawah.akh, s.tilawah.jml,
+          s.ummi.awl, s.ummi.akh, s.ummi.jml,
+          settings.total_hafalan || '-',
+          settings.notes || '-'
+        ];
+      });
 
-    autoTable(doc, {
-      startY: 50,
-      head: [
-        [
-          { content: 'NO', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-          { content: 'NAMA', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-          { content: 'HAFALAN AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
-          { content: 'TILAWAH AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
-          { content: 'TILAWAH UMMI', colSpan: 3, styles: { halign: 'center' } },
-          { content: 'TOTAL', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-          { content: 'CATATAN', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+      autoTable(doc, {
+        startY: 50,
+        head: [
+          [
+            { content: 'NO', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content: 'NAMA', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content: 'HAFALAN AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
+            { content: 'TILAWAH AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
+            { content: 'TILAWAH UMMI', colSpan: 3, styles: { halign: 'center' } },
+            { content: 'TOTAL', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+            { content: 'CATATAN', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+          ],
+          ['AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML']
         ],
-        ['AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML']
-      ],
-      body: rows,
-      theme: 'grid',
-      styles: { font: 'times', fontSize: 7, cellPadding: 2 },
-      headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.1, lineColor: [0, 0, 0] }
-    });
+        body: rows,
+        theme: 'grid',
+        styles: { font: 'times', fontSize: 7, cellPadding: 2 },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.1, lineColor: [0, 0, 0] }
+      });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 15;
-    
-    doc.setFontSize(10);
-    doc.text('Mengetahui,', 40, finalY);
-    doc.text('Kepala Sekolah', 40, finalY + 5);
-    if (institution?.principal_signature) {
-      doc.addImage(institution.principal_signature, 'PNG', 35, finalY + 7, 25, 12);
+      const finalY = (doc as any).lastAutoTable.finalY + 15;
+      
+      doc.setFontSize(10);
+      doc.text('Mengetahui,', 40, finalY);
+      doc.text('Kepala Sekolah', 40, finalY + 5);
+      if (institution?.principal_signature) {
+        doc.addImage(institution.principal_signature, 'PNG', 35, finalY + 7, 25, 12);
+      }
+      doc.setFont('times', 'bold');
+      doc.text(institution?.principal_name || '( .............................. )', 40, finalY + 25);
+
+      doc.setFont('times', 'normal');
+      doc.text('Koordinator Tahfidz,', pageWidth - 70, finalY + 5);
+      if (institution?.coordinator_signature) {
+        doc.addImage(institution.coordinator_signature, 'PNG', pageWidth - 75, finalY + 7, 25, 12);
+      }
+      doc.setFont('times', 'bold');
+      doc.text(institution?.coordinator_name || '( .............................. )', pageWidth - 70, finalY + 25);
+
+      doc.save(`Rekap_${selectedMonth}_${selectedHalaqoh}.pdf`);
+    } catch (error) {
+      console.error('PDF Generation Error:', error);
+      alert('Gagal mengunduh PDF. Silakan coba lagi.');
+    } finally {
+      setIsGenerating(false);
     }
-    doc.setFont('times', 'bold');
-    doc.text(institution?.principal_name || '( .............................. )', 40, finalY + 25);
-
-    doc.setFont('times', 'normal');
-    doc.text('Koordinator Tahfidz,', pageWidth - 70, finalY + 5);
-    if (institution?.coordinator_signature) {
-      doc.addImage(institution.coordinator_signature, 'PNG', pageWidth - 75, finalY + 7, 25, 12);
-    }
-    doc.setFont('times', 'bold');
-    doc.text(institution?.coordinator_name || '( .............................. )', pageWidth - 70, finalY + 25);
-
-    doc.save(`Rekap_${selectedMonth}_${selectedHalaqoh}.pdf`);
   };
 
   return (
@@ -288,19 +281,19 @@ export default function MonthlyRecap() {
           <div className="flex flex-wrap gap-2 w-full lg:w-auto">
             <button 
               onClick={generatePDF}
-              disabled={!selectedHalaqoh || recapData.length === 0}
+              disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className="flex-1 lg:flex-none bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
             >
               <Download size={20} />
-              PDF
+              {isGenerating ? '...' : 'PDF'}
             </button>
             <button 
               onClick={() => generateImage('jpg')}
-              disabled={!selectedHalaqoh || recapData.length === 0}
+              disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className="flex-1 lg:flex-none bg-amber-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
             >
               <FileText size={20} />
-              JPG
+              {isGenerating ? '...' : 'JPG'}
             </button>
           </div>
         </div>

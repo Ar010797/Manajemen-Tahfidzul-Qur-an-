@@ -1,17 +1,15 @@
 import React from 'react';
 import { Database, Download, Upload } from 'lucide-react';
+import { storage } from '../services/storage';
 
 export default function Maintenance() {
-  const handleExport = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/maintenance/export', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const blob = await res.blob();
+  const handleExport = () => {
+    const data = storage.exportData();
+    const blob = new Blob([data], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.db`;
+    a.download = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -32,13 +30,13 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-emerald-900 mb-2">Ekspor Database</h3>
             <p className="text-emerald-700/70 text-sm mb-8">
-              Unduh salinan database (.db) untuk cadangan manual. Simpan file ini di tempat yang aman.
+              Unduh salinan database (.json) untuk cadangan manual. Simpan file ini di tempat yang aman.
             </p>
             <button 
               onClick={handleExport}
               className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors"
             >
-              Unduh Backup (.db)
+              Unduh Backup (.json)
             </button>
           </div>
 
@@ -48,34 +46,27 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-stone-900 mb-2">Impor Database</h3>
             <p className="text-stone-500 text-sm mb-8">
-              Pulihkan data dari file backup (.db). Fitur ini akan menimpa data yang ada saat ini.
+              Pulihkan data dari file backup (.json). Fitur ini akan menimpa data yang ada saat ini.
             </p>
             <input 
               type="file"
-              accept=".db"
+              accept=".json"
               id="import-db"
               className="hidden"
-              onChange={async (e) => {
+              onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file && confirm('Peringatan: Ini akan menimpa semua data saat ini. Lanjutkan?')) {
                   const reader = new FileReader();
-                  reader.onloadend = async () => {
-                    const token = localStorage.getItem('token');
-                    const res = await fetch('/api/maintenance/import', {
-                      method: 'POST',
-                      headers: { 
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`
-                      },
-                      body: JSON.stringify({ database: reader.result })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
+                  reader.onloadend = () => {
+                    const success = storage.importData(reader.result as string);
+                    if (success) {
                       alert('Database berhasil diimpor. Aplikasi akan memuat ulang.');
                       window.location.reload();
+                    } else {
+                      alert('Gagal mengimpor database. Format file tidak valid.');
                     }
                   };
-                  reader.readAsDataURL(file);
+                  reader.readAsText(file);
                 }
               }}
             />
@@ -83,7 +74,7 @@ export default function Maintenance() {
               onClick={() => document.getElementById('import-db')?.click()}
               className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors"
             >
-              Unggah Backup (.db)
+              Unggah Backup (.json)
             </button>
           </div>
         </div>
@@ -96,20 +87,11 @@ export default function Maintenance() {
             </p>
           </div>
           <button 
-            onClick={async () => {
+            onClick={() => {
               if (confirm('PERINGATAN: Seluruh data akan dihapus permanen. Anda yakin ingin melanjutkan?')) {
-                const token = localStorage.getItem('token');
-                const res = await fetch('/api/maintenance/reset', {
-                  method: 'POST',
-                  headers: { Authorization: `Bearer ${token}` }
-                });
-                if (res.ok) {
-                  alert('Seluruh data berhasil direset.');
-                  window.location.reload();
-                } else {
-                  const data = await res.json();
-                  alert(data.error || 'Gagal mereset data.');
-                }
+                storage.resetData();
+                alert('Seluruh data berhasil direset.');
+                window.location.reload();
               }
             }}
             className="px-8 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all shadow-lg shadow-red-500/20 whitespace-nowrap"

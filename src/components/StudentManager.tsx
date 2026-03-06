@@ -1,75 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, UserCircle, Search, Edit2, Check, X } from 'lucide-react';
+import { storage } from '../services/storage';
 
 export default function StudentManager() {
   const [students, setStudents] = useState<any[]>([]);
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
   const [formData, setFormData] = useState({ name: '', halaqoh_id: '' });
   const [search, setSearch] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState({ name: '', halaqoh_id: '' });
 
-  const fetchData = async () => {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-    const [sRes, hRes] = await Promise.all([
-      fetch('/api/students', { headers }),
-      fetch('/api/halaqoh', { headers })
-    ]);
-    const sData = await sRes.json();
-    const hData = await hRes.json();
+  const fetchData = () => {
+    const sData = storage.getStudents();
+    const hData = storage.getHalaqoh();
     
-    if (Array.isArray(sData)) setStudents(sData);
-    else { console.error('Students error:', sData); setStudents([]); }
-    
-    if (Array.isArray(hData)) setHalaqohs(hData);
-    else { console.error('Halaqoh error:', hData); setHalaqohs([]); }
+    setStudents(sData);
+    setHalaqohs(hData);
   };
 
   useEffect(() => { fetchData(); }, []);
 
-  const handleAdd = async (e: React.FormEvent) => {
+  const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.halaqoh_id) return;
-    const token = localStorage.getItem('token');
-    await fetch('/api/students', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(formData)
-    });
+    storage.addStudent(formData.name, formData.halaqoh_id);
     setFormData({ name: '', halaqoh_id: '' });
     fetchData();
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: string) => {
     if (!window.confirm('Hapus siswa ini? Seluruh data setoran dan ujian siswa ini juga akan terhapus.')) return;
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch(`/api/students/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Gagal menghapus siswa');
-      fetchData();
-    } catch (error: any) {
-      alert(error.message);
-    }
+    storage.deleteStudent(id);
+    fetchData();
   };
 
-  const handleUpdate = async (id: number) => {
+  const handleUpdate = (id: string) => {
     if (!editData.name || !editData.halaqoh_id) return;
-    const token = localStorage.getItem('token');
-    await fetch(`/api/students/${id}`, {
-      method: 'PUT',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(editData)
-    });
+    storage.updateStudent(id, editData.name, editData.halaqoh_id);
     setEditingId(null);
     fetchData();
   };

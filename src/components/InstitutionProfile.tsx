@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Upload, Save } from 'lucide-react';
+import { storage } from '../services/storage';
 
 export default function InstitutionProfile() {
   const [profile, setProfile] = useState({
@@ -16,9 +17,8 @@ export default function InstitutionProfile() {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const res = await fetch('/api/institution');
-      const data = await res.json();
+    const fetchProfile = () => {
+      const data = storage.getInstitution();
       if (data) setProfile({
         ...data,
         principal_signature: data.principal_signature || '',
@@ -39,17 +39,9 @@ export default function InstitutionProfile() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    await fetch('/api/institution', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(profile)
-    });
+    storage.updateInstitution(profile);
     alert('Profil lembaga berhasil diperbarui!');
   };
 

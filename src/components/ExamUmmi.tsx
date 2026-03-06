@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { BookOpen, Save, Search, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
+import { storage } from '../services/storage';
 
 const UMMI_INDICATORS: Record<number, string[]> = {
   1: ['Makhroj', 'Huruf Hijaiyyah'],
@@ -23,18 +24,9 @@ export default function ExamUmmi() {
   const [showListOnMobile, setShowListOnMobile] = useState(true);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/students', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setStudents(data);
-      } else {
-        console.error('Students error:', data);
-        setStudents([]);
-      }
+    const fetchStudents = () => {
+      const data = storage.getStudents();
+      setStudents(data);
     };
     fetchStudents();
   }, []);
@@ -61,11 +53,10 @@ export default function ExamUmmi() {
       }, {} as Record<string, any[]>);
   }, [students, search]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent) return;
     
-    const token = localStorage.getItem('token');
     const levelsToSave = Object.keys(allScores).map(Number);
     
     if (levelsToSave.length === 0) {
@@ -75,19 +66,12 @@ export default function ExamUmmi() {
 
     try {
       for (const l of levelsToSave) {
-        await fetch('/api/exams/ummi', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            student_id: selectedStudent.id,
-            level: l,
-            scores: allScores[l],
-            date: format(new Date(), 'yyyy-MM-dd'),
-            semester
-          })
+        storage.addUmmiExam({
+          student_id: selectedStudent.id,
+          level: l,
+          scores: allScores[l],
+          date: format(new Date(), 'yyyy-MM-dd'),
+          semester
         });
       }
       

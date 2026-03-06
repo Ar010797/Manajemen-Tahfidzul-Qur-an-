@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { Users, BookOpen, GraduationCap, TrendingUp, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { storage } from '../services/storage';
+import { cn } from '../lib/utils';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -13,21 +15,13 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-      
-      const [studentsRes, halaqohRes] = await Promise.all([
-        fetch('/api/students', { headers }),
-        fetch('/api/halaqoh', { headers })
-      ]);
-      
-      const students = await studentsRes.json();
-      const halaqoh = await halaqohRes.json();
+    const fetchStats = () => {
+      const students = storage.getStudents();
+      const halaqoh = storage.getHalaqoh();
       
       setStats({
-        students: Array.isArray(students) ? students.length : 0,
-        halaqoh: Array.isArray(halaqoh) ? halaqoh.length : 0,
+        students: students.length,
+        halaqoh: halaqoh.length,
         deposits: 0, // Placeholder
         exams: 0 // Placeholder
       });
@@ -87,6 +81,18 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4">
+          <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shrink-0">
+            <Calendar size={24} />
+          </div>
+          <div>
+            <h3 className="text-amber-900 font-bold">Penyimpanan Lokal Aktif</h3>
+            <p className="text-amber-800/70 text-sm mt-1">
+              Data Anda saat ini disimpan di browser ini. Untuk menghindari kehilangan data, pastikan Anda melakukan backup secara berkala melalui menu <strong>Pengaturan &gt; Pemeliharaan</strong>.
+            </p>
+          </div>
+        </div>
+
         <div className="bg-emerald-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-emerald-900/20">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16" />
           <h2 className="text-xl font-bold mb-4 relative z-10">Tips Hari Ini</h2>
@@ -103,5 +109,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-import { cn } from '../lib/utils';

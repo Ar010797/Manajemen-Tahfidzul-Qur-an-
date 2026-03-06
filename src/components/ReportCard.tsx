@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { cn } from '../lib/utils';
-import socket from '../lib/socket';
+import { storage } from '../services/storage';
 
 export default function ReportCard() {
   const [students, setStudents] = useState<any[]>([]);
@@ -17,33 +17,15 @@ export default function ReportCard() {
   const [search, setSearch] = useState('');
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-      const [sRes, iRes] = await Promise.all([
-        fetch('/api/students', { headers }),
-        fetch('/api/institution')
-      ]);
-      const sData = await sRes.json();
-      if (Array.isArray(sData)) {
-        setStudents(sData);
-      } else {
-        console.error('Students error:', sData);
-        setStudents([]);
-      }
-      setInstitution(await iRes.json());
+    const fetchData = () => {
+      const sData = storage.getStudents();
+      setStudents(sData);
+      setInstitution(storage.getInstitution());
     };
     fetchData();
-
-    socket.on('exam-hafalan-updated', () => {
-      if (selectedStudent) fetchExamData(selectedStudent);
-    });
-
-    return () => {
-      socket.off('exam-hafalan-updated');
-    };
   }, [selectedStudent]);
 
   const groupedStudents = useMemo(() => {
@@ -68,40 +50,22 @@ export default function ReportCard() {
       }, {} as Record<string, any[]>);
   }, [students, search]);
 
-  const fetchExamData = async (student: any) => {
-    const token = localStorage.getItem('token');
-    const [eRes, sRes] = await Promise.all([
-      fetch(`/api/exams/student/${student.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }),
-      fetch(`/api/monthly-recap/settings?student_id=${student.id}&month=${format(new Date(), 'yyyy-MM')}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-    ]);
+  const fetchExamData = (student: any) => {
+    const eData = storage.getStudentExams(student.id);
+    const sData = storage.getRecapSettings(student.id, format(new Date(), 'yyyy-MM'));
     
-    setExamData(await eRes.json());
-    setRecapSettings(await sRes.json());
+    setExamData(eData);
+    setRecapSettings(sData);
     setSelectedStudent(student);
     setShowListOnMobile(false);
   };
 
-  const resetExam = async (type: 'ummi' | 'hafalan', id: number) => {
+  const resetExam = (type: 'ummi' | 'hafalan', id: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus data ujian ${type} ini? Data yang sudah dihapus tidak dapat dikembalikan.`)) return;
     
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch(`/api/exams/${type}/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        alert('Data ujian berhasil dihapus.');
-        if (selectedStudent) fetchExamData(selectedStudent);
-      }
-    } catch (error) {
-      console.error(`Error resetting ${type} exam:`, error);
-      alert('Gagal menghapus data.');
-    }
+    storage.deleteExam(type, id);
+    alert('Data ujian berhasil dihapus.');
+    if (selectedStudent) fetchExamData(selectedStudent);
   };
 
   const teacherNotes = useMemo(() => {
@@ -113,43 +77,63 @@ export default function ReportCard() {
   }, [examData, semester]);
 
   const generateImage = async (format: 'jpg' | 'png') => {
-    if (!selectedStudent || !examData) return;
+    if (!selectedStudent || !examData || isGenerating) return;
 
     const element = document.getElementById('report-card-capture');
     if (!element) return;
 
+    setIsGenerating(true);
     try {
+      // Ensure element is visible for capture
       element.style.display = 'block';
       element.style.visibility = 'visible';
-      element.style.position = 'static';
+      element.style.position = 'fixed';
+      element.style.top = '0';
+      element.style.left = '0';
+      element.style.zIndex = '-1';
       
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
+        logging: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
       });
       
       element.style.display = 'none';
-      element.style.position = 'absolute';
 
-      const dataUrl = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.download = `Rapor_${selectedStudent.name}.${format}`;
-      link.href = dataUrl;
-      link.click();
-      document.body.removeChild(link);
+      canvas.toBlob((blob) => {
+        if (!blob) throw new Error('Blob generation failed');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.download = `Rapor_${selectedStudent.name}.${format}`;
+        link.href = url;
+        
+        // Trigger download
+        link.click();
+        
+        // Fallback for some browsers
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }, `image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
     } catch (error) {
       console.error('Image Generation Error:', error);
-      alert('Gagal mengunduh gambar.');
+      alert('Gagal mengunduh gambar. Silakan coba lagi.');
       element.style.display = 'none';
-      element.style.position = 'absolute';
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   const generatePDF = async () => {
-    if (!selectedStudent || !examData) return;
+    if (!selectedStudent || !examData || isGenerating) return;
 
     const element = document.getElementById('report-card-capture');
     if (!element) {
@@ -157,22 +141,25 @@ export default function ReportCard() {
       return;
     }
 
+    setIsGenerating(true);
     try {
-      // Temporarily show the element for capture
+      // Ensure element is visible for capture
       element.style.display = 'block';
       element.style.visibility = 'visible';
-      element.style.position = 'static';
+      element.style.position = 'fixed';
+      element.style.top = '0';
+      element.style.left = '0';
+      element.style.zIndex = '-1';
       
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: 794, // A4 width in pixels at 96dpi is ~794px
+        windowWidth: 794,
       });
       
       element.style.display = 'none';
-      element.style.position = 'absolute';
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -185,7 +172,8 @@ export default function ReportCard() {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh rapor. Silakan coba lagi.');
       element.style.display = 'none';
-      element.style.position = 'absolute';
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -361,17 +349,19 @@ export default function ReportCard() {
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <button 
                   onClick={generatePDF}
-                  className="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+                  disabled={isGenerating}
+                  className="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                 >
                   <Download size={18} />
-                  PDF
+                  {isGenerating ? '...' : 'PDF'}
                 </button>
                 <button 
                   onClick={() => generateImage('jpg')}
-                  className="flex-1 sm:flex-none bg-amber-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+                  disabled={isGenerating}
+                  className="flex-1 sm:flex-none bg-amber-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
                 >
                   <Eye size={18} />
-                  JPG
+                  {isGenerating ? '...' : 'JPG'}
                 </button>
               </div>
             </div>

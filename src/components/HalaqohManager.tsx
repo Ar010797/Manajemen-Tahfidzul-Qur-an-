@@ -1,73 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Users, Edit2, Check, X } from 'lucide-react';
+import { storage } from '../services/storage';
 
 export default function HalaqohManager() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
   const [newName, setNewName] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
 
-  const fetchHalaqohs = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('/api/halaqoh', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (Array.isArray(data)) {
-      setHalaqohs(data);
-    } else {
-      console.error('Halaqoh error:', data);
-      setHalaqohs([]);
-    }
+  const fetchHalaqohs = () => {
+    const data = storage.getHalaqoh();
+    setHalaqohs(data);
   };
 
   useEffect(() => { fetchHalaqohs(); }, []);
 
-  const handleAdd = async (e: React.FormEvent) => {
+  const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName) return;
-    const token = localStorage.getItem('token');
-    await fetch('/api/halaqoh', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ name: newName })
-    });
+    storage.addHalaqoh(newName);
     setNewName('');
     fetchHalaqohs();
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: string) => {
     if (!confirm('Hapus halaqoh ini? Siswa yang terdaftar di halaqoh ini akan dipindahkan ke kategori "Tanpa Halaqoh".')) return;
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch(`/api/halaqoh/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Gagal menghapus halaqoh');
-      }
-      fetchHalaqohs();
-    } catch (error: any) {
-      alert(error.message);
-    }
+    storage.deleteHalaqoh(id);
+    fetchHalaqohs();
   };
 
-  const handleUpdate = async (id: number) => {
+  const handleUpdate = (id: string) => {
     if (!editName) return;
-    const token = localStorage.getItem('token');
-    await fetch(`/api/halaqoh/${id}`, {
-      method: 'PUT',
-      headers: { 
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ name: editName })
-    });
+    storage.updateHalaqoh(id, editName);
     setEditingId(null);
     fetchHalaqohs();
   };

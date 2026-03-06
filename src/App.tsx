@@ -251,8 +251,8 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm shadow-emerald-50">
-              Online Mode
+            <div className="hidden sm:flex px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 shadow-sm shadow-amber-50">
+              Local Storage Mode
             </div>
           </div>
         </header>

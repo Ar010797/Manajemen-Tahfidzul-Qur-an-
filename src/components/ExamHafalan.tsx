@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Trash2, Save, CheckCircle2, Clock, Calendar, GraduationCap, Search, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
-import socket from '../lib/socket';
+import { storage } from '../services/storage';
 
 const GRADES = [
   { value: 'A+', label: 'MUMTAAZ' },
@@ -20,33 +20,16 @@ export default function ExamHafalan() {
   const [semester, setSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeExamId, setActiveExamId] = useState<number | null>(null);
+  const [activeExamId, setActiveExamId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/students', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setStudents(data);
-      } else {
-        console.error('Students error:', data);
-        setStudents([]);
-      }
+    const fetchStudents = () => {
+      const data = storage.getStudents();
+      setStudents(data);
     };
     fetchStudents();
-
-    socket.on('exam-hafalan-updated', () => {
-      // Could re-fetch if needed
-    });
-
-    return () => {
-      socket.off('exam-hafalan-updated');
-    };
   }, []);
 
   const groupedStudents = useMemo(() => {
@@ -71,17 +54,13 @@ export default function ExamHafalan() {
       }, {} as Record<string, any[]>);
   }, [students, search]);
 
-  const fetchActiveExam = async (studentId: string) => {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`/api/exams/student/${studentId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
+  const fetchActiveExam = (studentId: string) => {
+    const data = storage.getStudentExams(studentId);
     const active = data.hafalan.find((e: any) => e.status === 'ongoing');
     if (active) {
       setActiveExamId(active.id);
-      setSurahs(JSON.parse(active.surahs));
-      setDaysProgress(JSON.parse(active.days_progress));
+      setSurahs(active.surahs);
+      setDaysProgress(active.days_progress);
       setNote(active.note);
       setSemester(active.semester || 'Ganjil');
     } else {
@@ -115,10 +94,9 @@ export default function ExamHafalan() {
     setSurahs(newSurahs);
   };
 
-  const saveProgress = useCallback(async (status: 'ongoing' | 'completed' = 'ongoing') => {
+  const saveProgress = useCallback((status: 'ongoing' | 'completed' = 'ongoing') => {
     if (!selectedStudent) return;
     setLoading(true);
-    const token = localStorage.getItem('token');
     
     const payload = {
       student_id: selectedStudent.id,
@@ -130,21 +108,14 @@ export default function ExamHafalan() {
       semester
     };
 
-    const method = activeExamId ? 'PUT' : 'POST';
-    const url = activeExamId ? `/api/exams/hafalan/${activeExamId}` : '/api/exams/hafalan';
-
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok && !activeExamId) {
-        fetchActiveExam(selectedStudent.id);
+      if (activeExamId) {
+        storage.updateHafalanExam(activeExamId, payload);
+      } else {
+        const newExam = storage.addHafalanExam(payload);
+        setActiveExamId(newExam.id);
       }
+      
       if (status === 'completed') {
         alert('Ujian selesai dan disimpan!');
         setSelectedStudent(null);
@@ -156,7 +127,7 @@ export default function ExamHafalan() {
     } finally {
       setLoading(false);
     }
-  }, [selectedStudent, surahs, note, daysProgress, activeExamId]);
+  }, [selectedStudent, surahs, note, daysProgress, activeExamId, semester]);
 
   // Autosave every 30 seconds if there are changes
   useEffect(() => {
