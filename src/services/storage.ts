@@ -16,6 +16,7 @@ export interface DataSchema {
     coordinator_name: string;
     halaqoh_teacher_name: string;
     academic_year: string;
+    report_date?: string;
     logo?: string;
     watermark?: string;
     principal_signature?: string;

@@ -10,6 +10,7 @@ export default function InstitutionProfile() {
     coordinator_name: '',
     halaqoh_teacher_name: '',
     academic_year: '',
+    report_date: '',
     logo: '',
     watermark: '',
     principal_signature: '',
@@ -112,6 +113,17 @@ export default function InstitutionProfile() {
                   value={profile.academic_year}
                   onChange={e => setProfile({...profile, academic_year: e.target.value})}
                 />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Tanggal Rapor (Opsional)</label>
+                <input 
+                  type="text"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                  placeholder="Contoh: Cikunir, 20 Juni 2025"
+                  value={profile.report_date}
+                  onChange={e => setProfile({...profile, report_date: e.target.value})}
+                />
+                <p className="text-[10px] text-stone-400 ml-1 italic">Jika dikosongkan, akan menggunakan tanggal hari ini otomatis.</p>
               </div>
             </div>
           </div>

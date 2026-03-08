@@ -101,9 +101,22 @@ export default function Dashboard() {
             <br /><br />
             Pastikan setiap setoran dicatat dengan detail untuk memudahkan pembuatan rapor di akhir semester.
           </p>
-          <button className="mt-8 px-6 py-3 bg-white text-emerald-900 font-bold rounded-xl text-sm hover:bg-emerald-50 transition-colors relative z-10">
-            Lihat Panduan
-          </button>
+          <div className="mt-8 flex flex-wrap gap-4 relative z-10">
+            <button className="px-6 py-3 bg-white text-emerald-900 font-bold rounded-xl text-sm hover:bg-emerald-50 transition-colors">
+              Lihat Panduan
+            </button>
+            <button 
+              onClick={() => {
+                if (confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
+                  storage.resetData();
+                  window.location.reload();
+                }
+              }}
+              className="px-6 py-3 bg-red-500/20 text-white border border-red-500/30 font-bold rounded-xl text-sm hover:bg-red-500/40 transition-colors"
+            >
+              Reset Semua Data
+            </button>
+          </div>
         </div>
       </div>
     </div>

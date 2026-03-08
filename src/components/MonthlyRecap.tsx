@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Search, Calendar, FileText, Save } from 'lucide-react';
+import { Download, Search, Calendar, FileText, Save, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
@@ -17,6 +17,8 @@ export default function MonthlyRecap() {
   const [institution, setInstitution] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [principalSigSize, setPrincipalSigSize] = useState(80);
+  const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
 
   useEffect(() => {
     const fetchData = () => {
@@ -116,152 +118,175 @@ export default function MonthlyRecap() {
   const generateImage = async (format: 'jpg' | 'png') => {
     if (!selectedHalaqoh || recapData.length === 0 || isGenerating) return;
 
-    const element = document.getElementById('recap-capture');
+    const element = document.getElementById('recap-preview-container');
     if (!element) return;
 
     setIsGenerating(true);
-    try {
-      // Ensure element is visible for capture
-      element.style.display = 'block';
-      element.style.visibility = 'visible';
-      element.style.position = 'fixed';
-      element.style.top = '0';
-      element.style.left = '0';
-      element.style.zIndex = '-1';
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      });
-      
-      element.style.display = 'none';
+    
+    // Small delay to ensure UI is stable
+    setTimeout(async () => {
+      try {
+        // Ensure images are loaded
+        const images = element.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        }));
 
-      canvas.toBlob((blob) => {
-        if (!blob) throw new Error('Blob generation failed');
-        const url = URL.createObjectURL(blob);
+        const canvas = await html2canvas(element, {
+          scale: 3, // High resolution
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          imageTimeout: 0,
+          onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.getElementById('recap-preview-container');
+            if (clonedElement) {
+              clonedElement.style.width = '297mm';
+              clonedElement.style.height = 'auto';
+              clonedElement.style.minHeight = '210mm';
+              clonedElement.style.transform = 'none';
+              clonedElement.style.margin = '0';
+              clonedElement.style.boxShadow = 'none';
+              clonedElement.style.backgroundColor = '#ffffff';
+              clonedElement.style.color = '#000000';
+              clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
+            }
+
+            // Workaround for oklab/oklch colors that html2canvas doesn't support
+            const allElements = clonedDoc.getElementsByTagName('*');
+            for (let i = 0; i < allElements.length; i++) {
+              const el = allElements[i] as HTMLElement;
+              if (el.style) {
+                const computed = window.getComputedStyle(el);
+                
+                // Catch-all for any oklch/oklab colors
+                if (computed.color.includes('okl')) el.style.color = '#1c1917';
+                if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+                if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+
+                // Specific overrides for better accuracy
+                if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
+                if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
+                if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
+                if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
+                if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
+                if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+                if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
+                if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
+                if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
+                if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+              }
+            }
+          }
+        });
+        
+        const dataUrl = canvas.toDataURL(format === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
         const link = document.createElement('a');
-        link.style.display = 'none';
-        document.body.appendChild(link);
+        link.href = dataUrl;
         link.download = `Rekap_${selectedMonth}_${selectedHalaqoh}.${format}`;
-        link.href = url;
-        
-        // Trigger download
+        document.body.appendChild(link);
         link.click();
-        
-        // Fallback for some browsers
-        setTimeout(() => {
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }, 100);
-      }, `image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
-    } catch (error) {
-      console.error('Image Generation Error:', error);
-      alert('Gagal mengunduh gambar. Silakan coba lagi.');
-      element.style.display = 'none';
-    } finally {
-      setIsGenerating(false);
-    }
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Image Generation Error:', error);
+        alert('Gagal mengunduh gambar. Silakan coba lagi.');
+      } finally {
+        setIsGenerating(false);
+      }
+    }, 500);
   };
 
   const generatePDF = async () => {
     if (!selectedHalaqoh || recapData.length === 0 || isGenerating) return;
     
+    const element = document.getElementById('recap-preview-container');
+    if (!element) return;
+
     setIsGenerating(true);
+    
     try {
-      const doc = new jsPDF('l', 'mm', 'a4');
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      
-      // Add Watermark
-      if (institution?.watermark) {
-        doc.saveGraphicsState();
-        doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
-        doc.addImage(institution.watermark, 'PNG', pageWidth / 2 - 50, pageHeight / 2 - 50, 100, 100);
-        doc.restoreGraphicsState();
-      }
+      // Ensure images are loaded
+      const images = element.getElementsByTagName('img');
+      await Promise.all(Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }));
 
-      // Logo
-      if (institution?.logo) {
-        doc.addImage(institution.logo, 'PNG', 20, 10, 20, 20);
-      }
+      const canvas = await html2canvas(element, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 0,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('recap-preview-container');
+          if (clonedElement) {
+            clonedElement.style.width = '297mm';
+            clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = '210mm';
+            clonedElement.style.transform = 'none';
+            clonedElement.style.margin = '0';
+            clonedElement.style.boxShadow = 'none';
+            clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.color = '#000000';
+          }
 
-      doc.setFont('times', 'bold');
-      doc.setFontSize(16);
-      doc.text('REKAPITULASI BULANAN TAHFIDZUL QUR\'AN', pageWidth / 2, 18, { align: 'center' });
-      
-      doc.setFontSize(12);
-      doc.text(institution?.name?.toUpperCase() || 'SEKOLAH ISLAM MIFTAHUSSALAM', pageWidth / 2, 25, { align: 'center' });
-      
-      doc.setFontSize(9);
-      doc.setFont('times', 'normal');
-      doc.text(institution?.address || '', pageWidth / 2, 30, { align: 'center' });
-      doc.setLineWidth(0.5);
-      doc.line(20, 33, pageWidth - 20, 33);
-
-      doc.setFontSize(10);
-      doc.text(`Bulan: ${format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}`, 20, 40);
-      doc.text(`Halaqoh: ${halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}`, 20, 45);
-      doc.text(`Pengampu: ${institution?.halaqoh_teacher_name || '-'}`, pageWidth - 60, 45);
-
-      const rows = recapData.map((s, i) => {
-        const settings = recapSettings[s.id] || {};
-        return [
-          i + 1,
-          s.name,
-          s.hafalan.awl, s.hafalan.akh, s.hafalan.jml,
-          s.tilawah.awl, s.tilawah.akh, s.tilawah.jml,
-          s.ummi.awl, s.ummi.akh, s.ummi.jml,
-          settings.total_hafalan || '-',
-          settings.notes || '-'
-        ];
+          const allElements = clonedDoc.getElementsByTagName('*');
+          for (let i = 0; i < allElements.length; i++) {
+            const el = allElements[i] as HTMLElement;
+            if (el.style) {
+              const computed = window.getComputedStyle(el);
+              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
+              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
+              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
+              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
+              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
+              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
+              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
+              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+            }
+          }
+        }
       });
 
-      autoTable(doc, {
-        startY: 50,
-        head: [
-          [
-            { content: 'NO', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-            { content: 'NAMA', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-            { content: 'HAFALAN AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
-            { content: 'TILAWAH AL-QUR\'AN', colSpan: 3, styles: { halign: 'center' } },
-            { content: 'TILAWAH UMMI', colSpan: 3, styles: { halign: 'center' } },
-            { content: 'TOTAL', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-            { content: 'CATATAN', rowSpan: 2, styles: { halign: 'center', valign: 'middle' } }
-          ],
-          ['AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML', 'AWL', 'AKH', 'JML']
-        ],
-        body: rows,
-        theme: 'grid',
-        styles: { font: 'times', fontSize: 7, cellPadding: 2 },
-        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.1, lineColor: [0, 0, 0] }
-      });
-
-      const finalY = (doc as any).lastAutoTable.finalY + 15;
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
       
-      doc.setFontSize(10);
-      doc.text('Mengetahui,', 40, finalY);
-      doc.text('Kepala Sekolah', 40, finalY + 5);
-      if (institution?.principal_signature) {
-        doc.addImage(institution.principal_signature, 'PNG', 35, finalY + 7, 25, 12);
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const ratio = imgProps.width / imgProps.height;
+      const width = pdfWidth;
+      const height = pdfWidth / ratio;
+      
+      let finalWidth = width;
+      let finalHeight = height;
+      
+      if (finalHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = pdfHeight * ratio;
       }
-      doc.setFont('times', 'bold');
-      doc.text(institution?.principal_name || '( .............................. )', 40, finalY + 25);
-
-      doc.setFont('times', 'normal');
-      doc.text('Koordinator Tahfidz,', pageWidth - 70, finalY + 5);
-      if (institution?.coordinator_signature) {
-        doc.addImage(institution.coordinator_signature, 'PNG', pageWidth - 75, finalY + 7, 25, 12);
-      }
-      doc.setFont('times', 'bold');
-      doc.text(institution?.coordinator_name || '( .............................. )', pageWidth - 70, finalY + 25);
-
-      doc.save(`Rekap_${selectedMonth}_${selectedHalaqoh}.pdf`);
+      
+      const x = (pdfWidth - finalWidth) / 2;
+      const y = (pdfHeight - finalHeight) / 2;
+      
+      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      pdf.save(`Rekap_${selectedMonth}_${selectedHalaqoh}.pdf`);
     } catch (error) {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh PDF. Silakan coba lagi.');
@@ -326,64 +351,242 @@ export default function MonthlyRecap() {
         {loading ? (
           <div className="py-20 text-center text-stone-400">Memuat data...</div>
         ) : recapData.length > 0 ? (
-          <div className="overflow-x-auto border border-stone-200 rounded-2xl">
-            <table className="w-full text-[11px] text-left border-collapse">
-              <thead className="bg-stone-50 text-stone-500 font-bold uppercase tracking-wider">
-                <tr className="border-b border-stone-200">
-                  <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">No</th>
-                  <th rowSpan={2} className="px-4 py-3 border-r border-stone-200">Nama</th>
-                  <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>
-                  <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>
-                  <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>
-                  <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Total Hafalan</th>
-                  <th rowSpan={2} className="px-4 py-3 text-center">Catatan Bulanan</th>
-                </tr>
-                <tr className="border-b border-stone-200">
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                  <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {recapData.map((s, idx) => (
-                  <tr key={s.id} className="hover:bg-stone-50 transition-colors">
-                    <td className="px-4 py-3 border-r border-stone-100 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 border-r border-stone-100 font-bold text-stone-800">{s.name}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.awl}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.akh}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.hafalan.jml}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.awl}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.akh}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.tilawah.jml}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.awl}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.akh}</td>
-                    <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
-                    <td className="px-4 py-3 border-r border-stone-100">
-                      <input 
-                        type="text"
-                        className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
-                        value={recapSettings[s.id]?.total_hafalan || ''}
-                        onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      <input 
-                        type="text"
-                        className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
-                        value={recapSettings[s.id]?.notes || ''}
-                        onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
-                      />
-                    </td>
+          <div className="space-y-8">
+            <div className="overflow-x-auto border border-stone-200 rounded-2xl">
+              <table className="w-full text-[11px] text-left border-collapse">
+                <thead className="bg-stone-50 text-stone-500 font-bold uppercase tracking-wider">
+                  <tr className="border-b border-stone-200">
+                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">No</th>
+                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200">Nama</th>
+                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>
+                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>
+                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>
+                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Total Hafalan</th>
+                    <th rowSpan={2} className="px-4 py-3 text-center">Catatan Bulanan</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                  <tr className="border-b border-stone-200">
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {recapData.map((s, idx) => (
+                    <tr key={s.id} className="hover:bg-stone-50 transition-colors">
+                      <td className="px-4 py-3 border-r border-stone-100 text-center">{idx + 1}</td>
+                      <td className="px-4 py-3 border-r border-stone-100 font-bold text-stone-800">{s.name}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.awl}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.akh}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.hafalan.jml}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.awl}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.akh}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.tilawah.jml}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.awl}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.akh}</td>
+                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
+                      <td className="px-4 py-3 border-r border-stone-100">
+                        <input 
+                          type="text"
+                          className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
+                          value={recapSettings[s.id]?.total_hafalan || ''}
+                          onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input 
+                          type="text"
+                          className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
+                          value={recapSettings[s.id]?.notes || ''}
+                          onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Preview for Export */}
+            <div className="mt-12 border-t pt-12">
+              <h3 className="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6 text-center">Pratinjau Hasil Ekspor</h3>
+              
+              {/* Signature Size Controls (Outside Capture Area) */}
+              <div className="max-w-[297mm] mx-auto mb-6 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center gap-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-50 rounded-lg">
+                    <Settings size={18} className="text-emerald-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-stone-900">Pengaturan Ukuran Tanda Tangan</h4>
+                    <p className="text-[10px] text-stone-500">Sesuaikan ukuran gambar ttd sebelum diunduh</p>
+                  </div>
+                </div>
+                
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                  <div>
+                    <div className="flex justify-between text-[10px] mb-2">
+                      <span className="text-stone-500 font-medium">Kepala Sekolah</span>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setPrincipalSigSize(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} className="scale-[-1]" />
+                        </button>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
+                        <button onClick={() => setPrincipalSigSize(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="40" 
+                      max="300" 
+                      value={principalSigSize} 
+                      onChange={e => setPrincipalSigSize(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[10px] mb-2">
+                      <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setCoordinatorSigSize(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} className="scale-[-1]" />
+                        </button>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
+                        <button onClick={() => setCoordinatorSigSize(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="40" 
+                      max="300" 
+                      value={coordinatorSigSize} 
+                      onChange={e => setCoordinatorSigSize(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto p-4 bg-stone-100 rounded-3xl shadow-inner">
+                <div id="recap-preview-container" className="bg-white shadow-2xl mx-auto p-[15mm] relative overflow-hidden" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Times New Roman', Times, serif", color: '#1c1917', backgroundColor: '#ffffff' }}>
+                  {/* Watermark */}
+                  {institution?.watermark && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
+                      <img src={institution.watermark} alt="" className="w-[120mm] h-[120mm] object-contain" />
+                    </div>
+                  )}
+
+                  {/* Header */}
+                  <div className="flex items-center border-b-2 border-black pb-4 mb-8 relative" style={{ borderBottomColor: '#000000' }}>
+                    {institution?.logo && (
+                      <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-24 h-24 object-contain" />
+                    )}
+                    <div className="flex-1 text-center pl-24">
+                      <h1 className="text-2xl font-bold uppercase tracking-tight">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
+                      <h2 className="text-xl font-bold uppercase mt-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
+                      <p className="text-[11px] leading-tight mt-2 italic">{institution?.address}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 text-sm mb-8 font-medium">
+                    <div className="space-y-2">
+                      <p><span className="w-24 inline-block">Bulan</span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</p>
+                      <p><span className="w-24 inline-block">Halaqoh</span>: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</p>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
+                      <p>Tahun Ajaran: {institution?.academic_year || '-'}</p>
+                    </div>
+                  </div>
+
+                  <table className="w-full border-collapse border border-black text-[10px]" style={{ borderColor: '#000000' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#fafaf9' }}>
+                        <th rowSpan={2} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>NO</th>
+                        <th rowSpan={2} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>NAMA</th>
+                        <th colSpan={3} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>
+                        <th colSpan={3} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>
+                        <th colSpan={3} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH UMMI</th>
+                        <th rowSpan={2} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>TOTAL</th>
+                        <th rowSpan={2} className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>CATATAN</th>
+                      </tr>
+                      <tr style={{ backgroundColor: '#fafaf9' }}>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>JML</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>JML</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>JML</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recapData.map((s, i) => (
+                        <tr key={s.id}>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{i + 1}</td>
+                          <td className="border border-black p-3 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.name}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.awl}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.akh}</td>
+                          <td className="border border-black p-3 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.jml}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.awl}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.akh}</td>
+                          <td className="border border-black p-3 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.jml}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.awl}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.akh}</td>
+                          <td className="border border-black p-3 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.jml}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
+                          <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <div className="grid grid-cols-2 text-sm text-center mt-6">
+                    <div>
+                      <p>Mengetahui,</p>
+                      <p className="mb-6">Kepala Sekolah</p>
+                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
+                        {institution?.principal_signature && (
+                          <img 
+                            src={institution.principal_signature} 
+                            alt="" 
+                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+                            style={{ height: `${principalSigSize}px`, maxWidth: 'none' }} 
+                          />
+                        )}
+                      </div>
+                      <p className="font-bold underline">{institution?.principal_name || '( .............................. )'}</p>
+                    </div>
+                    <div>
+                      <p className="invisible">.</p>
+                      <p className="mb-6">Koordinator Tahfidz,</p>
+                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
+                        {institution?.coordinator_signature && (
+                          <img 
+                            src={institution.coordinator_signature} 
+                            alt="" 
+                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+                            style={{ height: `${coordinatorSigSize}px`, maxWidth: 'none' }} 
+                          />
+                        )}
+                      </div>
+                      <p className="font-bold underline">{institution?.coordinator_name || '( .............................. )'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="py-20 text-center text-stone-400">
@@ -392,106 +595,7 @@ export default function MonthlyRecap() {
           </div>
         )}
       </div>
-      {/* Hidden capture element for image export */}
-      <div id="recap-capture" style={{ display: 'none', position: 'absolute', left: '-9999px' }}>
-        <div className="bg-white p-[15mm] relative" style={{ width: '297mm', minHeight: '210mm', fontFamily: 'serif', color: '#1c1917' }}>
-          {/* Watermark */}
-          {institution?.watermark && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.08]">
-              <img src={institution.watermark} alt="" className="w-[120mm] h-[120mm] object-contain" />
-            </div>
-          )}
-
-          {/* Header */}
-          <div className="flex items-center border-b-2 border-black pb-4 mb-6 relative" style={{ borderBottomColor: '#000000' }}>
-            {institution?.logo && (
-              <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-20 h-20 object-contain" />
-            )}
-            <div className="flex-1 text-center pl-20">
-              <h1 className="text-xl font-bold uppercase">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
-              <h2 className="text-lg font-bold uppercase">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
-              <p className="text-[10px] leading-tight">{institution?.address}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 text-xs mb-6">
-            <div className="space-y-1">
-              <p>Bulan: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</p>
-              <p>Halaqoh: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</p>
-            </div>
-            <div className="text-right">
-              <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
-            </div>
-          </div>
-
-          <table className="w-full border-collapse border border-black text-[9px]" style={{ borderColor: '#000000' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#fafaf9' }}>
-                <th rowSpan={2} className="border border-black p-1 text-center">NO</th>
-                <th rowSpan={2} className="border border-black p-1 text-left">NAMA</th>
-                <th colSpan={3} className="border border-black p-1 text-center">HAFALAN AL-QUR'AN</th>
-                <th colSpan={3} className="border border-black p-1 text-center">TILAWAH AL-QUR'AN</th>
-                <th colSpan={3} className="border border-black p-1 text-center">TILAWAH UMMI</th>
-                <th rowSpan={2} className="border border-black p-1 text-center">TOTAL</th>
-                <th rowSpan={2} className="border border-black p-1 text-center">CATATAN</th>
-              </tr>
-              <tr style={{ backgroundColor: '#fafaf9' }}>
-                <th className="border border-black p-1 text-center">AWL</th>
-                <th className="border border-black p-1 text-center">AKH</th>
-                <th className="border border-black p-1 text-center">JML</th>
-                <th className="border border-black p-1 text-center">AWL</th>
-                <th className="border border-black p-1 text-center">AKH</th>
-                <th className="border border-black p-1 text-center">JML</th>
-                <th className="border border-black p-1 text-center">AWL</th>
-                <th className="border border-black p-1 text-center">AKH</th>
-                <th className="border border-black p-1 text-center">JML</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recapData.map((s, i) => (
-                <tr key={s.id}>
-                  <td className="border border-black p-1 text-center">{i + 1}</td>
-                  <td className="border border-black p-1 font-bold">{s.name}</td>
-                  <td className="border border-black p-1 text-center">{s.hafalan.awl}</td>
-                  <td className="border border-black p-1 text-center">{s.hafalan.akh}</td>
-                  <td className="border border-black p-1 text-center">{s.hafalan.jml}</td>
-                  <td className="border border-black p-1 text-center">{s.tilawah.awl}</td>
-                  <td className="border border-black p-1 text-center">{s.tilawah.akh}</td>
-                  <td className="border border-black p-1 text-center">{s.tilawah.jml}</td>
-                  <td className="border border-black p-1 text-center">{s.ummi.awl}</td>
-                  <td className="border border-black p-1 text-center">{s.ummi.akh}</td>
-                  <td className="border border-black p-1 text-center">{s.ummi.jml}</td>
-                  <td className="border border-black p-1 text-center">{recapSettings[s.id]?.total_hafalan || '-'}</td>
-                  <td className="border border-black p-1">{recapSettings[s.id]?.notes || '-'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="grid grid-cols-2 text-xs text-center mt-12">
-            <div>
-              <p>Mengetahui,</p>
-              <p className="mb-12">Kepala Sekolah</p>
-              <div className="relative h-12 flex items-center justify-center">
-                {institution?.principal_signature && (
-                  <img src={institution.principal_signature} alt="" className="h-full object-contain absolute" />
-                )}
-              </div>
-              <p className="font-bold underline">{institution?.principal_name || '( .............................. )'}</p>
-            </div>
-            <div>
-              <p className="invisible">.</p>
-              <p className="mb-12">Koordinator Tahfidz,</p>
-              <div className="relative h-12 flex items-center justify-center">
-                {institution?.coordinator_signature && (
-                  <img src={institution.coordinator_signature} alt="" className="h-full object-contain absolute" />
-                )}
-              </div>
-              <p className="font-bold underline">{institution?.coordinator_name || '( .............................. )'}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* No more hidden capture element, we use the preview container */}
     </div>
   );
 }

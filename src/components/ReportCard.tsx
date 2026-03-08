@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft } from 'lucide-react';
+import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
@@ -18,6 +18,8 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [principalSigSize, setPrincipalSigSize] = useState(80);
+  const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
 
   useEffect(() => {
     const fetchData = () => {
@@ -76,42 +78,108 @@ export default function ReportCard() {
     return notes.length > 0 ? notes.join('; ') : '-';
   }, [examData, semester]);
 
-  const generateImage = async (format: 'jpg' | 'png') => {
+  const generateImage = async (imgFormat: 'jpg' | 'png') => {
     if (!selectedStudent || !examData || isGenerating) return;
 
     const element = document.getElementById('report-card-preview');
-    if (!element) return;
+    if (!element) {
+      alert('Elemen rapor tidak ditemukan.');
+      return;
+    }
 
     setIsGenerating(true);
+    
     try {
+      // Ensure images and fonts are loaded
+      const images = element.getElementsByTagName('img');
+      const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
+      
+      await Promise.all([
+        fontPromise,
+        ...Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      ]);
+
+      // Small delay to ensure rendering is stable
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3, // High resolution (Retina quality)
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        scrollX: 0,
-        scrollY: 0,
+        imageTimeout: 0,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('report-card-preview');
+          if (clonedElement) {
+            clonedElement.style.width = '210mm';
+            clonedElement.style.height = 'auto'; // Allow full height capture
+            clonedElement.style.minHeight = '297mm';
+            clonedElement.style.transform = 'none';
+            clonedElement.style.margin = '0';
+            clonedElement.style.boxShadow = 'none';
+            clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.color = '#000000';
+          }
+          
+          // Workaround for oklab/oklch colors that html2canvas doesn't support
+          const allElements = clonedDoc.getElementsByTagName('*');
+          for (let i = 0; i < allElements.length; i++) {
+            const el = allElements[i] as HTMLElement;
+            if (el.style) {
+              const computed = window.getComputedStyle(el);
+              
+              // Catch-all for any oklch/oklab colors
+              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+
+              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
+              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
+              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
+              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
+              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
+              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
+              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
+              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+            }
+          }
+        }
       });
       
       canvas.toBlob((blob) => {
-        if (!blob) throw new Error('Blob generation failed');
-        const url = URL.createObjectURL(blob);
+        if (!blob) {
+          alert('Gagal membuat file gambar.');
+          setIsGenerating(false);
+          return;
+        }
+        
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.download = `Rapor_${selectedStudent.name}.${format}`;
         link.href = url;
+        const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
+        link.download = `Rapor_${safeName}.${imgFormat}`;
+        document.body.appendChild(link);
         link.click();
         
         setTimeout(() => {
           document.body.removeChild(link);
-          URL.revokeObjectURL(url);
+          window.URL.revokeObjectURL(url);
+          setIsGenerating(false);
+          alert('Unduhan gambar berhasil dimulai.');
         }, 100);
-      }, `image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9);
-    } catch (error) {
+      }, imgFormat === 'jpg' ? 'image/jpeg' : 'image/png', 1.0); // Maximum quality
+
+    } catch (error: any) {
       console.error('Image Generation Error:', error);
-      alert('Gagal mengunduh gambar. Silakan coba lagi.');
-    } finally {
+      alert('Gagal mengunduh gambar: ' + (error.message || 'Terjadi kesalahan teknis'));
       setIsGenerating(false);
     }
   };
@@ -126,25 +194,118 @@ export default function ReportCard() {
     }
 
     setIsGenerating(true);
+
     try {
+      // Ensure images and fonts are loaded
+      const images = element.getElementsByTagName('img');
+      const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
+
+      await Promise.all([
+        fontPromise,
+        ...Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      ]);
+
+      // Small delay to ensure rendering is stable
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3, // High resolution
         useCORS: true,
         logging: false,
+        imageTimeout: 0,
         backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('report-card-preview');
+          if (clonedElement) {
+            clonedElement.style.width = '210mm';
+            clonedElement.style.height = 'auto'; // Allow height to be dynamic for capture
+            clonedElement.style.minHeight = '297mm';
+            clonedElement.style.transform = 'none';
+            clonedElement.style.margin = '0';
+            clonedElement.style.boxShadow = 'none';
+            clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.color = '#000000';
+          }
+
+          // Workaround for oklab/oklch colors that html2canvas doesn't support
+          const allElements = clonedDoc.getElementsByTagName('*');
+          for (let i = 0; i < allElements.length; i++) {
+            const el = allElements[i] as HTMLElement;
+            if (el.style) {
+              const computed = window.getComputedStyle(el);
+              
+              // Catch-all for any oklch/oklab colors
+              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+
+              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
+              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
+              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
+              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
+              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
+              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
+              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
+              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+            }
+          }
+        }
       });
       
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Rapor_${selectedStudent.name}.pdf`);
-    } catch (error) {
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      // Calculate scaling to fit the page
+      const ratio = imgProps.width / imgProps.height;
+      const width = pdfWidth;
+      const height = pdfWidth / ratio;
+      
+      // If height is still more than page height, scale down further
+      let finalWidth = width;
+      let finalHeight = height;
+      
+      if (finalHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = pdfHeight * ratio;
+      }
+      
+      // Center the image on the page
+      const x = (pdfWidth - finalWidth) / 2;
+      const y = (pdfHeight - finalHeight) / 2;
+      
+      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
+      
+      const pdfBlob = pdf.output('blob');
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Rapor_${safeName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        setIsGenerating(false);
+        alert('Unduhan PDF berhasil dimulai.');
+      }, 100);
+
+    } catch (error: any) {
       console.error('PDF Generation Error:', error);
-      alert('Gagal mengunduh rapor. Silakan coba lagi.');
-    } finally {
+      alert('Gagal mengunduh rapor: ' + (error.message || 'Terjadi kesalahan teknis'));
       setIsGenerating(false);
     }
   };
@@ -154,16 +315,16 @@ export default function ReportCard() {
     const targetUmmi = filteredUmmi[0]?.target || `Ummi jilid ${filteredUmmi[0]?.level || '-'}`;
     
     return (
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-[10px] font-bold">TARGET TAJWID: {targetUmmi}</p>
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[11px] font-bold uppercase tracking-wide">TARGET TAJWID: {targetUmmi}</p>
         </div>
-        <table className="w-full border-collapse border border-black text-[10px]" style={{ borderColor: '#000000' }}>
+        <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
-            <tr style={{ backgroundColor: '#fafaf9' }}>
-              <th className="border border-black p-1 w-10" style={{ borderColor: '#000000' }}>Jilid</th>
-              <th className="border border-black p-1 text-left" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
-              <th className="border border-black p-1 w-10" style={{ borderColor: '#000000' }}>Nilai</th>
+            <tr style={{ backgroundColor: '#f8fafc' }}>
+              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Jilid</th>
+              <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
+              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Nilai</th>
             </tr>
           </thead>
           <tbody>
@@ -171,13 +332,13 @@ export default function ReportCard() {
               const scores = typeof exam.scores === 'string' ? JSON.parse(exam.scores) : exam.scores;
               return Object.entries(scores || {}).filter(([_, v]) => v).map(([k, v], i) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
-                  <td className="border border-black p-1" style={{ borderColor: '#000000' }}>{k}</td>
-                  <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{v as string}</td>
+                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
+                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{k}</td>
+                  <td className="border border-black p-3 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{v as string}</td>
                 </tr>
               ));
             }) : (
-              <tr><td colSpan={3} className="border border-black p-4 text-center italic text-stone-400" style={{ borderColor: '#000000' }}>Belum ada data semester ini</td></tr>
+              <tr><td colSpan={3} className="border border-black p-6 text-center italic" style={{ borderColor: '#000000', color: '#a8a29e' }}>Belum ada data semester ini</td></tr>
             )}
           </tbody>
         </table>
@@ -191,15 +352,15 @@ export default function ReportCard() {
     
     let counter = 1;
     return (
-      <div>
-        <p className="text-[10px] font-bold mb-1">TARGET HAFALAN: {targetHafalan}</p>
-        <table className="w-full border-collapse border border-black text-[10px]" style={{ borderColor: '#000000' }}>
+      <div className="mt-4">
+        <p className="text-[11px] font-bold mb-2 uppercase tracking-wide">TARGET HAFALAN: {targetHafalan}</p>
+        <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
-            <tr style={{ backgroundColor: '#fafaf9' }}>
-              <th className="border border-black p-1 w-8" style={{ borderColor: '#000000' }}>No</th>
-              <th className="border border-black p-1 text-left" style={{ borderColor: '#000000' }}>Surat</th>
-              <th className="border border-black p-1 w-10" style={{ borderColor: '#000000' }}>Nilai</th>
-              <th className="border border-black p-1 w-16" style={{ borderColor: '#000000' }}>Predikat</th>
+            <tr style={{ backgroundColor: '#f8fafc' }}>
+              <th className="border border-black p-3 w-10 text-center align-middle" style={{ borderColor: '#000000' }}>No</th>
+              <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>Surat / Ayat</th>
+              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Nilai</th>
+              <th className="border border-black p-3 w-20 text-center align-middle" style={{ borderColor: '#000000' }}>Predikat</th>
             </tr>
           </thead>
           <tbody>
@@ -207,14 +368,14 @@ export default function ReportCard() {
               const surahs = typeof exam.surahs === 'string' ? JSON.parse(exam.surahs) : exam.surahs;
               return (surahs || []).map((s: any, i: number) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{counter++}</td>
-                  <td className="border border-black p-1" style={{ borderColor: '#000000' }}>{s.name}</td>
-                  <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{s.grade}</td>
-                  <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{s.predicate}</td>
+                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{counter++}</td>
+                  <td className="border border-black p-3 text-center align-middle" dir="auto" style={{ borderColor: '#000000', color: '#000000', fontFamily: "'Amiri', serif", letterSpacing: '0', fontVariantLigatures: 'common-ligatures' }}>{s.name}</td>
+                  <td className="border border-black p-3 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.grade}</td>
+                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.predicate}</td>
                 </tr>
               ));
             }) : (
-              <tr><td colSpan={4} className="border border-black p-4 text-center italic text-stone-400" style={{ borderColor: '#000000' }}>Belum ada data semester ini</td></tr>
+              <tr><td colSpan={4} className="border border-black p-6 text-center italic" style={{ borderColor: '#000000', color: '#a8a29e' }}>Belum ada data semester ini</td></tr>
             )}
           </tbody>
         </table>
@@ -242,7 +403,7 @@ export default function ReportCard() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        
+
         <div className="space-y-6 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
           {Object.entries(groupedStudents).map(([halaqohName, halaqohStudents]: [string, any[]]) => (
             <div key={halaqohName} className="space-y-3">
@@ -373,26 +534,88 @@ export default function ReportCard() {
                 </div>
               </div>
 
-              {/* Report Card Preview (HTML) */}
-              <div className="border border-stone-200 rounded-2xl overflow-x-auto shadow-inner bg-stone-100 p-4 lg:p-8">
-                <div id="report-card-preview" className="bg-white shadow-2xl mx-auto p-[10mm] sm:p-[15mm] relative overflow-hidden" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'serif', color: '#1c1917' }}>
+              {/* Signature Size Controls (Toolbar - Outside Capture Area) */}
+            <div className="mb-8 p-6 bg-stone-50 rounded-3xl border border-stone-100 flex flex-col sm:flex-row items-center gap-8 no-print print:hidden">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                  <Settings size={18} className="text-emerald-600" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-stone-900">Ukuran Tanda Tangan</h4>
+                  <p className="text-[10px] text-stone-500">Sesuaikan ukuran gambar ttd</p>
+                </div>
+              </div>
+              
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                  <div>
+                    <div className="flex justify-between text-[10px] mb-2">
+                      <span className="text-stone-500 font-medium">Kepala Sekolah</span>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setPrincipalSigSize(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} className="scale-[-1]" />
+                        </button>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
+                        <button onClick={() => setPrincipalSigSize(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="40" 
+                      max="300" 
+                      value={principalSigSize} 
+                      onChange={e => setPrincipalSigSize(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[10px] mb-2">
+                      <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setCoordinatorSigSize(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} className="scale-[-1]" />
+                        </button>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
+                        <button onClick={() => setCoordinatorSigSize(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                          <Search size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="40" 
+                      max="300" 
+                      value={coordinatorSigSize} 
+                      onChange={e => setCoordinatorSigSize(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    />
+                  </div>
+                </div>
+            </div>
+
+            {/* Report Card Preview (HTML) */}
+              <div className="border border-stone-200 rounded-2xl overflow-x-auto shadow-inner bg-stone-100 p-4 lg:p-12">
+                <div id="report-card-preview" className="bg-white shadow-2xl mx-auto p-[10mm] sm:p-[15mm] relative" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Times New Roman', Times, serif", color: '#000000' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.08]">
-                      <img src={institution.watermark} alt="" className="w-[120mm] h-[120mm] object-contain" />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
+                      <img src={institution.watermark} alt="" className="w-[140mm] h-[140mm] object-contain" />
                     </div>
                   )}
 
                   {/* Header */}
-                  <div className="flex items-center border-b-2 border-black pb-4 mb-6 relative" style={{ borderBottomColor: '#000000' }}>
+                  <div className="flex items-center border-b-4 border-black pb-4 mb-6 relative" style={{ borderBottomColor: '#000000' }}>
                     {institution?.logo && (
-                      <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-16 h-16 sm:w-20 sm:h-20 object-contain" />
+                      <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 object-contain" />
                     )}
-                    <div className="flex-1 text-center pl-16 sm:pl-20">
-                      <p className="text-sm font-bold mb-1">شهادة حفظ القرآن الكريم</p>
-                      <h1 className="text-lg sm:text-xl font-bold uppercase">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
-                      <p className="text-[9px] sm:text-[10px] leading-tight">{institution?.address}</p>
-                      <div className="mt-2 text-[10px] sm:text-xs font-bold">
+                    <div className="flex-1 text-center pl-20 sm:pl-24">
+                      <p className="text-3xl mb-2" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
+                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>شهادة حفظ القرآن الكريم</span>
+                      </p>
+                      <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-tight">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                      <p className="text-[10px] sm:text-[11px] leading-tight mt-2 italic">{institution?.address}</p>
+                      <div className="mt-4 text-xs sm:text-sm font-bold border-t border-black pt-2 inline-block px-4">
                         <p>UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
                         <p>TAHUN AJARAN {institution?.academic_year || '2025/2026'}</p>
                       </div>
@@ -400,67 +623,79 @@ export default function ReportCard() {
                   </div>
 
                   {/* Student Info */}
-                  <div className="grid grid-cols-2 text-[10px] sm:text-xs mb-6">
-                    <div className="space-y-1">
+                  <div className="grid grid-cols-2 text-xs sm:text-sm mb-6 font-medium">
+                    <div className="space-y-2">
                       <div className="flex">
-                        <span className="w-16 sm:w-20">Nama</span>
-                        <span>: {selectedStudent.name}</span>
+                        <span className="w-24 sm:w-28">Nama Siswa</span>
+                        <span>: <span className="font-bold uppercase">{selectedStudent.name}</span></span>
                       </div>
                       <div className="flex">
-                        <span className="w-16 sm:w-20">Kelas</span>
+                        <span className="w-24 sm:w-28">Halaqoh / Kelas</span>
                         <span>: {selectedStudent.halaqoh_name}</span>
                       </div>
                       <div className="flex">
-                        <span className="w-16 sm:w-20">Pengampu</span>
+                        <span className="w-24 sm:w-28">Guru Pengampu</span>
                         <span>: {institution?.halaqoh_teacher_name || '-'}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold">SEMESTER: {semester === 'Ganjil' ? '1 (Ganjil)' : '2 (Genap)'}</p>
+                    <div className="text-right flex flex-col justify-end">
+                      <p className="font-bold text-base sm:text-lg uppercase">SEMESTER: {semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}</p>
                     </div>
                   </div>
 
                   {/* Title Box */}
-                  <div className="border border-black py-1.5 text-center font-bold text-sm mb-6" style={{ borderColor: '#000000' }}>
+                  <div className="border-2 border-black py-2 flex items-center justify-center font-bold text-base sm:text-lg mb-6 uppercase tracking-[0.2em]" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
                     LAPORAN PENCAPAIAN TAHFIDZ
                   </div>
 
                   {/* Tables Container */}
-                  <div className="grid grid-cols-2 gap-8 mb-6">
+                  <div className="grid grid-cols-2 gap-8 sm:gap-12 mb-8">
                     {renderHafalanTable()}
                     {renderUmmiTable()}
                   </div>
 
                   {/* Footer Box - Catatan Guru */}
-                  <div className="border border-black mb-12" style={{ borderColor: '#000000' }}>
-                    <div className="border-b border-black px-2 py-1 text-[10px] font-bold uppercase" style={{ backgroundColor: '#fafaf9', borderBottomColor: '#000000' }}>Catatan Guru</div>
-                    <div className="p-2 min-h-[15mm] text-[10px] italic">
-                      {teacherNotes}
+                  <div className="border-2 border-black mb-6" style={{ borderColor: '#000000', color: '#000000' }}>
+                    <div className="border-b-2 border-black px-4 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center" style={{ backgroundColor: '#f8fafc', borderBottomColor: '#000000', color: '#000000' }}>Catatan & Motivasi Guru</div>
+                    <div className="p-3 min-h-[20mm] text-xs sm:text-sm italic leading-relaxed" style={{ color: '#000000' }}>
+                      {teacherNotes || 'Alhamdulillah, terus tingkatkan hafalannya dan jaga murajaahnya. Semoga Allah memberkahi setiap langkahmu dalam menghafal Al-Qur\'an.'}
                     </div>
                   </div>
 
                   {/* Signatures */}
-                  <div className="grid grid-cols-3 text-xs text-center">
+                  <div className="grid grid-cols-3 text-[10px] sm:text-xs text-center">
                     <div>
-                      <p className="mb-16">Orang Tua/Wali</p>
-                      <p className="font-bold">( .............................. )</p>
+                      <p className="mb-10 sm:mb-12">Orang Tua/Wali,</p>
+                      <p className="font-bold underline">( .............................. )</p>
                     </div>
                     <div>
                       <p className="mb-2">Mengetahui,</p>
-                      <p className="mb-12">Kepala Sekolah</p>
-                      <div className="relative h-16 flex items-center justify-center">
+                      <p className="mb-6 sm:mb-8">Kepala Sekolah</p>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
                         {institution?.principal_signature && (
-                          <img src={institution.principal_signature} alt="" className="h-full object-contain absolute" />
+                          <img 
+                            src={institution.principal_signature} 
+                            alt="" 
+                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+                            style={{ height: `${principalSigSize}px`, maxWidth: 'none' }} 
+                          />
                         )}
                       </div>
                       <p className="font-bold underline">{institution?.principal_name || 'Cikun, S.Pd'}</p>
                     </div>
                     <div>
-                      <p className="mb-2">Pengampu Halaqoh,</p>
-                      <p className="mb-12">{institution?.halaqoh_teacher_name || 'Al-Ustadz'}</p>
-                      <div className="relative h-16 flex items-center justify-center">
+                      <p className="mb-2 text-[9px] sm:text-[11px]">
+                        {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
+                      </p>
+                      <p className="mb-6 sm:mb-8">Koordinator Tahfidz,</p>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
                         {institution?.coordinator_signature && (
-                          <img src={institution.coordinator_signature} alt="" className="h-full object-contain absolute" />
+                          <img 
+                            src={institution.coordinator_signature} 
+                            alt="" 
+                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+                            style={{ height: `${coordinatorSigSize}px`, maxWidth: 'none' }} 
+                          />
                         )}
                       </div>
                       <p className="font-bold underline">{institution?.coordinator_name || 'Abdul Rohman'}</p>
