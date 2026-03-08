@@ -79,25 +79,48 @@ export default function Maintenance() {
           </div>
         </div>
 
-        <div className="mt-12 p-8 bg-red-50 rounded-3xl border border-red-100 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-red-900 mb-1">Reset Seluruh Data</h3>
-            <p className="text-red-700/70 text-sm">
-              Tindakan ini akan menghapus permanen seluruh data siswa, halaqoh, setoran, dan ujian. Pastikan Anda sudah melakukan backup.
-            </p>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-8 bg-amber-50 rounded-3xl border border-amber-100 flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-amber-900 mb-1">Reset Data Saja</h3>
+              <p className="text-amber-700/70 text-sm mb-4">
+                Menghapus semua data siswa, halaqoh, setoran, dan ujian. Profil lembaga dan tanda tangan tetap disimpan.
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                if (confirm('Apakah Anda yakin ingin menghapus semua data siswa dan setoran? Profil lembaga akan tetap ada.')) {
+                  storage.resetData();
+                  alert('Data berhasil direset.');
+                  window.location.reload();
+                }
+              }}
+              className="w-full py-3 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-500 transition-all shadow-lg shadow-amber-500/20"
+            >
+              Reset Data
+            </button>
           </div>
-          <button 
-            onClick={() => {
-              if (confirm('PERINGATAN: Seluruh data akan dihapus permanen. Anda yakin ingin melanjutkan?')) {
-                storage.resetData();
-                alert('Seluruh data berhasil direset.');
-                window.location.reload();
-              }
-            }}
-            className="px-8 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all shadow-lg shadow-red-500/20 whitespace-nowrap"
-          >
-            Reset Sekarang
-          </button>
+
+          <div className="p-8 bg-red-50 rounded-3xl border border-red-100 flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-red-900 mb-1">Reset Total (Pabrik)</h3>
+              <p className="text-red-700/70 text-sm mb-4">
+                Menghapus SELURUH data termasuk profil lembaga, logo, tanda tangan, dan mengeluarkan Anda dari sistem.
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                if (confirm('PERINGATAN: Seluruh data akan dihapus permanen dan Anda akan dikeluarkan. Anda yakin ingin melanjutkan?')) {
+                  storage.factoryReset();
+                  alert('Sistem berhasil direset total.');
+                  window.location.href = '/';
+                }
+              }}
+              className="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all shadow-lg shadow-red-500/20"
+            >
+              Reset Total
+            </button>
+          </div>
         </div>
 
         <div className="mt-12 p-6 bg-amber-50 rounded-2xl border border-amber-100">

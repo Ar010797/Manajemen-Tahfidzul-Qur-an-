@@ -49,11 +49,11 @@ const defaultData: DataSchema = {
 
 const getRawData = (): DataSchema => {
   const data = localStorage.getItem(getStorageKey());
-  if (!data) return defaultData;
+  if (!data) return JSON.parse(JSON.stringify(defaultData));
   try {
     return JSON.parse(data);
   } catch (e) {
-    return defaultData;
+    return JSON.parse(JSON.stringify(defaultData));
   }
 };
 
@@ -185,6 +185,14 @@ export const storage = {
     saveRawData(data);
     return newExam;
   },
+  updateUmmiExam: (id: string, updates: Partial<DataSchema['exams_ummi'][0]>) => {
+    const data = getRawData();
+    const index = data.exams_ummi.findIndex(e => e.id === id);
+    if (index !== -1) {
+      data.exams_ummi[index] = { ...data.exams_ummi[index], ...updates };
+      saveRawData(data);
+    }
+  },
   deleteUmmiExam: (id: string) => {
     const data = getRawData();
     data.exams_ummi = data.exams_ummi.filter(e => e.id !== id);
@@ -230,7 +238,16 @@ export const storage = {
 
   // Maintenance
   resetData: () => {
-    saveRawData(defaultData);
+    const currentData = getRawData();
+    // Keep institution but clear everything else
+    const reset = {
+      ...JSON.parse(JSON.stringify(defaultData)),
+      institution: currentData.institution
+    };
+    saveRawData(reset);
+  },
+  factoryReset: () => {
+    localStorage.clear();
   },
   exportData: () => {
     return JSON.stringify(getRawData());

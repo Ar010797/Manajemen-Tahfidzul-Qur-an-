@@ -107,14 +107,14 @@ export default function Dashboard() {
             </button>
             <button 
               onClick={() => {
-                if (confirm('Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak dapat dibatalkan.')) {
-                  storage.resetData();
+                if (confirm('Apakah Anda yakin ingin menghapus SEMUA data (termasuk profil lembaga) dan mereset total sistem?')) {
+                  storage.factoryReset();
                   window.location.reload();
                 }
               }}
               className="px-6 py-3 bg-red-500/20 text-white border border-red-500/30 font-bold rounded-xl text-sm hover:bg-red-500/40 transition-colors"
             >
-              Reset Semua Data
+              Reset Total
             </button>
           </div>
         </div>

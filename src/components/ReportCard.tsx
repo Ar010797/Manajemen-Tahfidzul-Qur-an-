@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft, Settings } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft, Settings, Edit2, X, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
@@ -20,6 +21,7 @@ export default function ReportCard() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
+  const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
 
   useEffect(() => {
     const fetchData = () => {
@@ -67,6 +69,21 @@ export default function ReportCard() {
     
     storage.deleteExam(type, id);
     alert('Data ujian berhasil dihapus.');
+    if (selectedStudent) fetchExamData(selectedStudent);
+  };
+
+  const handleUpdateExam = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingExam) return;
+
+    if (editingExam.type === 'ummi') {
+      storage.updateUmmiExam(editingExam.data.id, editingExam.data);
+    } else {
+      storage.updateHafalanExam(editingExam.data.id, editingExam.data);
+    }
+
+    alert('Data ujian berhasil diperbarui.');
+    setEditingExam(null);
     if (selectedStudent) fetchExamData(selectedStudent);
   };
 
@@ -514,7 +531,10 @@ export default function ReportCard() {
                     {examData.ummi.filter((e: any) => e.semester === semester).map((e: any) => (
                       <div key={e.id} className="flex items-center justify-between bg-white p-2 rounded-lg border border-stone-100 text-xs">
                         <span>Jilid {e.level} ({e.date})</span>
-                        <button onClick={() => resetExam('ummi', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                        <div className="flex gap-2">
+                          <button onClick={() => setEditingExam({ type: 'ummi', data: { ...e } })} className="text-emerald-600 hover:text-emerald-700 font-bold">Edit</button>
+                          <button onClick={() => resetExam('ummi', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                        </div>
                       </div>
                     ))}
                     {examData.ummi.filter((e: any) => e.semester === semester).length === 0 && <p className="text-xs italic text-stone-400">Tidak ada data</p>}
@@ -526,7 +546,10 @@ export default function ReportCard() {
                     {examData.hafalan.filter((e: any) => e.semester === semester).map((e: any) => (
                       <div key={e.id} className="flex items-center justify-between bg-white p-2 rounded-lg border border-stone-100 text-xs">
                         <span>Hafalan ({e.date})</span>
-                        <button onClick={() => resetExam('hafalan', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                        <div className="flex gap-2">
+                          <button onClick={() => setEditingExam({ type: 'hafalan', data: { ...e } })} className="text-emerald-600 hover:text-emerald-700 font-bold">Edit</button>
+                          <button onClick={() => resetExam('hafalan', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                        </div>
                       </div>
                     ))}
                     {examData.hafalan.filter((e: any) => e.semester === semester).length === 0 && <p className="text-xs italic text-stone-400">Tidak ada data</p>}
@@ -712,6 +735,154 @@ export default function ReportCard() {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {editingExam && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+          >
+            <div className="p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                  <Edit2 size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-stone-900">Edit Nilai Ujian</h3>
+                  <p className="text-xs text-stone-500">{editingExam.type === 'ummi' ? 'Ujian Ummi / Tilawah' : 'Ujian Hafalan'}</p>
+                </div>
+              </div>
+              <button onClick={() => setEditingExam(null)} className="p-2 hover:bg-stone-200 rounded-full transition-colors">
+                <X size={20} className="text-stone-400" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-6">
+              <form id="edit-exam-form" onSubmit={handleUpdateExam} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Tanggal</label>
+                    <input 
+                      type="date"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2 text-sm"
+                      value={editingExam.data.date}
+                      onChange={e => setEditingExam({ ...editingExam, data: { ...editingExam.data, date: e.target.value } })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Target / Jilid</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2 text-sm"
+                      value={editingExam.data.target || ''}
+                      onChange={e => setEditingExam({ ...editingExam, data: { ...editingExam.data, target: e.target.value } })}
+                    />
+                  </div>
+                </div>
+
+                {editingExam.type === 'ummi' ? (
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold text-stone-900 border-b border-stone-100 pb-2">Detail Nilai Jilid {editingExam.data.level}</h4>
+                    <div className="grid gap-3">
+                      {Object.entries(editingExam.data.scores).map(([indicator, score]: [string, any]) => (
+                        <div key={indicator} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
+                          <span className="text-sm font-medium text-stone-700">{indicator}</span>
+                          <div className="flex gap-1">
+                            {['A', 'B', 'C'].map(grade => (
+                              <button
+                                key={grade}
+                                type="button"
+                                onClick={() => {
+                                  const newScores = { ...editingExam.data.scores, [indicator]: grade };
+                                  setEditingExam({ ...editingExam, data: { ...editingExam.data, scores: newScores } });
+                                }}
+                                className={cn(
+                                  "w-8 h-8 rounded-lg font-bold text-xs transition-all",
+                                  score === grade 
+                                    ? "bg-emerald-600 text-white shadow-md" 
+                                    : "bg-white text-stone-400 border border-stone-200"
+                                )}
+                              >
+                                {grade}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-bold text-stone-900 border-b border-stone-100 pb-2">Daftar Surat</h4>
+                      <div className="space-y-3">
+                        {editingExam.data.surahs.map((surah: any, idx: number) => (
+                          <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-stone-50 p-3 rounded-xl border border-stone-100">
+                            <div className="col-span-7">
+                              <input 
+                                type="text"
+                                className="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs"
+                                value={surah.name}
+                                onChange={e => {
+                                  const newSurahs = [...editingExam.data.surahs];
+                                  newSurahs[idx].name = e.target.value;
+                                  setEditingExam({ ...editingExam, data: { ...editingExam.data, surahs: newSurahs } });
+                                }}
+                              />
+                            </div>
+                            <div className="col-span-5">
+                              <select 
+                                className="w-full bg-white border border-stone-200 rounded-lg px-2 py-1.5 text-xs font-bold text-emerald-700"
+                                value={surah.grade}
+                                onChange={e => {
+                                  const newSurahs = [...editingExam.data.surahs];
+                                  newSurahs[idx].grade = e.target.value;
+                                  const predicates: any = { 'A+': 'MUMTAAZ', 'A': 'JAYYID JIDDAN', 'B+': 'JAYYID', 'B': 'MAQBUL', 'C': 'DHOIF' };
+                                  newSurahs[idx].predicate = predicates[e.target.value] || '';
+                                  setEditingExam({ ...editingExam, data: { ...editingExam.data, surahs: newSurahs } });
+                                }}
+                              >
+                                {['A+', 'A', 'B+', 'B', 'C'].map(g => <option key={g} value={g}>{g}</option>)}
+                              </select>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Catatan Guru</label>
+                      <textarea 
+                        className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2 text-sm min-h-[80px]"
+                        value={editingExam.data.note || ''}
+                        onChange={e => setEditingExam({ ...editingExam, data: { ...editingExam.data, note: e.target.value } })}
+                      />
+                    </div>
+                  </div>
+                )}
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-stone-100 bg-stone-50 flex gap-3">
+              <button 
+                onClick={() => setEditingExam(null)}
+                className="flex-1 py-3 border border-stone-200 text-stone-600 font-bold rounded-xl hover:bg-stone-100 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                form="edit-exam-form"
+                type="submit"
+                className="flex-[2] py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+              >
+                <Save size={18} />
+                Simpan Perubahan
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
