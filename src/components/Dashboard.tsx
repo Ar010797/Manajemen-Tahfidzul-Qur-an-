@@ -13,28 +13,59 @@ export default function Dashboard() {
     deposits: 0,
     exams: 0
   });
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     const fetchStats = () => {
       const students = storage.getStudents();
       const halaqoh = storage.getHalaqoh();
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const deposits = storage.getDailyDepositsCount(today);
+      const exams = storage.getExamsCount();
       
       setStats({
         students: students.length,
         halaqoh: halaqoh.length,
-        deposits: 0, // Placeholder
-        exams: 0 // Placeholder
+        deposits,
+        exams
       });
     };
+
     fetchStats();
-  }, []);
+
+    // Refresh stats every 30 seconds to keep it updated
+    const interval = setInterval(() => {
+      fetchStats();
+      const now = new Date();
+      if (now.getDate() !== currentDate.getDate()) {
+        setCurrentDate(now);
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [currentDate]);
 
   const cards = [
     { label: 'Total Siswa', value: stats.students, icon: Users, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
     { label: 'Total Halaqoh', value: stats.halaqoh, icon: BookOpen, color: 'blue', gradient: 'from-blue-500 to-indigo-600' },
-    { label: 'Setoran Hari Ini', value: '12', icon: TrendingUp, color: 'amber', gradient: 'from-amber-500 to-orange-600' },
-    { label: 'Ujian Selesai', value: '4', icon: GraduationCap, color: 'purple', gradient: 'from-purple-500 to-pink-600' },
+    { label: 'Setoran Hari Ini', value: stats.deposits, icon: TrendingUp, color: 'amber', gradient: 'from-amber-500 to-orange-600' },
+    { label: 'Total Ujian', value: stats.exams, icon: GraduationCap, color: 'purple', gradient: 'from-purple-500 to-pink-600' },
   ];
+
+  const tips = [
+    "Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya.",
+    "Al-Qur'an akan menjadi syafaat bagi pembacanya di hari kiamat nanti.",
+    "Satu huruf Al-Qur'an bernilai sepuluh kebaikan. Teruslah membaca dan menghafal.",
+    "Hati yang di dalamnya terdapat Al-Qur'an tidak akan pernah merasa kesepian.",
+    "Istiqomah dalam murojaah adalah kunci menjaga hafalan agar tetap melekat.",
+    "Jangan biarkan hari berlalu tanpa membaca atau menghafal ayat-ayat Allah.",
+    "Al-Qur'an adalah cahaya bagi hati dan petunjuk bagi jalan kehidupan.",
+    "Menghafal Al-Qur'an butuh kesabaran, namun hasilnya adalah kemuliaan di dunia dan akhirat.",
+    "Jadikan Al-Qur'an sebagai sahabat terbaikmu dalam setiap langkah.",
+    "Setiap ayat yang dihafal adalah satu anak tangga menuju surga."
+  ];
+
+  const currentTip = tips[currentDate.getDate() % tips.length];
 
   return (
     <div className="space-y-8">
@@ -46,7 +77,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-3 px-4 py-2 bg-white border border-stone-200 rounded-2xl shadow-sm">
           <Calendar className="text-emerald-600 w-5 h-5" />
           <span className="font-semibold text-stone-700">
-            {format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}
+            {format(currentDate, 'EEEE, dd MMMM yyyy', { locale: id })}
           </span>
         </div>
       </div>
@@ -97,7 +128,7 @@ export default function Dashboard() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16" />
           <h2 className="text-xl font-bold mb-4 relative z-10">Tips Hari Ini</h2>
           <p className="text-emerald-100/80 text-sm leading-relaxed relative z-10">
-            "Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya."
+            "{currentTip}"
             <br /><br />
             Pastikan setiap setoran dicatat dengan detail untuk memudahkan pembuatan rapor di akhir semester.
           </p>

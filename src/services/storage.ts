@@ -226,6 +226,16 @@ export const storage = {
     };
   },
 
+  getDailyDepositsCount: (date: string) => {
+    const data = getRawData();
+    return data.daily_deposits.filter(d => d.date === date).length;
+  },
+
+  getExamsCount: () => {
+    const data = getRawData();
+    return data.exams_ummi.length + data.exams_hafalan.length;
+  },
+
   deleteExam: (type: 'ummi' | 'hafalan', id: string) => {
     const data = getRawData();
     if (type === 'ummi') {
