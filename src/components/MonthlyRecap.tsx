@@ -35,8 +35,11 @@ export default function MonthlyRecap() {
     
     const data = storage.getMonthlyRecapData(selectedMonth, selectedHalaqoh);
     
+    // Sort data by date ascending to ensure AWL is truly the first and AKH is truly the last
+    const sortedData = [...data].sort((a, b) => a.date.localeCompare(b.date));
+    
     // Group by student
-    const grouped = data.reduce((acc: any, curr: any) => {
+    const grouped = sortedData.reduce((acc: any, curr: any) => {
       if (!acc[curr.student_id]) {
         acc[curr.student_id] = {
           id: curr.student_id,
@@ -46,50 +49,73 @@ export default function MonthlyRecap() {
           tilawah: { awl: '-', akh: '-', jml: 0 }
         };
       }
-      const details = curr.details;
+      const details = curr.details || {};
       const target = acc[curr.student_id][curr.type];
       
+      // CRITICAL: Exclude BL and C from ALL calculations as requested
+      const grade = details.grade || '';
+      const isExcluded = grade === 'BL' || grade === 'C';
+      
       if (curr.type === 'hafalan') {
-        const label = `${details.surah} ${details.verse_start || ''}-${details.verse_end || ''}`;
+        const surah = details.surah || '';
+        const startStr = details.verse_start || '';
+        const endStr = details.verse_end || '';
+        const label = `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`.trim() || '-';
+        
         if (target.awl === '-') target.awl = label;
         target.akh = label;
         
-        // Don't count if grade is BL
-        if (details.grade !== 'BL') {
-          const start = parseInt(details.verse_start) || 0;
-          const end = parseInt(details.verse_end) || 0;
-          const verses = start && end ? end - start + 1 : 0;
-          target.jml += Math.max(0, verses);
+        if (!isExcluded) {
+          const start = parseInt(startStr) || 0;
+          const end = parseInt(endStr) || 0;
+          if (start > 0) {
+            target.jml += (end >= start) ? (end - start + 1) : 1;
+          }
         }
       } else if (curr.type === 'ummi') {
-        const label = details.page_start ? `J${details.level} H${details.page_start}-${details.page_end}` : `J${details.level} H${details.page || ''}`;
+        const level = details.level || '';
+        const startStr = details.page_start || '';
+        const endStr = details.page_end || '';
+        
+        // Improved label logic for Ummi to avoid empty "J H"
+        let label = '-';
+        if (level && startStr) {
+          label = `J${level} H${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`;
+        } else if (level) {
+          label = `J${level}`;
+        } else if (startStr) {
+          label = `H${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`;
+        }
+          
         if (target.awl === '-') target.awl = label;
         target.akh = label;
         
-        // Don't count if grade is C
-        if (details.grade !== 'C') {
-          if (details.page_start && details.page_end) {
-            const start = parseInt(details.page_start) || 0;
-            const end = parseInt(details.page_end) || 0;
-            const pages = end - start + 1;
-            target.jml += Math.max(0, pages);
-          } else {
+        if (!isExcluded) {
+          const start = parseInt(startStr) || 0;
+          const end = parseInt(endStr) || 0;
+          if (start > 0) {
+            target.jml += (end >= start) ? (end - start + 1) : 1;
+          } else if (level) {
             target.jml += 1;
           }
         }
       } else if (curr.type === 'tilawah') {
-        const label = details.verse_start ? `${details.surah} ${details.verse_start}-${details.verse_end}` : details.surah;
+        const surah = details.surah || '';
+        const startStr = details.verse_start || '';
+        const endStr = details.verse_end || '';
+        const label = startStr 
+          ? `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}` 
+          : (surah || '-');
+          
         if (target.awl === '-') target.awl = label;
         target.akh = label;
         
-        // Don't count if grade is C
-        if (details.grade !== 'C') {
-          if (details.verse_start && details.verse_end) {
-            const start = parseInt(details.verse_start) || 0;
-            const end = parseInt(details.verse_end) || 0;
-            const verses = end - start + 1;
-            target.jml += Math.max(0, verses);
-          } else {
+        if (!isExcluded) {
+          const start = parseInt(startStr) || 0;
+          const end = parseInt(endStr) || 0;
+          if (start > 0) {
+            target.jml += (end >= start) ? (end - start + 1) : 1;
+          } else if (surah) {
             target.jml += 1;
           }
         }
@@ -112,6 +138,10 @@ export default function MonthlyRecap() {
 
   useEffect(() => {
     fetchRecap();
+    
+    // Refresh data when window gets focus (e.g. after editing in another tab or returning to this tab)
+    window.addEventListener('focus', fetchRecap);
+    return () => window.removeEventListener('focus', fetchRecap);
   }, [selectedHalaqoh, selectedMonth]);
 
   const updateSettings = (studentId: string, field: string, value: string) => {
@@ -520,45 +550,45 @@ export default function MonthlyRecap() {
                     </div>
                   </div>
 
-                  <table className="w-full border-collapse border border-black text-[9px] leading-tight" style={{ borderColor: '#000000', tableLayout: 'auto' }}>
+                  <table className="w-full border-collapse border border-black text-[9px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'auto' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#fafaf9' }}>
-                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NO</th>
-                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NAMA</th>
-                        <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>
-                        <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>
-                        <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH UMMI</th>
-                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>TOTAL</th>
-                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>CATATAN</th>
+                        <th rowSpan={2} className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NO</th>
+                        <th rowSpan={2} className="border border-black px-3 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NAMA</th>
+                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>
+                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>
+                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH UMMI</th>
+                        <th rowSpan={2} className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>TOTAL</th>
+                        <th rowSpan={2} className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000' }}>CATATAN</th>
                       </tr>
                       <tr style={{ backgroundColor: '#fafaf9' }}>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-1 py-1.5 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
+                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
                       </tr>
                     </thead>
                     <tbody>
                       {recapData.map((s, i) => (
                         <tr key={s.id}>
-                          <td className="border border-black px-1 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{i + 1}</td>
-                          <td className="border border-black px-2 py-2 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.name}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.awl}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.akh}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.jml}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.awl}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.akh}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.jml}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.awl}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.akh}</td>
-                          <td className="border border-black px-1 py-2 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.jml}</td>
-                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
-                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{i + 1}</td>
+                          <td className="border border-black px-3 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.name}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.awl}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.akh}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.jml}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.awl}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.akh}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.jml}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.awl}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.akh}</td>
+                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.jml}</td>
+                          <td className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
+                          <td className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
                     </tbody>

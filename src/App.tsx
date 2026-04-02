@@ -174,10 +174,10 @@ export default function App() {
                     className={cn("flex items-center gap-3", !isSidebarOpen && "hidden")}
                   >
                     <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
-                      <ShieldCheck className="text-white w-6 h-6" />
+                      <BookOpen className="text-white w-6 h-6" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-extrabold text-stone-900 leading-tight tracking-tight">Tracking</span>
+                      <span className="font-extrabold text-stone-900 leading-tight tracking-tight">Manager</span>
                       <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-600 font-black">Tahfidz 2026</span>
                     </div>
                   </motion.div>
@@ -268,7 +268,7 @@ export default function App() {
                     <Menu size={20} />
                   </button>
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-stone-400">
-                    <span className="hidden sm:inline">Aplikasi</span>
+                    <span className="hidden sm:inline">Manager Tahfidz</span>
                     <ChevronRight size={12} className="hidden sm:inline opacity-50" />
                     <span className="text-emerald-600 font-black">
                       {activeTab.replace('-', ' ')}

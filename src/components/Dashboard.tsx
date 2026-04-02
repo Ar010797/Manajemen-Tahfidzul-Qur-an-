@@ -86,10 +86,15 @@ export default function Dashboard() {
         {cards.map((card, idx) => (
           <motion.div
             key={card.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              delay: idx * 0.1,
+              ease: [0.16, 1, 0.3, 1]
+            }}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative"
           >
             <div className={cn(
               "absolute top-0 right-0 w-24 h-24 bg-gradient-to-br opacity-[0.03] rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500",
