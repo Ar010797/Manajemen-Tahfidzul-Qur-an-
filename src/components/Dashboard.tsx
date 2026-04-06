@@ -138,9 +138,14 @@ export default function Dashboard() {
             Pastikan setiap setoran dicatat dengan detail untuk memudahkan pembuatan rapor di akhir semester.
           </p>
           <div className="mt-8 flex flex-wrap gap-4 relative z-10">
-            <button className="px-6 py-3 bg-white text-emerald-900 font-bold rounded-xl text-sm hover:bg-emerald-50 transition-colors">
-              Lihat Panduan
-            </button>
+            <a 
+              href="https://wa.me/6285869372879" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-white text-emerald-900 font-bold rounded-xl text-sm hover:bg-emerald-50 transition-colors"
+            >
+              Hubungi Bantuan
+            </a>
             <button 
               onClick={() => {
                 if (confirm('Apakah Anda yakin ingin menghapus SEMUA data (termasuk profil lembaga) dan mereset total sistem?')) {

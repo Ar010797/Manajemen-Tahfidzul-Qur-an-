@@ -5,11 +5,11 @@ import { storage } from '../services/storage';
 export default function Maintenance() {
   const handleExport = () => {
     const data = storage.exportData();
-    const blob = new Blob([data], { type: 'application/json' });
+    const blob = new Blob([data], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -30,13 +30,13 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-emerald-900 mb-2">Ekspor Database</h3>
             <p className="text-emerald-700/70 text-sm mb-8">
-              Unduh salinan database (.json) untuk cadangan manual. Simpan file ini di tempat yang aman.
+              Unduh salinan database (.txt) untuk cadangan manual. Simpan file ini di tempat yang aman.
             </p>
             <button 
               onClick={handleExport}
               className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors"
             >
-              Unduh Backup (.json)
+              Unduh Backup (.txt)
             </button>
           </div>
 
@@ -46,11 +46,11 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-stone-900 mb-2">Impor Database</h3>
             <p className="text-stone-500 text-sm mb-8">
-              Pulihkan data dari file backup (.json). Fitur ini akan menimpa data yang ada saat ini.
+              Pulihkan data dari file backup (.txt atau .json). Fitur ini akan menimpa data yang ada saat ini.
             </p>
             <input 
               type="file"
-              accept=".json"
+              accept=".txt,.json"
               id="import-db"
               className="hidden"
               onChange={(e) => {
@@ -74,7 +74,7 @@ export default function Maintenance() {
               onClick={() => document.getElementById('import-db')?.click()}
               className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors"
             >
-              Unggah Backup (.json)
+              Unggah Backup (.txt)
             </button>
           </div>
         </div>

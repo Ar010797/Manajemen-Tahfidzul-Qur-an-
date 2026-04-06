@@ -100,6 +100,17 @@ export default function SplashScreen() {
         </motion.div>
 
         <div className="flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+            className="mb-4"
+          >
+            <p className="text-2xl sm:text-3xl font-arabic text-emerald-700/80 tracking-normal leading-relaxed">
+              بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+            </p>
+          </motion.div>
+          
           <div className="overflow-hidden">
             <motion.h1 
               initial={{ y: 40, opacity: 0 }}

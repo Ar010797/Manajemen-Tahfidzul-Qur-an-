@@ -122,9 +122,14 @@ export default function SettingsHub() {
               Jika Anda mengalami kesulitan dalam mengelola data atau memerlukan fitur tambahan, silakan hubungi tim pengembang sistem.
             </p>
           </div>
-          <button className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap">
-            Hubungi Support
-          </button>
+          <a 
+            href="https://wa.me/6285869372879" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap flex items-center gap-2"
+          >
+            <span>Hubungi Support</span>
+          </a>
         </div>
         
         {/* Abstract background shapes */}

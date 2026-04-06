@@ -100,12 +100,13 @@ export default function MonthlyRecap() {
           }
         }
       } else if (curr.type === 'tilawah') {
+        const juz = details.juz || '';
         const surah = details.surah || '';
         const startStr = details.verse_start || '';
         const endStr = details.verse_end || '';
         const label = startStr 
-          ? `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}` 
-          : (surah || '-');
+          ? `${juz ? `J${juz} ` : ''}${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}` 
+          : (surah || (juz ? `Juz ${juz}` : '-'));
           
         if (target.awl === '-') target.awl = label;
         target.akh = label;

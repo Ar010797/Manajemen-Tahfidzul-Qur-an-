@@ -20,7 +20,33 @@ export default function DailyInput() {
     if (data && data.details) {
       setDetails(data.details);
     } else {
-      setDetails({});
+      // If no deposit for today, try to auto-fill "Awal" from the last deposit
+      const lastDeposit = storage.getLastDeposit(selectedStudent.id, type);
+      if (lastDeposit && lastDeposit.details) {
+        const lastDetails = lastDeposit.details;
+        if (type === 'hafalan') {
+          setDetails({
+            surah: lastDetails.surah,
+            verse_start: lastDetails.verse_end ? parseInt(lastDetails.verse_end) + 1 : '',
+            verse_end: lastDetails.verse_end ? parseInt(lastDetails.verse_end) + 1 : ''
+          });
+        } else if (type === 'ummi') {
+          setDetails({
+            level: lastDetails.level,
+            page_start: lastDetails.page_end ? parseInt(lastDetails.page_end) + 1 : '',
+            page_end: lastDetails.page_end ? parseInt(lastDetails.page_end) + 1 : ''
+          });
+        } else if (type === 'tilawah') {
+          setDetails({
+            juz: lastDetails.juz,
+            surah: lastDetails.surah,
+            verse_start: lastDetails.verse_end ? parseInt(lastDetails.verse_end) + 1 : '',
+            verse_end: lastDetails.verse_end ? parseInt(lastDetails.verse_end) + 1 : ''
+          });
+        }
+      } else {
+        setDetails({});
+      }
     }
   };
 
@@ -334,7 +360,20 @@ export default function DailyInput() {
               )}
 
               {type === 'tilawah' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Juz</label>
+                    <select 
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      value={details.juz || ''}
+                      onChange={e => setDetails({...details, juz: e.target.value})}
+                    >
+                      <option value="">Pilih Juz</option>
+                      {Array.from({length: 30}, (_, i) => i + 1).map(i => (
+                        <option key={i} value={i}>Juz {i}</option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Nama Surat</label>
                     <input 

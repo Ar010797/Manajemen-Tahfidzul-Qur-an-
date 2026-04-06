@@ -231,6 +231,14 @@ export const storage = {
     return data.daily_deposits.filter(d => d.date === date).length;
   },
 
+  getLastDeposit: (student_id: string, type: string) => {
+    const data = getRawData();
+    const deposits = data.daily_deposits
+      .filter(d => d.student_id === student_id && d.type === type)
+      .sort((a, b) => b.date.localeCompare(a.date));
+    return deposits.length > 0 ? deposits[0] : null;
+  },
+
   getExamsCount: () => {
     const data = getRawData();
     return data.exams_ummi.length + data.exams_hafalan.length;
