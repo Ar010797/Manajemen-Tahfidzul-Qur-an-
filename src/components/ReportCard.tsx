@@ -152,20 +152,26 @@ export default function ReportCard() {
               const computed = window.getComputedStyle(el);
               
               // Catch-all for any oklch/oklab colors
-              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.color.includes('okl')) el.style.color = '#000000';
               if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+
+              if (el.tagName === 'TH' || el.tagName === 'TD') {
+                el.style.borderColor = '#000000';
+                el.style.color = '#000000';
+              }
 
               if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
               if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
               if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
               if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
               if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
               if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
               if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
               if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
               if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
             }
           }
         }
@@ -190,9 +196,8 @@ export default function ReportCard() {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
           setIsGenerating(false);
-          alert('Unduhan gambar berhasil dimulai.');
         }, 100);
-      }, imgFormat === 'jpg' ? 'image/jpeg' : 'image/png', 1.0); // Maximum quality
+      }, imgFormat === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
 
     } catch (error: any) {
       console.error('Image Generation Error:', error);
@@ -258,20 +263,26 @@ export default function ReportCard() {
               const computed = window.getComputedStyle(el);
               
               // Catch-all for any oklch/oklab colors
-              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.color.includes('okl')) el.style.color = '#000000';
               if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+
+              if (el.tagName === 'TH' || el.tagName === 'TD') {
+                el.style.borderColor = '#000000';
+                el.style.color = '#000000';
+              }
 
               if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
               if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
               if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
               if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
               if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
               if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
               if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
               if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
               if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
             }
           }
         }
@@ -317,7 +328,6 @@ export default function ReportCard() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         setIsGenerating(false);
-        alert('Unduhan PDF berhasil dimulai.');
       }, 100);
 
     } catch (error: any) {

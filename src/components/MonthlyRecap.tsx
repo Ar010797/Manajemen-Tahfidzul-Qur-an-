@@ -200,7 +200,7 @@ export default function MonthlyRecap() {
               clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
             }
 
-            // Workaround for oklab/oklch colors that html2canvas doesn't support
+            // Workaround for oklab/oklch colors and table rendering issues
             const allElements = clonedDoc.getElementsByTagName('*');
             for (let i = 0; i < allElements.length; i++) {
               const el = allElements[i] as HTMLElement;
@@ -208,9 +208,29 @@ export default function MonthlyRecap() {
                 const computed = window.getComputedStyle(el);
                 
                 // Catch-all for any oklch/oklab colors
-                if (computed.color.includes('okl')) el.style.color = '#1c1917';
+                if (computed.color.includes('okl')) el.style.color = '#000000';
                 if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-                if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+                if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+
+                if (el.tagName === 'TH' || el.tagName === 'TD') {
+                  el.style.borderColor = '#000000';
+                  el.style.color = '#000000';
+                  el.style.opacity = '1';
+                  el.style.visibility = 'visible';
+                  el.style.verticalAlign = 'middle';
+                  el.style.lineHeight = '1.2';
+                  el.style.boxSizing = 'border-box';
+                  el.style.overflow = 'visible';
+                  el.style.wordBreak = 'break-word';
+                  el.style.position = 'relative';
+                  el.style.zIndex = '1';
+                }
+
+                if (el.tagName === 'TH') {
+                  el.style.fontWeight = 'bold';
+                  el.style.backgroundColor = '#f8fafc';
+                  el.style.zIndex = '10';
+                }
 
                 // Specific overrides for better accuracy
                 if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
@@ -218,11 +238,12 @@ export default function MonthlyRecap() {
                 if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
                 if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
                 if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-                if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+                if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
                 if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
                 if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
                 if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
                 if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+                if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
               }
             }
           }
@@ -231,10 +252,13 @@ export default function MonthlyRecap() {
         const dataUrl = canvas.toDataURL(format === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = `Rekap_${selectedMonth}_${selectedHalaqoh}.${format}`;
+        link.download = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.${format}`;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(dataUrl);
+        }, 100);
       } catch (error) {
         console.error('Image Generation Error:', error);
         alert('Gagal mengunduh gambar. Silakan coba lagi.');
@@ -288,19 +312,41 @@ export default function MonthlyRecap() {
             const el = allElements[i] as HTMLElement;
             if (el.style) {
               const computed = window.getComputedStyle(el);
-              if (computed.color.includes('okl')) el.style.color = '#1c1917';
+              if (computed.color.includes('okl')) el.style.color = '#000000';
               if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#e7e5e4';
+              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+
+              if (el.tagName === 'TH' || el.tagName === 'TD') {
+                el.style.borderColor = '#000000';
+                el.style.color = '#000000';
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.verticalAlign = 'middle';
+                el.style.lineHeight = '1.2';
+                el.style.boxSizing = 'border-box';
+                el.style.overflow = 'visible';
+                el.style.wordBreak = 'break-word';
+                el.style.position = 'relative';
+                el.style.zIndex = '1';
+              }
+
+              if (el.tagName === 'TH') {
+                el.style.fontWeight = 'bold';
+                el.style.backgroundColor = '#f8fafc';
+                el.style.zIndex = '10';
+              }
+
               if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
               if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
               if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
               if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
               if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#1c1917';
+              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
               if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
               if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
               if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
               if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
+              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
             }
           }
         }
@@ -329,7 +375,8 @@ export default function MonthlyRecap() {
       const y = (pdfHeight - finalHeight) / 2;
       
       pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
-      pdf.save(`Rekap_${selectedMonth}_${selectedHalaqoh}.pdf`);
+      const fileName = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.pdf`;
+      pdf.save(fileName);
     } catch (error) {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh PDF. Silakan coba lagi.');
@@ -337,6 +384,10 @@ export default function MonthlyRecap() {
       setIsGenerating(false);
     }
   };
+
+  const hasHafalan = recapData.some(s => s.hafalan.awl !== '-' || s.hafalan.akh !== '-' || s.hafalan.jml > 0);
+  const hasTilawah = recapData.some(s => s.tilawah.awl !== '-' || s.tilawah.akh !== '-' || s.tilawah.jml > 0);
+  const hasUmmi = recapData.some(s => s.ummi.awl !== '-' || s.ummi.akh !== '-' || s.ummi.jml > 0);
 
   return (
     <div className="space-y-8">
@@ -401,22 +452,34 @@ export default function MonthlyRecap() {
                   <tr className="border-b border-stone-200">
                     <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">No</th>
                     <th rowSpan={2} className="px-4 py-3 border-r border-stone-200">Nama</th>
-                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>
-                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>
-                    <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>
+                    {hasHafalan && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>}
+                    {hasTilawah && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>}
+                    {hasUmmi && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>}
                     <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Total Hafalan</th>
                     <th rowSpan={2} className="px-4 py-3 text-center">Catatan Bulanan</th>
                   </tr>
                   <tr className="border-b border-stone-200">
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                    <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                    {hasHafalan && (
+                      <>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                      </>
+                    )}
+                    {hasTilawah && (
+                      <>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                      </>
+                    )}
+                    {hasUmmi && (
+                      <>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
+                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
@@ -424,15 +487,27 @@ export default function MonthlyRecap() {
                     <tr key={s.id} className="hover:bg-stone-50 transition-colors">
                       <td className="px-4 py-3 border-r border-stone-100 text-center">{idx + 1}</td>
                       <td className="px-4 py-3 border-r border-stone-100 font-bold text-stone-800">{s.name}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.awl}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.akh}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.hafalan.jml}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.awl}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.akh}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.tilawah.jml}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.awl}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.akh}</td>
-                      <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
+                      {hasHafalan && (
+                        <>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.awl}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.akh}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.hafalan.jml}</td>
+                        </>
+                      )}
+                      {hasTilawah && (
+                        <>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.awl}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.akh}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.tilawah.jml}</td>
+                        </>
+                      )}
+                      {hasUmmi && (
+                        <>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.awl}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.akh}</td>
+                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
+                        </>
+                      )}
                       <td className="px-4 py-3 border-r border-stone-100">
                         <input 
                           type="text"
@@ -551,45 +626,104 @@ export default function MonthlyRecap() {
                     </div>
                   </div>
 
-                  <table className="w-full border-collapse border border-black text-[9px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'auto' }}>
+                  <table className="w-full border-collapse border border-black text-[9px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: '30px' }} />
+                      <col style={{ width: '120px' }} />
+                      {hasHafalan && (
+                        <>
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '30px' }} />
+                        </>
+                      )}
+                      {hasTilawah && (
+                        <>
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '30px' }} />
+                        </>
+                      )}
+                      {hasUmmi && (
+                        <>
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '60px' }} />
+                          <col style={{ width: '30px' }} />
+                        </>
+                      )}
+                      <col style={{ width: '60px' }} />
+                      <col style={{ width: '80px' }} />
+                    </colgroup>
                     <thead>
-                      <tr style={{ backgroundColor: '#fafaf9' }}>
-                        <th rowSpan={2} className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NO</th>
-                        <th rowSpan={2} className="border border-black px-3 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>NAMA</th>
-                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>
-                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>
-                        <th colSpan={3} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000' }}>TILAWAH UMMI</th>
-                        <th rowSpan={2} className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>TOTAL</th>
-                        <th rowSpan={2} className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000' }}>CATATAN</th>
+                      <tr style={{ backgroundColor: '#f8fafc' }}>
+                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
+                          <div className="flex items-center justify-center min-h-[40px]">NO</div>
+                        </th>
+                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
+                          <div className="flex items-center justify-center min-h-[40px]">NAMA SISWA</div>
+                        </th>
+                        {hasHafalan && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>HAFALAN AL-QUR'AN</th>}
+                        {hasTilawah && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH AL-QUR'AN</th>}
+                        {hasUmmi && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH UMMI</th>}
+                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
+                          <div className="flex items-center justify-center min-h-[40px]">TOTAL</div>
+                        </th>
+                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
+                          <div className="flex items-center justify-center min-h-[40px]">CATATAN</div>
+                        </th>
                       </tr>
-                      <tr style={{ backgroundColor: '#fafaf9' }}>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AWL</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>AKH</th>
-                        <th className="border border-black px-2 py-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000' }}>JML</th>
+                      <tr style={{ backgroundColor: '#f8fafc' }}>
+                        {hasHafalan && (
+                          <>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                          </>
+                        )}
+                        {hasTilawah && (
+                          <>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                          </>
+                        )}
+                        {hasUmmi && (
+                          <>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                          </>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
                       {recapData.map((s, i) => (
                         <tr key={s.id}>
-                          <td className="border border-black px-2 py-3 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{i + 1}</td>
-                          <td className="border border-black px-3 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.name}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.awl}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.akh}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.hafalan.jml}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.awl}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.akh}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.tilawah.jml}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.awl}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.akh}</td>
-                          <td className="border border-black px-2 py-3 text-center align-middle font-bold whitespace-nowrap" style={{ borderColor: '#000000', color: '#1c1917' }}>{s.ummi.jml}</td>
-                          <td className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
-                          <td className="border border-black px-3 py-3 text-center align-middle" style={{ borderColor: '#000000', color: '#1c1917' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{i + 1}</td>
+                          <td className="border border-black px-2 py-2 text-left align-middle font-bold overflow-hidden" style={{ borderColor: '#000000', color: '#000000', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{s.name}</td>
+                          {hasHafalan && (
+                            <>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.awl}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.akh}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.jml}</td>
+                            </>
+                          )}
+                          {hasTilawah && (
+                            <>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.awl}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.akh}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.jml}</td>
+                            </>
+                          )}
+                          {hasUmmi && (
+                            <>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.awl}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.akh}</td>
+                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.jml}</td>
+                            </>
+                          )}
+                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
+                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
