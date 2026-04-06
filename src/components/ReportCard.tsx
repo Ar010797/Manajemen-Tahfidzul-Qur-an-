@@ -453,7 +453,7 @@ export default function ReportCard() {
         }));
 
         const canvas = await html2canvas(element, {
-          scale: 3, // Increased from 2 for better quality in bulk
+          scale: 2, // Reverted to 2 for better stability on mobile devices
           useCORS: true,
           logging: false,
           imageTimeout: 0,
@@ -518,6 +518,11 @@ export default function ReportCard() {
         });
 
         const imgData = canvas.toDataURL('image/png');
+        if (!imgData || imgData === 'data:,') {
+          console.error(`Canvas empty for student ${student.name}`);
+          continue;
+        }
+
         const imgProps = pdf.getImageProperties(imgData);
         const ratio = imgProps.width / imgProps.height;
         let finalWidth = pdfWidth;
@@ -542,7 +547,20 @@ export default function ReportCard() {
       }
 
       const safeHalaqohName = halaqohName.replace(/[^a-z0-9]/gi, '_');
-      pdf.save(`Rapor_Halaqoh_${safeHalaqohName}_Semester_${bulkSemester}.pdf`);
+      
+      // Use Blob approach for better mobile download compatibility
+      const pdfBlob = pdf.output('blob');
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Rapor_Halaqoh_${safeHalaqohName}_Semester_${bulkSemester}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
       
       // Restore original semester
       setSemester(originalSemester);
