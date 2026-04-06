@@ -19,9 +19,6 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
-  const [bulkDownloadData, setBulkDownloadData] = useState<{ name: string, students: any[] } | null>(null);
-  const [bulkSemester, setBulkSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
@@ -135,6 +132,14 @@ export default function ReportCard() {
         logging: false,
         imageTimeout: 0,
         onclone: (clonedDoc) => {
+          // Ensure images are visible in clone
+          const clonedImages = clonedDoc.getElementsByTagName('img');
+          for (let i = 0; i < clonedImages.length; i++) {
+            clonedImages[i].style.visibility = 'visible';
+            clonedImages[i].style.display = 'block';
+            clonedImages[i].style.opacity = '1';
+          }
+
           const clonedElement = clonedDoc.getElementById('report-card-preview');
           if (clonedElement) {
             clonedElement.style.width = '210mm';
@@ -278,6 +283,14 @@ export default function ReportCard() {
         imageTimeout: 0,
         backgroundColor: '#ffffff',
         onclone: (clonedDoc) => {
+          // Ensure images are visible in clone
+          const clonedImages = clonedDoc.getElementsByTagName('img');
+          for (let i = 0; i < clonedImages.length; i++) {
+            clonedImages[i].style.visibility = 'visible';
+            clonedImages[i].style.display = 'block';
+            clonedImages[i].style.opacity = '1';
+          }
+
           const clonedElement = clonedDoc.getElementById('report-card-preview');
           if (clonedElement) {
             clonedElement.style.width = '210mm';
@@ -404,192 +417,6 @@ export default function ReportCard() {
     }
   };
 
-  const startBulkDownload = async () => {
-    if (!bulkDownloadData || isGenerating) return;
-    
-    const { name: halaqohName, students: halaqohStudents } = bulkDownloadData;
-    setIsGenerating(true);
-    setGenerationProgress({ current: 0, total: halaqohStudents.length });
-
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    try {
-      // Temporarily set the global semester to the bulk semester for generation
-      const originalSemester = semester;
-      const originalStudent = selectedStudent;
-      setSemester(bulkSemester);
-
-      for (let i = 0; i < halaqohStudents.length; i++) {
-        const student = halaqohStudents[i];
-        setGenerationProgress({ current: i + 1, total: halaqohStudents.length });
-
-        try {
-          // Update state for this student
-          const eData = storage.getStudentExams(student.id);
-          const sData = storage.getRecapSettings(student.id, format(new Date(), 'yyyy-MM'));
-          
-          setExamData(eData);
-          setRecapSettings(sData);
-          setSelectedStudent(student);
-
-          // Wait for React to render and images to be potentially fetched
-          // We need to be sure the DOM has updated to the new student
-          await new Promise(resolve => setTimeout(resolve, 2000));
-
-          const element = document.getElementById('report-card-preview');
-          if (!element) {
-            console.error(`Element not found for student ${student.name}`);
-            continue;
-          }
-
-          // Double check if the element actually contains the current student's name
-          // to prevent capturing the previous student due to slow React updates
-          const nameInDom = element.querySelector('.student-name-display')?.textContent || '';
-          if (nameInDom && !nameInDom.toUpperCase().includes(student.name.toUpperCase())) {
-            console.warn(`DOM not yet updated for ${student.name}, waiting longer...`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-
-          // Ensure images are loaded
-          const images = element.getElementsByTagName('img');
-          await Promise.all(Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          }));
-
-          const canvas = await html2canvas(element, {
-            scale: 2, 
-            useCORS: true,
-            logging: false,
-            imageTimeout: 0,
-            backgroundColor: '#ffffff',
-            onclone: (clonedDoc) => {
-              const clonedElement = clonedDoc.getElementById('report-card-preview');
-              if (clonedElement) {
-                clonedElement.style.width = '210mm';
-                clonedElement.style.height = 'auto';
-                clonedElement.style.minHeight = '297mm';
-                clonedElement.style.transform = 'none';
-                clonedElement.style.margin = '0';
-                clonedElement.style.boxShadow = 'none';
-                clonedElement.style.backgroundColor = '#ffffff';
-                clonedElement.style.color = '#000000';
-                clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
-              }
-
-              const style = clonedDoc.createElement('style');
-              style.innerHTML = `
-                @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-                #report-card-preview, #report-card-preview * { 
-                  font-family: 'Times New Roman', Times, serif !important; 
-                }
-                #report-card-preview [style*="Amiri"], 
-                #report-card-preview [style*="Amiri"] * { 
-                  font-family: 'Amiri', serif !important; 
-                }
-                #report-card-preview table, 
-                #report-card-preview th, 
-                #report-card-preview td { 
-                  border-color: #000000 !important; 
-                  color: #000000 !important;
-                }
-              `;
-              clonedDoc.head.appendChild(style);
-
-              const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
-              if (semesterDisplay) {
-                semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${bulkSemester.toUpperCase()}`;
-              }
-              const semesterInfo = clonedDoc.querySelector('.semester-info-text');
-              if (semesterInfo) {
-                semesterInfo.textContent = `SEMESTER: ${bulkSemester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
-              }
-
-              const allElements = clonedDoc.getElementsByTagName('*');
-              for (let j = 0; j < allElements.length; j++) {
-                const el = allElements[j] as HTMLElement;
-                if (el.style) {
-                  const computed = window.getComputedStyle(el);
-                  if (computed.color.includes('okl')) el.style.color = '#000000';
-                  if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-                  if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-                  if (el.tagName === 'TH' || el.tagName === 'TD') {
-                    el.style.borderColor = '#000000';
-                    el.style.color = '#000000';
-                  }
-                }
-              }
-            }
-          });
-
-          const imgData = canvas.toDataURL('image/png');
-          if (!imgData || imgData === 'data:,') {
-            console.error(`Canvas empty for student ${student.name}`);
-            continue;
-          }
-
-          const imgProps = pdf.getImageProperties(imgData);
-          const ratio = imgProps.width / imgProps.height;
-          let finalWidth = pdfWidth;
-          let finalHeight = pdfWidth / ratio;
-
-          if (finalHeight > pdfHeight) {
-            finalHeight = pdfHeight;
-            finalWidth = pdfHeight * ratio;
-          }
-
-          const x = (pdfWidth - finalWidth) / 2;
-          const y = (pdfHeight - finalHeight) / 2;
-
-          pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
-
-          if (i < halaqohStudents.length - 1) {
-            pdf.addPage();
-          }
-
-          // Small delay to let browser breathe between captures
-          await new Promise(resolve => setTimeout(resolve, 300));
-        } catch (studentError) {
-          console.error(`Error processing student ${student.name}:`, studentError);
-          // Continue to next student even if one fails
-        }
-      }
-
-      const safeHalaqohName = halaqohName.replace(/[^a-z0-9]/gi, '_');
-      
-      // Use Blob approach for better mobile download compatibility
-      const pdfBlob = pdf.output('blob');
-      const url = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Rapor_Halaqoh_${safeHalaqohName}_Semester_${bulkSemester}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 100);
-      
-      // Restore original state
-      setSemester(originalSemester);
-      setSelectedStudent(originalStudent);
-      setBulkDownloadData(null);
-      alert(`Berhasil mengunduh rapor halaqoh.`);
-    } catch (error: any) {
-      console.error('Bulk PDF Error:', error);
-      alert('Gagal mengunduh rapor massal: ' + (error.message || 'Terjadi kesalahan'));
-    } finally {
-      setIsGenerating(false);
-      setGenerationProgress({ current: 0, total: 0 });
-    }
-  };
-
   const renderUmmiTable = () => {
     const filteredUmmi = examData.ummi.filter((e: any) => e.semester === semester);
     const targetUmmi = filteredUmmi[0]?.target || `Ummi jilid ${filteredUmmi[0]?.level || '-'}`;
@@ -692,18 +519,6 @@ export default function ReportCard() {
                   {halaqohName}
                 </h4>
                 <div className="flex items-center gap-2">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setBulkDownloadData({ name: halaqohName, students: halaqohStudents });
-                    }}
-                    disabled={isGenerating}
-                    className="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full hover:bg-emerald-100 transition-colors font-bold flex items-center gap-1 disabled:opacity-50"
-                    title="Download Semua Rapor Halaqoh Ini"
-                  >
-                    <Download size={10} />
-                    PDF Semua
-                  </button>
                   <span className="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full">
                     {halaqohStudents.length} Siswa
                   </span>
@@ -780,14 +595,6 @@ export default function ReportCard() {
               </div>
 
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                {isGenerating && generationProgress.total > 0 && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-xl">
-                    <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-bold text-emerald-700">
-                      {generationProgress.current} / {generationProgress.total}
-                    </span>
-                  </div>
-                )}
                 <button 
                   onClick={generatePDF}
                   disabled={isGenerating}
@@ -795,7 +602,7 @@ export default function ReportCard() {
                   title="Unduh PDF Kualitas Tinggi (HDR)"
                 >
                   <Download size={18} />
-                  {isGenerating && generationProgress.total === 0 ? '...' : 'PDF HDR'}
+                  {isGenerating ? '...' : 'PDF HDR'}
                 </button>
                 <button 
                   onClick={() => generateImage('jpg')}
@@ -919,7 +726,7 @@ export default function ReportCard() {
                     {institution?.logo && (
                       <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 object-contain" />
                     )}
-                    <div className="flex-1 text-center pl-20 sm:pl-24">
+                    <div className="flex-1 text-center px-20 sm:px-24">
                       <p className="text-3xl mb-2" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
                         <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>شهادة حفظ القرآن الكريم</span>
                       </p>
@@ -1022,113 +829,6 @@ export default function ReportCard() {
           </div>
         )}
       </div>
-
-      {/* Bulk Download Modal */}
-      {bulkDownloadData && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden"
-          >
-            <div className="p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
-                  <Download size={20} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-stone-900">Unduh Rapor Massal</h3>
-                  <p className="text-xs text-stone-500">Halaqoh: {bulkDownloadData.name}</p>
-                </div>
-              </div>
-              {!isGenerating && (
-                <button onClick={() => setBulkDownloadData(null)} className="p-2 hover:bg-stone-200 rounded-full transition-colors">
-                  <X size={20} className="text-stone-400" />
-                </button>
-              )}
-            </div>
-
-            <div className="p-8 space-y-6">
-              {!isGenerating ? (
-                <>
-                  <div className="space-y-4">
-                    <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest">Pilih Semester</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => setBulkSemester('Ganjil')}
-                        className={cn(
-                          "p-4 rounded-2xl border-2 transition-all text-sm font-bold",
-                          bulkSemester === 'Ganjil' 
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-700" 
-                            : "border-stone-100 bg-stone-50 text-stone-500 hover:border-emerald-200"
-                        )}
-                      >
-                        Semester Ganjil
-                      </button>
-                      <button
-                        onClick={() => setBulkSemester('Genap')}
-                        className={cn(
-                          "p-4 rounded-2xl border-2 transition-all text-sm font-bold",
-                          bulkSemester === 'Genap' 
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-700" 
-                            : "border-stone-100 bg-stone-50 text-stone-500 hover:border-emerald-200"
-                        )}
-                      >
-                        Semester Genap
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl">
-                    <p className="text-xs text-amber-700 leading-relaxed">
-                      <strong>Catatan:</strong> Proses ini akan mengunduh {bulkDownloadData.students.length} rapor sekaligus. 
-                      Halaman akan berganti otomatis selama proses berlangsung. Mohon tidak menutup tab ini.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={startBulkDownload}
-                    className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
-                  >
-                    <Download size={20} />
-                    Mulai Unduh PDF
-                  </button>
-                </>
-              ) : (
-                <div className="py-8 text-center space-y-6">
-                  <div className="relative w-24 h-24 mx-auto">
-                    <div className="absolute inset-0 border-4 border-emerald-100 rounded-full" />
-                    <div 
-                      className="absolute inset-0 border-4 border-emerald-600 rounded-full border-t-transparent animate-spin" 
-                      style={{ animationDuration: '1.5s' }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-lg font-bold text-emerald-600">
-                        {Math.round((generationProgress.current / generationProgress.total) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-bold text-stone-900">Sedang Memproses...</h4>
-                    <p className="text-sm text-stone-500 mt-1">
-                      Siswa {generationProgress.current} dari {generationProgress.total}
-                    </p>
-                  </div>
-
-                  <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-emerald-600"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(generationProgress.current / generationProgress.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* Edit Modal */}
       {editingExam && (
