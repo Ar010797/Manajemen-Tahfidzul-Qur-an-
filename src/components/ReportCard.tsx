@@ -418,132 +418,146 @@ export default function ReportCard() {
     try {
       // Temporarily set the global semester to the bulk semester for generation
       const originalSemester = semester;
+      const originalStudent = selectedStudent;
       setSemester(bulkSemester);
 
       for (let i = 0; i < halaqohStudents.length; i++) {
         const student = halaqohStudents[i];
         setGenerationProgress({ current: i + 1, total: halaqohStudents.length });
 
-        // Update state for this student
-        const eData = storage.getStudentExams(student.id);
-        const sData = storage.getRecapSettings(student.id, format(new Date(), 'yyyy-MM'));
-        
-        setExamData(eData);
-        setRecapSettings(sData);
-        setSelectedStudent(student);
+        try {
+          // Update state for this student
+          const eData = storage.getStudentExams(student.id);
+          const sData = storage.getRecapSettings(student.id, format(new Date(), 'yyyy-MM'));
+          
+          setExamData(eData);
+          setRecapSettings(sData);
+          setSelectedStudent(student);
 
-        // Wait for React to render and images to be potentially fetched
-        // Increased timeout and added explicit check
-        await new Promise(resolve => setTimeout(resolve, 1500));
+          // Wait for React to render and images to be potentially fetched
+          // We need to be sure the DOM has updated to the new student
+          await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const element = document.getElementById('report-card-preview');
-        if (!element) {
-          console.error(`Element not found for student ${student.name}`);
-          continue;
-        }
+          const element = document.getElementById('report-card-preview');
+          if (!element) {
+            console.error(`Element not found for student ${student.name}`);
+            continue;
+          }
 
-        // Ensure images are loaded
-        const images = element.getElementsByTagName('img');
-        await Promise.all(Array.from(images).map(img => {
-          if (img.complete) return Promise.resolve();
-          return new Promise(resolve => {
-            img.onload = resolve;
-            img.onerror = resolve;
-          });
-        }));
+          // Double check if the element actually contains the current student's name
+          // to prevent capturing the previous student due to slow React updates
+          const nameInDom = element.querySelector('.student-name-display')?.textContent || '';
+          if (nameInDom && !nameInDom.toUpperCase().includes(student.name.toUpperCase())) {
+            console.warn(`DOM not yet updated for ${student.name}, waiting longer...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
 
-        const canvas = await html2canvas(element, {
-          scale: 2, // Reverted to 2 for better stability on mobile devices
-          useCORS: true,
-          logging: false,
-          imageTimeout: 0,
-          backgroundColor: '#ffffff',
-          onclone: (clonedDoc) => {
-            const clonedElement = clonedDoc.getElementById('report-card-preview');
-            if (clonedElement) {
-              clonedElement.style.width = '210mm';
-              clonedElement.style.height = 'auto';
-              clonedElement.style.minHeight = '297mm';
-              clonedElement.style.transform = 'none';
-              clonedElement.style.margin = '0';
-              clonedElement.style.boxShadow = 'none';
-              clonedElement.style.backgroundColor = '#ffffff';
-              clonedElement.style.color = '#000000';
-              clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
-            }
+          // Ensure images are loaded
+          const images = element.getElementsByTagName('img');
+          await Promise.all(Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          }));
 
-            const style = clonedDoc.createElement('style');
-            style.innerHTML = `
-              @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-              #report-card-preview, #report-card-preview * { 
-                font-family: 'Times New Roman', Times, serif !important; 
+          const canvas = await html2canvas(element, {
+            scale: 2, 
+            useCORS: true,
+            logging: false,
+            imageTimeout: 0,
+            backgroundColor: '#ffffff',
+            onclone: (clonedDoc) => {
+              const clonedElement = clonedDoc.getElementById('report-card-preview');
+              if (clonedElement) {
+                clonedElement.style.width = '210mm';
+                clonedElement.style.height = 'auto';
+                clonedElement.style.minHeight = '297mm';
+                clonedElement.style.transform = 'none';
+                clonedElement.style.margin = '0';
+                clonedElement.style.boxShadow = 'none';
+                clonedElement.style.backgroundColor = '#ffffff';
+                clonedElement.style.color = '#000000';
+                clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
               }
-              #report-card-preview [style*="Amiri"], 
-              #report-card-preview [style*="Amiri"] * { 
-                font-family: 'Amiri', serif !important; 
-              }
-              #report-card-preview table, 
-              #report-card-preview th, 
-              #report-card-preview td { 
-                border-color: #000000 !important; 
-                color: #000000 !important;
-              }
-            `;
-            clonedDoc.head.appendChild(style);
 
-            const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
-            if (semesterDisplay) {
-              semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${bulkSemester.toUpperCase()}`;
-            }
-            const semesterInfo = clonedDoc.querySelector('.semester-info-text');
-            if (semesterInfo) {
-              semesterInfo.textContent = `SEMESTER: ${bulkSemester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
-            }
+              const style = clonedDoc.createElement('style');
+              style.innerHTML = `
+                @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
+                #report-card-preview, #report-card-preview * { 
+                  font-family: 'Times New Roman', Times, serif !important; 
+                }
+                #report-card-preview [style*="Amiri"], 
+                #report-card-preview [style*="Amiri"] * { 
+                  font-family: 'Amiri', serif !important; 
+                }
+                #report-card-preview table, 
+                #report-card-preview th, 
+                #report-card-preview td { 
+                  border-color: #000000 !important; 
+                  color: #000000 !important;
+                }
+              `;
+              clonedDoc.head.appendChild(style);
 
-            const allElements = clonedDoc.getElementsByTagName('*');
-            for (let j = 0; j < allElements.length; j++) {
-              const el = allElements[j] as HTMLElement;
-              if (el.style) {
-                const computed = window.getComputedStyle(el);
-                if (computed.color.includes('okl')) el.style.color = '#000000';
-                if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-                if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-                if (el.tagName === 'TH' || el.tagName === 'TD') {
-                  el.style.borderColor = '#000000';
-                  el.style.color = '#000000';
+              const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
+              if (semesterDisplay) {
+                semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${bulkSemester.toUpperCase()}`;
+              }
+              const semesterInfo = clonedDoc.querySelector('.semester-info-text');
+              if (semesterInfo) {
+                semesterInfo.textContent = `SEMESTER: ${bulkSemester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
+              }
+
+              const allElements = clonedDoc.getElementsByTagName('*');
+              for (let j = 0; j < allElements.length; j++) {
+                const el = allElements[j] as HTMLElement;
+                if (el.style) {
+                  const computed = window.getComputedStyle(el);
+                  if (computed.color.includes('okl')) el.style.color = '#000000';
+                  if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+                  if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+                  if (el.tagName === 'TH' || el.tagName === 'TD') {
+                    el.style.borderColor = '#000000';
+                    el.style.color = '#000000';
+                  }
                 }
               }
             }
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          if (!imgData || imgData === 'data:,') {
+            console.error(`Canvas empty for student ${student.name}`);
+            continue;
           }
-        });
 
-        const imgData = canvas.toDataURL('image/png');
-        if (!imgData || imgData === 'data:,') {
-          console.error(`Canvas empty for student ${student.name}`);
-          continue;
+          const imgProps = pdf.getImageProperties(imgData);
+          const ratio = imgProps.width / imgProps.height;
+          let finalWidth = pdfWidth;
+          let finalHeight = pdfWidth / ratio;
+
+          if (finalHeight > pdfHeight) {
+            finalHeight = pdfHeight;
+            finalWidth = pdfHeight * ratio;
+          }
+
+          const x = (pdfWidth - finalWidth) / 2;
+          const y = (pdfHeight - finalHeight) / 2;
+
+          pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+
+          if (i < halaqohStudents.length - 1) {
+            pdf.addPage();
+          }
+
+          // Small delay to let browser breathe between captures
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (studentError) {
+          console.error(`Error processing student ${student.name}:`, studentError);
+          // Continue to next student even if one fails
         }
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const ratio = imgProps.width / imgProps.height;
-        let finalWidth = pdfWidth;
-        let finalHeight = pdfWidth / ratio;
-
-        if (finalHeight > pdfHeight) {
-          finalHeight = pdfHeight;
-          finalWidth = pdfHeight * ratio;
-        }
-
-        const x = (pdfWidth - finalWidth) / 2;
-        const y = (pdfHeight - finalHeight) / 2;
-
-        pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
-
-        if (i < halaqohStudents.length - 1) {
-          pdf.addPage();
-        }
-
-        // Small delay to let browser breathe between captures
-        await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       const safeHalaqohName = halaqohName.replace(/[^a-z0-9]/gi, '_');
@@ -562,10 +576,11 @@ export default function ReportCard() {
         window.URL.revokeObjectURL(url);
       }, 100);
       
-      // Restore original semester
+      // Restore original state
       setSemester(originalSemester);
+      setSelectedStudent(originalStudent);
       setBulkDownloadData(null);
-      alert(`Berhasil mengunduh ${halaqohStudents.length} rapor.`);
+      alert(`Berhasil mengunduh rapor halaqoh.`);
     } catch (error: any) {
       console.error('Bulk PDF Error:', error);
       alert('Gagal mengunduh rapor massal: ' + (error.message || 'Terjadi kesalahan'));
@@ -922,7 +937,7 @@ export default function ReportCard() {
                     <div className="space-y-2">
                       <div className="flex">
                         <span className="w-24 sm:w-28">Nama Siswa</span>
-                        <span>: <span className="font-bold uppercase">{selectedStudent.name}</span></span>
+                        <span>: <span className="font-bold uppercase student-name-display">{selectedStudent.name}</span></span>
                       </div>
                       <div className="flex">
                         <span className="w-24 sm:w-28">Halaqoh / Kelas</span>
