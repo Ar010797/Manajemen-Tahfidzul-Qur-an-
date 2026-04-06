@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft, Settings, Edit2, X, Save } from 'lucide-react';
+import { Printer, Search, Download, Eye, GraduationCap, ChevronLeft, Settings, Edit2, X, Save, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
@@ -129,7 +129,7 @@ export default function ReportCard() {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(element, {
-        scale: 3, // High resolution (Retina quality)
+        scale: 4, // Ultra-high resolution (HDR-like quality)
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
@@ -223,7 +223,7 @@ export default function ReportCard() {
         const link = document.createElement('a');
         link.href = url;
         const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
-        link.download = `Rapor_${safeName}.${imgFormat}`;
+        link.download = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
         document.body.appendChild(link);
         link.click();
         
@@ -272,7 +272,7 @@ export default function ReportCard() {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(element, {
-        scale: 3, // High resolution
+        scale: 4, // Ultra-high resolution
         useCORS: true,
         logging: false,
         imageTimeout: 0,
@@ -387,7 +387,7 @@ export default function ReportCard() {
       const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Rapor_${safeName}.pdf`;
+      link.download = `Rapor_${safeName}_Semester_${semester}.pdf`;
       document.body.appendChild(link);
       link.click();
       
@@ -453,7 +453,7 @@ export default function ReportCard() {
         }));
 
         const canvas = await html2canvas(element, {
-          scale: 2, 
+          scale: 3, // Increased from 2 for better quality in bulk
           useCORS: true,
           logging: false,
           imageTimeout: 0,
@@ -759,17 +759,19 @@ export default function ReportCard() {
                   onClick={generatePDF}
                   disabled={isGenerating}
                   className="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                  title="Unduh PDF Kualitas Tinggi (HDR)"
                 >
                   <Download size={18} />
-                  {isGenerating && generationProgress.total === 0 ? '...' : 'PDF'}
+                  {isGenerating && generationProgress.total === 0 ? '...' : 'PDF HDR'}
                 </button>
                 <button 
                   onClick={() => generateImage('jpg')}
                   disabled={isGenerating}
                   className="flex-1 sm:flex-none bg-amber-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+                  title="Unduh Gambar Kualitas Tinggi (HDR)"
                 >
-                  <Eye size={18} />
-                  {isGenerating ? '...' : 'JPG'}
+                  <FileText size={18} />
+                  {isGenerating ? '...' : 'JPG HDR'}
                 </button>
               </div>
             </div>

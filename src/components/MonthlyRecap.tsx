@@ -180,7 +180,7 @@ export default function MonthlyRecap() {
         }));
 
         const canvas = await html2canvas(element, {
-          scale: 3, // High resolution
+          scale: 4, // Ultra-high resolution
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
@@ -288,7 +288,7 @@ export default function MonthlyRecap() {
       }));
 
       const canvas = await html2canvas(element, {
-        scale: 3,
+        scale: 4, // Ultra-high resolution
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
@@ -402,17 +402,19 @@ export default function MonthlyRecap() {
               onClick={generatePDF}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className="flex-1 lg:flex-none bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+              title="Unduh PDF Kualitas Tinggi (HDR)"
             >
               <Download size={20} />
-              {isGenerating ? '...' : 'PDF'}
+              {isGenerating ? '...' : 'PDF HDR'}
             </button>
             <button 
               onClick={() => generateImage('jpg')}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className="flex-1 lg:flex-none bg-amber-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
+              title="Unduh Gambar Kualitas Tinggi (HDR)"
             >
               <FileText size={20} />
-              {isGenerating ? '...' : 'JPG'}
+              {isGenerating ? '...' : 'JPG HDR'}
             </button>
           </div>
         </div>
