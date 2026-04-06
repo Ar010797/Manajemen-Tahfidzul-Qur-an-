@@ -20,6 +20,8 @@ export default function ReportCard() {
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
+  const [bulkDownloadData, setBulkDownloadData] = useState<{ name: string, students: any[] } | null>(null);
+  const [bulkSemester, setBulkSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
@@ -402,11 +404,10 @@ export default function ReportCard() {
     }
   };
 
-  const generateHalaqohPDF = async (halaqohName: string, halaqohStudents: any[]) => {
-    if (isGenerating || halaqohStudents.length === 0) return;
+  const startBulkDownload = async () => {
+    if (!bulkDownloadData || isGenerating) return;
     
-    if (!confirm(`Anda akan mengunduh ${halaqohStudents.length} rapor untuk halaqoh ${halaqohName}. Proses ini mungkin memakan waktu beberapa saat. Lanjutkan?`)) return;
-
+    const { name: halaqohName, students: halaqohStudents } = bulkDownloadData;
     setIsGenerating(true);
     setGenerationProgress({ current: 0, total: halaqohStudents.length });
 
@@ -415,6 +416,10 @@ export default function ReportCard() {
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
     try {
+      // Temporarily set the global semester to the bulk semester for generation
+      const originalSemester = semester;
+      setSemester(bulkSemester);
+
       for (let i = 0; i < halaqohStudents.length; i++) {
         const student = halaqohStudents[i];
         setGenerationProgress({ current: i + 1, total: halaqohStudents.length });
@@ -427,13 +432,17 @@ export default function ReportCard() {
         setRecapSettings(sData);
         setSelectedStudent(student);
 
-        // Wait for React to render the student data
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Wait for React to render and images to be potentially fetched
+        // Increased timeout and added explicit check
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         const element = document.getElementById('report-card-preview');
-        if (!element) continue;
+        if (!element) {
+          console.error(`Element not found for student ${student.name}`);
+          continue;
+        }
 
-        // Ensure images are loaded for this specific student
+        // Ensure images are loaded
         const images = element.getElementsByTagName('img');
         await Promise.all(Array.from(images).map(img => {
           if (img.complete) return Promise.resolve();
@@ -444,7 +453,7 @@ export default function ReportCard() {
         }));
 
         const canvas = await html2canvas(element, {
-          scale: 2, // Lower scale for bulk to save memory
+          scale: 2, 
           useCORS: true,
           logging: false,
           imageTimeout: 0,
@@ -484,11 +493,11 @@ export default function ReportCard() {
 
             const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
             if (semesterDisplay) {
-              semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
+              semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${bulkSemester.toUpperCase()}`;
             }
             const semesterInfo = clonedDoc.querySelector('.semester-info-text');
             if (semesterInfo) {
-              semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
+              semesterInfo.textContent = `SEMESTER: ${bulkSemester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
             }
 
             const allElements = clonedDoc.getElementsByTagName('*');
@@ -527,10 +536,17 @@ export default function ReportCard() {
         if (i < halaqohStudents.length - 1) {
           pdf.addPage();
         }
+
+        // Small delay to let browser breathe between captures
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       const safeHalaqohName = halaqohName.replace(/[^a-z0-9]/gi, '_');
-      pdf.save(`Rapor_Halaqoh_${safeHalaqohName}_Semester_${semester}.pdf`);
+      pdf.save(`Rapor_Halaqoh_${safeHalaqohName}_Semester_${bulkSemester}.pdf`);
+      
+      // Restore original semester
+      setSemester(originalSemester);
+      setBulkDownloadData(null);
       alert(`Berhasil mengunduh ${halaqohStudents.length} rapor.`);
     } catch (error: any) {
       console.error('Bulk PDF Error:', error);
@@ -646,7 +662,7 @@ export default function ReportCard() {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      generateHalaqohPDF(halaqohName, halaqohStudents);
+                      setBulkDownloadData({ name: halaqohName, students: halaqohStudents });
                     }}
                     disabled={isGenerating}
                     className="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full hover:bg-emerald-100 transition-colors font-bold flex items-center gap-1 disabled:opacity-50"
@@ -971,6 +987,113 @@ export default function ReportCard() {
           </div>
         )}
       </div>
+
+      {/* Bulk Download Modal */}
+      {bulkDownloadData && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden"
+          >
+            <div className="p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                  <Download size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-stone-900">Unduh Rapor Massal</h3>
+                  <p className="text-xs text-stone-500">Halaqoh: {bulkDownloadData.name}</p>
+                </div>
+              </div>
+              {!isGenerating && (
+                <button onClick={() => setBulkDownloadData(null)} className="p-2 hover:bg-stone-200 rounded-full transition-colors">
+                  <X size={20} className="text-stone-400" />
+                </button>
+              )}
+            </div>
+
+            <div className="p-8 space-y-6">
+              {!isGenerating ? (
+                <>
+                  <div className="space-y-4">
+                    <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest">Pilih Semester</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => setBulkSemester('Ganjil')}
+                        className={cn(
+                          "p-4 rounded-2xl border-2 transition-all text-sm font-bold",
+                          bulkSemester === 'Ganjil' 
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700" 
+                            : "border-stone-100 bg-stone-50 text-stone-500 hover:border-emerald-200"
+                        )}
+                      >
+                        Semester Ganjil
+                      </button>
+                      <button
+                        onClick={() => setBulkSemester('Genap')}
+                        className={cn(
+                          "p-4 rounded-2xl border-2 transition-all text-sm font-bold",
+                          bulkSemester === 'Genap' 
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700" 
+                            : "border-stone-100 bg-stone-50 text-stone-500 hover:border-emerald-200"
+                        )}
+                      >
+                        Semester Genap
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl">
+                    <p className="text-xs text-amber-700 leading-relaxed">
+                      <strong>Catatan:</strong> Proses ini akan mengunduh {bulkDownloadData.students.length} rapor sekaligus. 
+                      Halaman akan berganti otomatis selama proses berlangsung. Mohon tidak menutup tab ini.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={startBulkDownload}
+                    className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                  >
+                    <Download size={20} />
+                    Mulai Unduh PDF
+                  </button>
+                </>
+              ) : (
+                <div className="py-8 text-center space-y-6">
+                  <div className="relative w-24 h-24 mx-auto">
+                    <div className="absolute inset-0 border-4 border-emerald-100 rounded-full" />
+                    <div 
+                      className="absolute inset-0 border-4 border-emerald-600 rounded-full border-t-transparent animate-spin" 
+                      style={{ animationDuration: '1.5s' }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-lg font-bold text-emerald-600">
+                        {Math.round((generationProgress.current / generationProgress.total) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-bold text-stone-900">Sedang Memproses...</h4>
+                    <p className="text-sm text-stone-500 mt-1">
+                      Siswa {generationProgress.current} dari {generationProgress.total}
+                    </p>
+                  </div>
+
+                  <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-emerald-600"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(generationProgress.current / generationProgress.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {editingExam && (
