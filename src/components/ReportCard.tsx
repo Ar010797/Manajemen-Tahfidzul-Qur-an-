@@ -19,6 +19,7 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
@@ -401,6 +402,145 @@ export default function ReportCard() {
     }
   };
 
+  const generateHalaqohPDF = async (halaqohName: string, halaqohStudents: any[]) => {
+    if (isGenerating || halaqohStudents.length === 0) return;
+    
+    if (!confirm(`Anda akan mengunduh ${halaqohStudents.length} rapor untuk halaqoh ${halaqohName}. Proses ini mungkin memakan waktu beberapa saat. Lanjutkan?`)) return;
+
+    setIsGenerating(true);
+    setGenerationProgress({ current: 0, total: halaqohStudents.length });
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    try {
+      for (let i = 0; i < halaqohStudents.length; i++) {
+        const student = halaqohStudents[i];
+        setGenerationProgress({ current: i + 1, total: halaqohStudents.length });
+
+        // Update state for this student
+        const eData = storage.getStudentExams(student.id);
+        const sData = storage.getRecapSettings(student.id, format(new Date(), 'yyyy-MM'));
+        
+        setExamData(eData);
+        setRecapSettings(sData);
+        setSelectedStudent(student);
+
+        // Wait for React to render the student data
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const element = document.getElementById('report-card-preview');
+        if (!element) continue;
+
+        // Ensure images are loaded for this specific student
+        const images = element.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        }));
+
+        const canvas = await html2canvas(element, {
+          scale: 2, // Lower scale for bulk to save memory
+          useCORS: true,
+          logging: false,
+          imageTimeout: 0,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.getElementById('report-card-preview');
+            if (clonedElement) {
+              clonedElement.style.width = '210mm';
+              clonedElement.style.height = 'auto';
+              clonedElement.style.minHeight = '297mm';
+              clonedElement.style.transform = 'none';
+              clonedElement.style.margin = '0';
+              clonedElement.style.boxShadow = 'none';
+              clonedElement.style.backgroundColor = '#ffffff';
+              clonedElement.style.color = '#000000';
+              clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
+            }
+
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = `
+              @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
+              #report-card-preview, #report-card-preview * { 
+                font-family: 'Times New Roman', Times, serif !important; 
+              }
+              #report-card-preview [style*="Amiri"], 
+              #report-card-preview [style*="Amiri"] * { 
+                font-family: 'Amiri', serif !important; 
+              }
+              #report-card-preview table, 
+              #report-card-preview th, 
+              #report-card-preview td { 
+                border-color: #000000 !important; 
+                color: #000000 !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+
+            const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
+            if (semesterDisplay) {
+              semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
+            }
+            const semesterInfo = clonedDoc.querySelector('.semester-info-text');
+            if (semesterInfo) {
+              semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
+            }
+
+            const allElements = clonedDoc.getElementsByTagName('*');
+            for (let j = 0; j < allElements.length; j++) {
+              const el = allElements[j] as HTMLElement;
+              if (el.style) {
+                const computed = window.getComputedStyle(el);
+                if (computed.color.includes('okl')) el.style.color = '#000000';
+                if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
+                if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
+                if (el.tagName === 'TH' || el.tagName === 'TD') {
+                  el.style.borderColor = '#000000';
+                  el.style.color = '#000000';
+                }
+              }
+            }
+          }
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        const ratio = imgProps.width / imgProps.height;
+        let finalWidth = pdfWidth;
+        let finalHeight = pdfWidth / ratio;
+
+        if (finalHeight > pdfHeight) {
+          finalHeight = pdfHeight;
+          finalWidth = pdfHeight * ratio;
+        }
+
+        const x = (pdfWidth - finalWidth) / 2;
+        const y = (pdfHeight - finalHeight) / 2;
+
+        pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+
+        if (i < halaqohStudents.length - 1) {
+          pdf.addPage();
+        }
+      }
+
+      const safeHalaqohName = halaqohName.replace(/[^a-z0-9]/gi, '_');
+      pdf.save(`Rapor_Halaqoh_${safeHalaqohName}_Semester_${semester}.pdf`);
+      alert(`Berhasil mengunduh ${halaqohStudents.length} rapor.`);
+    } catch (error: any) {
+      console.error('Bulk PDF Error:', error);
+      alert('Gagal mengunduh rapor massal: ' + (error.message || 'Terjadi kesalahan'));
+    } finally {
+      setIsGenerating(false);
+      setGenerationProgress({ current: 0, total: 0 });
+    }
+  };
+
   const renderUmmiTable = () => {
     const filteredUmmi = examData.ummi.filter((e: any) => e.semester === semester);
     const targetUmmi = filteredUmmi[0]?.target || `Ummi jilid ${filteredUmmi[0]?.level || '-'}`;
@@ -502,9 +642,23 @@ export default function ReportCard() {
                 <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
                   {halaqohName}
                 </h4>
-                <span className="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full">
-                  {halaqohStudents.length} Siswa
-                </span>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      generateHalaqohPDF(halaqohName, halaqohStudents);
+                    }}
+                    disabled={isGenerating}
+                    className="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full hover:bg-emerald-100 transition-colors font-bold flex items-center gap-1 disabled:opacity-50"
+                    title="Download Semua Rapor Halaqoh Ini"
+                  >
+                    <Download size={10} />
+                    PDF Semua
+                  </button>
+                  <span className="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full">
+                    {halaqohStudents.length} Siswa
+                  </span>
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -577,13 +731,21 @@ export default function ReportCard() {
               </div>
 
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                {isGenerating && generationProgress.total > 0 && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-xl">
+                    <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-bold text-emerald-700">
+                      {generationProgress.current} / {generationProgress.total}
+                    </span>
+                  </div>
+                )}
                 <button 
                   onClick={generatePDF}
                   disabled={isGenerating}
                   className="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                 >
                   <Download size={18} />
-                  {isGenerating ? '...' : 'PDF'}
+                  {isGenerating && generationProgress.total === 0 ? '...' : 'PDF'}
                 </button>
                 <button 
                   onClick={() => generateImage('jpg')}
