@@ -5,14 +5,30 @@ import { storage } from '../services/storage';
 export default function Maintenance() {
   const handleExport = () => {
     const data = storage.exportData();
-    const blob = new Blob([data], { type: 'text/plain' });
+    const blob = new Blob([data], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.txt`;
+    const fileName = `tahfidz_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     a.remove();
+    
+    // Add confirmation for the user
+    setTimeout(() => {
+      alert(`File cadangan "${fileName}" telah dikirim ke folder Download browser Anda. Silakan periksa untuk memastikan file sudah tersimpan.`);
+    }, 500);
+  };
+
+  const handleCopyToClipboard = () => {
+    const data = storage.exportData();
+    navigator.clipboard.writeText(data).then(() => {
+      alert('Data cadangan telah disalin ke clipboard. Anda dapat menempelkannya (paste) ke aplikasi catatan atau pesan sebagai cadangan tambahan.');
+    }).catch(err => {
+      console.error('Gagal menyalin:', err);
+      alert('Gagal menyalin ke clipboard. Silakan coba unduh file saja.');
+    });
   };
 
   return (
@@ -30,14 +46,23 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-emerald-900 mb-2">Ekspor Database</h3>
             <p className="text-emerald-700/70 text-sm mb-8">
-              Unduh salinan database (.txt) untuk cadangan manual. Simpan file ini di tempat yang aman.
+              Unduh salinan database (.json) untuk cadangan manual. Simpan file ini di tempat yang aman.
             </p>
-            <button 
-              onClick={handleExport}
-              className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors"
-            >
-              Unduh Backup (.txt)
-            </button>
+            <div className="grid grid-cols-1 gap-3 w-full">
+              <button 
+                onClick={handleExport}
+                className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2"
+              >
+                <Download size={18} />
+                Unduh Backup (.json)
+              </button>
+              <button 
+                onClick={handleCopyToClipboard}
+                className="w-full bg-white text-emerald-600 border-2 border-emerald-100 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors text-sm"
+              >
+                Salin ke Clipboard (Teks)
+              </button>
+            </div>
           </div>
 
           <div className="p-8 bg-stone-50 rounded-3xl border border-stone-200 flex flex-col items-center text-center">
@@ -46,11 +71,11 @@ export default function Maintenance() {
             </div>
             <h3 className="text-lg font-bold text-stone-900 mb-2">Impor Database</h3>
             <p className="text-stone-500 text-sm mb-8">
-              Pulihkan data dari file backup (.txt atau .json). Fitur ini akan menimpa data yang ada saat ini.
+              Pulihkan data dari file backup (.json atau .txt). Fitur ini akan menimpa data yang ada saat ini.
             </p>
             <input 
               type="file"
-              accept=".txt,.json"
+              accept=".json,.txt"
               id="import-db"
               className="hidden"
               onChange={(e) => {
@@ -74,7 +99,7 @@ export default function Maintenance() {
               onClick={() => document.getElementById('import-db')?.click()}
               className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors"
             >
-              Unggah Backup (.txt)
+              Unggah Backup (.json)
             </button>
           </div>
         </div>

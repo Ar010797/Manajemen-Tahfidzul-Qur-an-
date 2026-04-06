@@ -19,8 +19,23 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [principalSigSize, setPrincipalSigSize] = useState(80);
-  const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
+  const [principalSigSize, setPrincipalSigSize] = useState(() => {
+    const saved = localStorage.getItem('principalSigSize');
+    return saved ? parseInt(saved, 10) : 80;
+  });
+  const [coordinatorSigSize, setCoordinatorSigSize] = useState(() => {
+    const saved = localStorage.getItem('coordinatorSigSize');
+    return saved ? parseInt(saved, 10) : 80;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('principalSigSize', principalSigSize.toString());
+  }, [principalSigSize]);
+
+  useEffect(() => {
+    localStorage.setItem('coordinatorSigSize', coordinatorSigSize.toString());
+  }, [coordinatorSigSize]);
+
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
 
   useEffect(() => {
@@ -228,7 +243,8 @@ export default function ReportCard() {
         const link = document.createElement('a');
         link.href = url;
         const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
-        link.download = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
+        const fileName = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         
@@ -236,6 +252,8 @@ export default function ReportCard() {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
           setIsGenerating(false);
+          // Add confirmation
+          alert(`Gambar "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
         }, 100);
       }, imgFormat === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
 
@@ -400,7 +418,8 @@ export default function ReportCard() {
       const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Rapor_${safeName}_Semester_${semester}.pdf`;
+      const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       
@@ -408,6 +427,8 @@ export default function ReportCard() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         setIsGenerating(false);
+        // Add confirmation
+        alert(`File PDF "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
       }, 100);
 
     } catch (error: any) {
