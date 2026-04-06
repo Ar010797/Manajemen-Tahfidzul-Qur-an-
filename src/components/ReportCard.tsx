@@ -142,6 +142,38 @@ export default function ReportCard() {
             clonedElement.style.boxShadow = 'none';
             clonedElement.style.backgroundColor = '#ffffff';
             clonedElement.style.color = '#000000';
+            clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
+          }
+          
+          // Inject global font styles to the clone
+          const style = clonedDoc.createElement('style');
+          style.innerHTML = `
+            @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
+            #report-card-preview, #report-card-preview * { 
+              font-family: 'Times New Roman', Times, serif !important; 
+            }
+            #report-card-preview [style*="Amiri"], 
+            #report-card-preview [style*="Amiri"] * { 
+              font-family: 'Amiri', serif !important; 
+            }
+            /* Ensure borders are black and visible */
+            #report-card-preview table, 
+            #report-card-preview th, 
+            #report-card-preview td { 
+              border-color: #000000 !important; 
+              color: #000000 !important;
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+          
+          // Force semester text in clone to match current state to avoid any sync issues
+          const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
+          if (semesterDisplay) {
+            semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
+          }
+          const semesterInfo = clonedDoc.querySelector('.semester-info-text');
+          if (semesterInfo) {
+            semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
           }
           
           // Workaround for oklab/oklch colors that html2canvas doesn't support
@@ -253,6 +285,38 @@ export default function ReportCard() {
             clonedElement.style.boxShadow = 'none';
             clonedElement.style.backgroundColor = '#ffffff';
             clonedElement.style.color = '#000000';
+            clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
+          }
+
+          // Inject global font styles to the clone
+          const style = clonedDoc.createElement('style');
+          style.innerHTML = `
+            @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
+            #report-card-preview, #report-card-preview * { 
+              font-family: 'Times New Roman', Times, serif !important; 
+            }
+            #report-card-preview [style*="Amiri"], 
+            #report-card-preview [style*="Amiri"] * { 
+              font-family: 'Amiri', serif !important; 
+            }
+            /* Ensure borders are black and visible */
+            #report-card-preview table, 
+            #report-card-preview th, 
+            #report-card-preview td { 
+              border-color: #000000 !important; 
+              color: #000000 !important;
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+
+          // Force semester text in clone to match current state to avoid any sync issues
+          const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
+          if (semesterDisplay) {
+            semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
+          }
+          const semesterInfo = clonedDoc.querySelector('.semester-info-text');
+          if (semesterInfo) {
+            semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
           }
 
           // Workaround for oklab/oklch colors that html2canvas doesn't support
@@ -649,7 +713,7 @@ export default function ReportCard() {
                       <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-tight">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
                       <p className="text-[10px] sm:text-[11px] leading-tight mt-2 italic">{institution?.address}</p>
                       <div className="mt-4 text-xs sm:text-sm font-bold border-t border-black pt-2 inline-block px-4">
-                        <p>UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
+                        <p className="semester-display-text">UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
                         <p>TAHUN AJARAN {institution?.academic_year || '2025/2026'}</p>
                       </div>
                     </div>
@@ -672,7 +736,7 @@ export default function ReportCard() {
                       </div>
                     </div>
                     <div className="text-right flex flex-col justify-end">
-                      <p className="font-bold text-base sm:text-lg uppercase">SEMESTER: {semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}</p>
+                      <p className="font-bold text-base sm:text-lg uppercase semester-info-text">SEMESTER: {semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}</p>
                     </div>
                   </div>
 
