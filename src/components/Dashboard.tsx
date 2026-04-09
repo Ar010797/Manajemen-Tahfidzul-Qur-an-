@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Users, BookOpen, GraduationCap, TrendingUp, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
+import { Users, BookOpen, GraduationCap, TrendingUp, Calendar, Edit2, Save, X } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, parse } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
@@ -14,6 +14,7 @@ export default function Dashboard() {
     exams: 0
   });
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [activeDays, setActiveDays] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchStats = () => {
@@ -29,6 +30,8 @@ export default function Dashboard() {
         deposits,
         exams
       });
+
+      setActiveDays(storage.getAllActiveDays());
     };
 
     fetchStats();
@@ -66,6 +69,31 @@ export default function Dashboard() {
   ];
 
   const currentTip = tips[currentDate.getDate() % tips.length];
+
+  const academicYear = storage.getInstitution().academic_year || '2025/2026';
+  const [yearStart, yearEnd] = academicYear.split('/').map(y => parseInt(y));
+  
+  const months = [
+    { name: 'Juli', value: `${yearStart}-07` },
+    { name: 'Agustus', value: `${yearStart}-08` },
+    { name: 'September', value: `${yearStart}-09` },
+    { name: 'Oktober', value: `${yearStart}-10` },
+    { name: 'November', value: `${yearStart}-11` },
+    { name: 'Desember', value: `${yearStart}-12` },
+    { name: 'Januari', value: `${yearEnd}-01` },
+    { name: 'Februari', value: `${yearEnd}-02` },
+    { name: 'Maret', value: `${yearEnd}-03` },
+    { name: 'April', value: `${yearEnd}-04` },
+    { name: 'Mei', value: `${yearEnd}-05` },
+    { name: 'Juni', value: `${yearEnd}-06` },
+  ];
+
+  const semester1 = months.slice(0, 6);
+  const semester2 = months.slice(6, 12);
+
+  const calculateTotal = (monthList: typeof months) => {
+    return monthList.reduce((acc, m) => acc + (activeDays[m.value] || 0), 0);
+  };
 
   return (
     <div className="space-y-8">
@@ -116,8 +144,64 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-50 rounded-xl">
+                <Calendar className="text-emerald-600 w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-stone-900">Hari Aktif Belajar</h3>
+                <p className="text-stone-500 text-xs">Tahun Ajaran {academicYear}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Semester 1 */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Semester 1 (Ganjil)</h4>
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  Total: {calculateTotal(semester1)} Hari
+                </span>
+              </div>
+              <div className="space-y-2">
+                {semester1.map(m => (
+                  <div key={m.value} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100 group">
+                    <span className="text-sm font-medium text-stone-700">{m.name}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-stone-900">{activeDays[m.value] || 0} Hari</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Semester 2 */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Semester 2 (Genap)</h4>
+                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                  Total: {calculateTotal(semester2)} Hari
+                </span>
+              </div>
+              <div className="space-y-2">
+                {semester2.map(m => (
+                  <div key={m.value} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100 group">
+                    <span className="text-sm font-medium text-stone-700">{m.name}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-stone-900">{activeDays[m.value] || 0} Hari</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4 h-fit">
           <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shrink-0">
             <Calendar size={24} />
           </div>
@@ -128,7 +212,9 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
+      </div>
 
+      <div className="grid grid-cols-1 gap-8">
         <div className="bg-emerald-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-emerald-900/20">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16" />
           <h2 className="text-xl font-bold mb-4 relative z-10">Tips Hari Ini</h2>

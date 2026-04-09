@@ -28,6 +28,7 @@ export interface DataSchema {
   exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string; target?: string }>;
   exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string; target?: string }>;
   monthly_recaps: Array<{ student_id: string; month: string; total_hafalan: string; notes: string }>;
+  active_days: Record<string, number>; // key: YYYY-MM, value: number of active days
 }
 
 const defaultData: DataSchema = {
@@ -44,7 +45,8 @@ const defaultData: DataSchema = {
   daily_deposits: [],
   exams_ummi: [],
   exams_hafalan: [],
-  monthly_recaps: []
+  monthly_recaps: [],
+  active_days: {}
 };
 
 const getRawData = (): DataSchema => {
@@ -299,7 +301,8 @@ export const storage = {
                         (Array.isArray(data.deposits) ? data.deposits : []),
         exams_ummi: Array.isArray(data.exams_ummi) ? data.exams_ummi : [],
         exams_hafalan: Array.isArray(data.exams_hafalan) ? data.exams_hafalan : [],
-        monthly_recaps: Array.isArray(data.monthly_recaps) ? data.monthly_recaps : []
+        monthly_recaps: Array.isArray(data.monthly_recaps) ? data.monthly_recaps : [],
+        active_days: (data.active_days && typeof data.active_days === 'object') ? data.active_days : {}
       };
 
       // Ensure critical institution fields are never empty strings if they were provided as such
@@ -315,5 +318,36 @@ export const storage = {
       console.error('Import error:', e);
       return false;
     }
+  },
+
+  // Active Days
+  getActiveDays: (month: string) => {
+    const data = getRawData();
+    // Get unique dates in this month that have at least one deposit
+    const uniqueDates = new Set(
+      data.daily_deposits
+        .filter(d => d.date.startsWith(month))
+        .map(d => d.date)
+    );
+    return uniqueDates.size;
+  },
+  getAllActiveDays: () => {
+    const data = getRawData();
+    const activeDays: Record<string, number> = {};
+    
+    // Group all deposits by month and count unique dates
+    data.daily_deposits.forEach(d => {
+      const month = d.date.substring(0, 7); // YYYY-MM
+      if (!activeDays[month]) {
+        const uniqueDatesInMonth = new Set(
+          data.daily_deposits
+            .filter(dep => dep.date.startsWith(month))
+            .map(dep => dep.date)
+        );
+        activeDays[month] = uniqueDatesInMonth.size;
+      }
+    });
+    
+    return activeDays;
   }
 };

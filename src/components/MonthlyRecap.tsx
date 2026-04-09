@@ -401,6 +401,8 @@ export default function MonthlyRecap() {
   const hasTilawah = recapData.some(s => s.tilawah.awl !== '-' || s.tilawah.akh !== '-' || s.tilawah.jml > 0);
   const hasUmmi = recapData.some(s => s.ummi.awl !== '-' || s.ummi.akh !== '-' || s.ummi.jml > 0);
 
+  const activeDaysCount = storage.getActiveDays(selectedMonth);
+
   return (
     <div className="space-y-8">
       <div className="bg-white p-4 sm:p-8 rounded-3xl border border-stone-200 shadow-sm">
@@ -469,6 +471,7 @@ export default function MonthlyRecap() {
                     {hasHafalan && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>}
                     {hasTilawah && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>}
                     {hasUmmi && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>}
+                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Hari Aktif</th>
                     <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Total Hafalan</th>
                     <th rowSpan={2} className="px-4 py-3 text-center">Catatan Bulanan</th>
                   </tr>
@@ -522,6 +525,7 @@ export default function MonthlyRecap() {
                           <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
                         </>
                       )}
+                      <td className="px-4 py-3 border-r border-stone-100 text-center font-bold text-emerald-600">{activeDaysCount}</td>
                       <td className="px-4 py-3 border-r border-stone-100">
                         <input 
                           type="text"
@@ -665,6 +669,7 @@ export default function MonthlyRecap() {
                           <col style={{ width: '30px' }} />
                         </>
                       )}
+                      <col style={{ width: '40px' }} />
                       <col style={{ width: '60px' }} />
                       <col style={{ width: '80px' }} />
                     </colgroup>
@@ -679,6 +684,9 @@ export default function MonthlyRecap() {
                         {hasHafalan && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>HAFALAN AL-QUR'AN</th>}
                         {hasTilawah && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH AL-QUR'AN</th>}
                         {hasUmmi && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH UMMI</th>}
+                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
+                          <div className="flex items-center justify-center min-h-[40px]">HARI AKTIF</div>
+                        </th>
                         <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
                           <div className="flex items-center justify-center min-h-[40px]">TOTAL</div>
                         </th>
@@ -736,6 +744,7 @@ export default function MonthlyRecap() {
                               <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.jml}</td>
                             </>
                           )}
+                          <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{activeDaysCount}</td>
                           <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
                           <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
