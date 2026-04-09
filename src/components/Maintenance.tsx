@@ -88,7 +88,7 @@ export default function Maintenance() {
                       alert('Database berhasil diimpor. Aplikasi akan memuat ulang.');
                       window.location.reload();
                     } else {
-                      alert('Gagal mengimpor database. Format file tidak valid.');
+                      alert('Gagal mengimpor database. File mungkin rusak atau formatnya tidak sesuai. Pastikan Anda mengunggah file .json yang diunduh dari aplikasi ini.');
                     }
                   };
                   reader.readAsText(file);

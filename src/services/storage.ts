@@ -273,9 +273,35 @@ export const storage = {
   importData: (json: string) => {
     try {
       const data = JSON.parse(json);
-      saveRawData(data);
+      
+      // Basic validation: must be an object and have institution
+      if (!data || typeof data !== 'object' || !data.institution) {
+        throw new Error('Format data tidak valid: Missing institution');
+      }
+
+      // Ensure all required top-level keys exist with correct types
+      const validatedData: DataSchema = {
+        institution: {
+          ...defaultData.institution,
+          ...(data.institution || {})
+        },
+        halaqoh: Array.isArray(data.halaqoh) ? data.halaqoh : [],
+        students: Array.isArray(data.students) ? data.students : [],
+        daily_deposits: Array.isArray(data.daily_deposits) ? data.daily_deposits : [],
+        exams_ummi: Array.isArray(data.exams_ummi) ? data.exams_ummi : [],
+        exams_hafalan: Array.isArray(data.exams_hafalan) ? data.exams_hafalan : [],
+        monthly_recaps: Array.isArray(data.monthly_recaps) ? data.monthly_recaps : []
+      };
+
+      // Final check to ensure no critical fields are missing in institution
+      if (!validatedData.institution.name) {
+        validatedData.institution.name = defaultData.institution.name;
+      }
+
+      saveRawData(validatedData);
       return true;
     } catch (e) {
+      console.error('Import error:', e);
       return false;
     }
   }
