@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, UserCircle, Search, Edit2, Check, X } from 'lucide-react';
 import { storage } from '../services/storage';
+import { cn } from '../lib/utils';
 
 export default function StudentManager() {
   const [students, setStudents] = useState<any[]>([]);
@@ -9,6 +10,7 @@ export default function StudentManager() {
   const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState({ name: '', halaqoh_id: '' });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const fetchData = () => {
     const sData = storage.getStudents();
@@ -31,7 +33,35 @@ export default function StudentManager() {
   const handleDelete = (id: string) => {
     if (!window.confirm('Hapus siswa ini? Seluruh data setoran dan ujian siswa ini juga akan terhapus.')) return;
     storage.deleteStudent(id);
+    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
     fetchData();
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Hapus ${selectedIds.length} siswa terpilih? Seluruh data setoran dan ujian mereka juga akan terhapus.`)) return;
+    
+    selectedIds.forEach(id => {
+      storage.deleteStudent(id);
+    });
+    
+    setSelectedIds([]);
+    fetchData();
+    alert(`${selectedIds.length} siswa berhasil dihapus.`);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredStudents.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredStudents.map(s => s.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   const handleUpdate = (id: string) => {
@@ -102,10 +132,21 @@ export default function StudentManager() {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest flex items-center gap-2">
-            <Search size={16} className="text-stone-400" />
-            Daftar Siswa
-          </h3>
+          <div className="flex items-center gap-4">
+            <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest flex items-center gap-2">
+              <Search size={16} className="text-stone-400" />
+              Daftar Siswa
+            </h3>
+            {selectedIds.length > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-bold border border-red-100 hover:bg-red-100 transition-colors"
+              >
+                <Trash2 size={14} />
+                Hapus {selectedIds.length} Terpilih
+              </button>
+            )}
+          </div>
           <div className="relative w-full sm:w-72">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
             <input 
@@ -124,6 +165,14 @@ export default function StudentManager() {
               <table className="min-w-full divide-y divide-stone-200">
                 <thead className="bg-stone-50">
                   <tr>
+                    <th className="px-6 py-4 text-left w-10">
+                      <input 
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        checked={filteredStudents.length > 0 && selectedIds.length === filteredStudents.length}
+                        onChange={toggleSelectAll}
+                      />
+                    </th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-stone-400 uppercase tracking-widest">Nama Siswa</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-stone-400 uppercase tracking-widest">Halaqoh</th>
                     <th className="px-6 py-4 text-right text-[10px] font-bold text-stone-400 uppercase tracking-widest">Aksi</th>
@@ -131,7 +180,21 @@ export default function StudentManager() {
                 </thead>
                 <tbody className="bg-white divide-y divide-stone-100">
                   {filteredStudents.map(s => (
-                    <tr key={s.id} className="hover:bg-stone-50/50 transition-colors group">
+                    <tr 
+                      key={s.id} 
+                      className={cn(
+                        "hover:bg-stone-50/50 transition-colors group",
+                        selectedIds.includes(s.id) && "bg-emerald-50/30"
+                      )}
+                    >
+                      <td className="px-6 py-4">
+                        <input 
+                          type="checkbox"
+                          className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                          checked={selectedIds.includes(s.id)}
+                          onChange={() => toggleSelect(s.id)}
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         {editingId === s.id ? (
                           <input 
@@ -202,7 +265,7 @@ export default function StudentManager() {
                   ))}
                   {filteredStudents.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-6 py-16 text-center">
+                      <td colSpan={4} className="px-6 py-16 text-center">
                         <div className="flex flex-col items-center justify-center text-stone-400">
                           <Search size={40} className="mb-2 opacity-20" />
                           <p className="text-sm italic">Data siswa tidak ditemukan.</p>

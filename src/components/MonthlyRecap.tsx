@@ -126,7 +126,19 @@ export default function MonthlyRecap() {
     }, {});
 
     const studentList = Object.values(grouped);
-    setRecapData(studentList);
+    
+    // Sort studentList based on the original students order (order_index)
+    const allStudents = storage.getStudents();
+    const sortedStudentList = studentList.sort((a: any, b: any) => {
+      const studentA = allStudents.find(s => s.id === a.id);
+      const studentB = allStudents.find(s => s.id === b.id);
+      if (studentA && studentB) {
+        return studentA.order_index - studentB.order_index;
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    setRecapData(sortedStudentList);
 
     // Fetch settings for each student
     const settings: Record<string, any> = {};

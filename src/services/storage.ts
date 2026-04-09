@@ -58,7 +58,13 @@ const getRawData = (): DataSchema => {
 };
 
 const saveRawData = (data: DataSchema) => {
-  localStorage.setItem(getStorageKey(), JSON.stringify(data));
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(data));
+    return true;
+  } catch (e) {
+    console.error('Storage error:', e);
+    return false;
+  }
 };
 
 export const storage = {
@@ -272,33 +278,38 @@ export const storage = {
   },
   importData: (json: string) => {
     try {
-      const data = JSON.parse(json);
+      // Clean the string from potential BOM or whitespace
+      const cleanJson = json.trim().replace(/^\uFEFF/, '');
+      const data = JSON.parse(cleanJson);
       
-      // Basic validation: must be an object and have institution
-      if (!data || typeof data !== 'object' || !data.institution) {
-        throw new Error('Format data tidak valid: Missing institution');
+      if (!data || typeof data !== 'object') {
+        throw new Error('Data bukan merupakan objek JSON yang valid');
       }
 
-      // Ensure all required top-level keys exist with correct types
+      // Robust mapping: Use defaultData as base and merge safely
       const validatedData: DataSchema = {
         institution: {
           ...defaultData.institution,
           ...(data.institution || {})
         },
-        halaqoh: Array.isArray(data.halaqoh) ? data.halaqoh : [],
+        halaqoh: Array.isArray(data.halaqoh) ? data.halaqoh : 
+                 (Array.isArray(data.groups) ? data.groups : []), // Support legacy keys if any
         students: Array.isArray(data.students) ? data.students : [],
-        daily_deposits: Array.isArray(data.daily_deposits) ? data.daily_deposits : [],
+        daily_deposits: Array.isArray(data.daily_deposits) ? data.daily_deposits : 
+                        (Array.isArray(data.deposits) ? data.deposits : []),
         exams_ummi: Array.isArray(data.exams_ummi) ? data.exams_ummi : [],
         exams_hafalan: Array.isArray(data.exams_hafalan) ? data.exams_hafalan : [],
         monthly_recaps: Array.isArray(data.monthly_recaps) ? data.monthly_recaps : []
       };
 
-      // Final check to ensure no critical fields are missing in institution
-      if (!validatedData.institution.name) {
-        validatedData.institution.name = defaultData.institution.name;
-      }
+      // Ensure critical institution fields are never empty strings if they were provided as such
+      if (!validatedData.institution.name) validatedData.institution.name = defaultData.institution.name;
+      if (!validatedData.institution.academic_year) validatedData.institution.academic_year = defaultData.institution.academic_year;
 
-      saveRawData(validatedData);
+      const success = saveRawData(validatedData);
+      if (!success) {
+        throw new Error('Gagal menyimpan ke memori perangkat (Quota Exceeded?)');
+      }
       return true;
     } catch (e) {
       console.error('Import error:', e);

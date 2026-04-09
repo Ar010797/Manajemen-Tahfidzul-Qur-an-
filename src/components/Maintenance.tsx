@@ -1,8 +1,11 @@
-import React from 'react';
-import { Database, Download, Upload } from 'lucide-react';
+import React, { useState } from 'react';
+import { Database, Download, Upload, ClipboardPaste } from 'lucide-react';
 import { storage } from '../services/storage';
 
 export default function Maintenance() {
+  const [pasteText, setPasteText] = useState('');
+  const [showPasteArea, setShowPasteArea] = useState(false);
+
   const handleExport = () => {
     const data = storage.exportData();
     const blob = new Blob([data], { type: 'application/json' });
@@ -29,6 +32,23 @@ export default function Maintenance() {
       console.error('Gagal menyalin:', err);
       alert('Gagal menyalin ke clipboard. Silakan coba unduh file saja.');
     });
+  };
+
+  const handlePasteImport = () => {
+    if (!pasteText.trim()) {
+      alert('Silakan tempel teks cadangan terlebih dahulu.');
+      return;
+    }
+
+    if (confirm('Peringatan: Ini akan menimpa semua data saat ini. Lanjutkan?')) {
+      const success = storage.importData(pasteText);
+      if (success) {
+        alert('Database berhasil diimpor dari teks. Aplikasi akan memuat ulang.');
+        window.location.reload();
+      } else {
+        alert('Gagal mengimpor database. Teks yang Anda tempel mungkin tidak lengkap, salah format, atau memori perangkat penuh.');
+      }
+    }
   };
 
   return (
@@ -82,14 +102,22 @@ export default function Maintenance() {
                 const file = e.target.files?.[0];
                 if (file && confirm('Peringatan: Ini akan menimpa semua data saat ini. Lanjutkan?')) {
                   const reader = new FileReader();
-                  reader.onloadend = () => {
-                    const success = storage.importData(reader.result as string);
+                  reader.onload = () => {
+                    const content = reader.result as string;
+                    if (!content || content.trim().length === 0) {
+                      alert('Gagal mengimpor: File kosong.');
+                      return;
+                    }
+                    const success = storage.importData(content);
                     if (success) {
                       alert('Database berhasil diimpor. Aplikasi akan memuat ulang.');
                       window.location.reload();
                     } else {
-                      alert('Gagal mengimpor database. File mungkin rusak atau formatnya tidak sesuai. Pastikan Anda mengunggah file .json yang diunduh dari aplikasi ini.');
+                      alert('Gagal mengimpor database. File mungkin rusak, bukan format JSON yang benar, atau memori perangkat penuh. Pastikan Anda mengunggah file .json yang diunduh dari aplikasi ini.');
                     }
+                  };
+                  reader.onerror = () => {
+                    alert('Gagal membaca file. Silakan coba lagi.');
                   };
                   reader.readAsText(file);
                 }
@@ -97,12 +125,43 @@ export default function Maintenance() {
             />
             <button 
               onClick={() => document.getElementById('import-db')?.click()}
-              className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors"
+              className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors mb-3"
             >
               Unggah Backup (.json)
             </button>
+            <button 
+              onClick={() => setShowPasteArea(!showPasteArea)}
+              className="text-stone-500 text-xs font-bold hover:text-stone-700 transition-colors flex items-center gap-1"
+            >
+              <ClipboardPaste size={14} />
+              {showPasteArea ? 'Sembunyikan Area Tempel' : 'Gunakan Teks Cadangan (Alternatif)'}
+            </button>
           </div>
         </div>
+
+        {showPasteArea && (
+          <div className="mt-8 p-6 bg-stone-50 rounded-3xl border border-stone-200 animate-in fade-in slide-in-from-top-4 duration-300">
+            <h3 className="text-sm font-bold text-stone-900 mb-3 flex items-center gap-2">
+              <ClipboardPaste size={16} className="text-stone-500" />
+              Tempel Teks Cadangan
+            </h3>
+            <p className="text-xs text-stone-500 mb-4">
+              Jika unggah file bermasalah, buka file cadangan Anda dengan aplikasi teks, salin isinya, lalu tempel di bawah ini.
+            </p>
+            <textarea 
+              className="w-full h-32 bg-white border border-stone-200 rounded-xl p-4 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-stone-500/50 mb-4"
+              placeholder='Tempel teks JSON di sini (diawali dengan {"institution": ...)'
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+            />
+            <button 
+              onClick={handlePasteImport}
+              className="w-full bg-stone-900 text-white py-3 rounded-xl font-bold hover:bg-stone-800 transition-colors"
+            >
+              Impor dari Teks
+            </button>
+          </div>
+        )}
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-8 bg-amber-50 rounded-3xl border border-amber-100 flex flex-col justify-between">

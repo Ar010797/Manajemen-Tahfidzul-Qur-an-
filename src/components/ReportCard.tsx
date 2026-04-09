@@ -57,6 +57,11 @@ export default function ReportCard() {
       groups[groupName].push(s);
     });
     
+    // Ensure students within each group are sorted by order_index
+    Object.keys(groups).forEach(key => {
+      groups[key].sort((a, b) => a.order_index - b.order_index);
+    });
+    
     return Object.keys(groups)
       .sort((a, b) => {
         if (a === 'Tanpa Halaqoh') return 1;
