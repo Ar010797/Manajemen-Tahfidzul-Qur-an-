@@ -194,7 +194,7 @@ export default function StudentManager() {
                 type="text"
                 className={cn("w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all", theme.ring)}
                 placeholder="Masukkan nama lengkap"
-                value={formData.name}
+                value={formData.name || ''}
                 onChange={e => setFormData({...formData, name: e.target.value})}
               />
             </div>
@@ -202,7 +202,7 @@ export default function StudentManager() {
               <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider ml-1">Pilih Halaqoh</label>
               <select 
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
-                value={formData.halaqoh_id}
+                value={formData.halaqoh_id || ''}
                 onChange={e => setFormData({...formData, halaqoh_id: e.target.value})}
               >
                 <option value="">Pilih Halaqoh</option>
@@ -244,7 +244,7 @@ export default function StudentManager() {
               type="text"
               placeholder="Cari nama siswa..."
               className={cn("w-full bg-stone-50 border border-stone-200 rounded-2xl py-2.5 pl-11 pr-4 focus:outline-none focus:ring-2 transition-all text-sm", theme.ring)}
-              value={search}
+              value={search || ''}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
@@ -291,7 +291,7 @@ export default function StudentManager() {
                           <input 
                             type="text"
                             className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
-                            value={editData.name}
+                            value={editData.name || ''}
                             onChange={e => setEditData({...editData, name: e.target.value})}
                             autoFocus
                           />
@@ -303,7 +303,7 @@ export default function StudentManager() {
                         {editingId === s.id ? (
                           <select 
                             className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
-                            value={editData.halaqoh_id}
+                            value={editData.halaqoh_id || ''}
                             onChange={e => setEditData({...editData, halaqoh_id: e.target.value})}
                           >
                             <option value="">Pilih Halaqoh</option>

@@ -499,7 +499,7 @@ export default function ExamHafalan() {
                           type="text"
                           placeholder="Nama Surat & Ayat..."
                           className="w-full bg-white border border-stone-200 rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                          value={surah.name}
+                          value={surah.name || ''}
                           onChange={(e) => updateSurah(index, 'name', e.target.value)}
                         />
                       </div>
@@ -536,7 +536,7 @@ export default function ExamHafalan() {
                 <textarea 
                   className="w-full bg-stone-50 border border-stone-200 rounded-2xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 min-h-[100px]"
                   placeholder="Berikan motivasi atau catatan perkembangan..."
-                  value={note}
+                  value={note || ''}
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>

@@ -217,7 +217,7 @@ export default function ExamUmmi() {
           type="text"
           placeholder="Cari nama..."
           className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-4 mb-6 focus:outline-none focus:ring-2", theme.ring)}
-          value={search}
+          value={search || ''}
           onChange={e => setSearch(e.target.value)}
         />
         
@@ -310,7 +310,7 @@ export default function ExamUmmi() {
                   type="text"
                   placeholder="Contoh: Ummi Jilid 4"
                   className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2", theme.ring)}
-                  value={target}
+                  value={target || ''}
                   onChange={e => setTarget(e.target.value)}
                 />
               </div>

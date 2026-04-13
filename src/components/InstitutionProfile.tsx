@@ -139,7 +139,7 @@ export default function InstitutionProfile() {
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
-                  value={profile.name}
+                  value={profile.name || ''}
                   onChange={e => setProfile({...profile, name: e.target.value})}
                 />
               </div>
@@ -147,7 +147,7 @@ export default function InstitutionProfile() {
                 <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Alamat Lengkap</label>
                 <textarea 
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 min-h-[100px]"
-                  value={profile.address}
+                  value={profile.address || ''}
                   onChange={e => setProfile({...profile, address: e.target.value})}
                 />
               </div>
@@ -159,7 +159,7 @@ export default function InstitutionProfile() {
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
-                  value={profile.principal_name}
+                  value={profile.principal_name || ''}
                   onChange={e => setProfile({...profile, principal_name: e.target.value})}
                 />
               </div>
@@ -168,7 +168,7 @@ export default function InstitutionProfile() {
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
-                  value={profile.coordinator_name}
+                  value={profile.coordinator_name || ''}
                   onChange={e => setProfile({...profile, coordinator_name: e.target.value})}
                 />
               </div>
@@ -177,7 +177,7 @@ export default function InstitutionProfile() {
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
-                  value={profile.halaqoh_teacher_name}
+                  value={profile.halaqoh_teacher_name || ''}
                   onChange={e => setProfile({...profile, halaqoh_teacher_name: e.target.value})}
                 />
               </div>
@@ -187,7 +187,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   placeholder="Contoh: 2025/2026"
-                  value={profile.academic_year}
+                  value={profile.academic_year || ''}
                   onChange={e => setProfile({...profile, academic_year: e.target.value})}
                 />
               </div>
@@ -197,7 +197,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   placeholder="Contoh: Cikunir, 20 Juni 2025"
-                  value={profile.report_date}
+                  value={profile.report_date || ''}
                   onChange={e => setProfile({...profile, report_date: e.target.value})}
                 />
                 <p className="text-[10px] text-stone-400 ml-1 italic">Jika dikosongkan, akan menggunakan tanggal hari ini otomatis.</p>
@@ -235,7 +235,7 @@ export default function InstitutionProfile() {
                     <input 
                       type="time"
                       className="w-full bg-white border border-stone-200 rounded-xl px-4 py-2 text-sm"
-                      value={profile.reminder_time}
+                      value={profile.reminder_time || ''}
                       onChange={e => setProfile({...profile, reminder_time: e.target.value})}
                     />
                   </div>

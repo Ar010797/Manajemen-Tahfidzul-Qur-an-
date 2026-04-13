@@ -116,7 +116,7 @@ export default function HalaqohManager() {
             type="text"
             className={cn("flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2", theme.ring)}
             placeholder="Nama Halaqoh Baru (Contoh: Halaqoh Abu Bakar)"
-            value={newName}
+            value={newName || ''}
             onChange={e => setNewName(e.target.value)}
           />
           <button 
@@ -136,7 +136,7 @@ export default function HalaqohManager() {
                   <input 
                     type="text"
                     className="flex-1 bg-white border border-stone-200 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                    value={editName}
+                    value={editName || ''}
                     onChange={e => setEditName(e.target.value)}
                     autoFocus
                   />
