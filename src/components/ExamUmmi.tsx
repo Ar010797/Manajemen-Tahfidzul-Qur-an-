@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Save, Search, ChevronLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { BookOpen, Save, Search, ChevronLeft, TrendingUp, BarChart3 } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 
 const UMMI_INDICATORS: Record<number, string[]> = {
   1: ['Makhroj', 'Huruf Hijaiyyah'],
@@ -105,6 +116,19 @@ export default function ExamUmmi() {
     setSelectedStudent(s);
     setShowListOnMobile(false);
   };
+
+  const progressData = useMemo(() => {
+    if (!selectedStudent) return [];
+    const exams = storage.getStudentExams(selectedStudent.id).ummi;
+    return [...exams]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(e => ({
+        date: format(parseISO(e.date), 'dd/MM'),
+        fullDate: format(parseISO(e.date), 'dd MMM yyyy'),
+        level: e.level,
+        levelName: e.level === 7 ? 'Tilawah' : `Jilid ${e.level}`
+      }));
+  }, [selectedStudent]);
 
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
@@ -256,6 +280,28 @@ export default function ExamUmmi() {
                   <p className="text-stone-500 text-sm">Input Nilai Ujian Ummi / Tilawah</p>
                 </div>
               </div>
+
+              {progressData.length > 0 && (
+                <div className="hidden md:block bg-stone-50 p-4 rounded-2xl border border-stone-100 w-64">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp size={14} className={theme.text} />
+                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Progress Terakhir</span>
+                  </div>
+                  <div className="h-16 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={progressData}>
+                        <defs>
+                          <linearGradient id="colorLevel" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b'} stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor={themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b'} stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <Area type="monotone" dataKey="level" stroke={themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b'} fillOpacity={1} fill="url(#colorLevel)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
               
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
@@ -317,6 +363,49 @@ export default function ExamUmmi() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
+              {progressData.length > 1 && (
+                <div className="p-6 bg-stone-50 rounded-2xl border border-stone-100">
+                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <BarChart3 size={14} className={theme.text} />
+                    Grafik Perkembangan Jilid
+                  </h4>
+                  <div className="h-48 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={progressData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                        <XAxis 
+                          dataKey="date" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          dy={10}
+                        />
+                        <YAxis 
+                          domain={[1, 7]} 
+                          ticks={[1, 2, 3, 4, 5, 6, 7]} 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fill: '#9ca3af' }}
+                        />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                          labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                          formatter={(value: number) => [value === 7 ? 'Tilawah' : `Jilid ${value}`, 'Level']}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="level" 
+                          stroke={themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b'} 
+                          strokeWidth={3} 
+                          dot={{ r: 4, fill: themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b', strokeWidth: 2, stroke: '#fff' }}
+                          activeDot={{ r: 6, strokeWidth: 0 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
               <div className="grid gap-6">
                 {UMMI_INDICATORS[level].map(indicator => (
                   <div key={indicator} className="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-100">

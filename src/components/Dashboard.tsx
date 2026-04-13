@@ -5,6 +5,8 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, parse
 import { id } from 'date-fns/locale';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
+import ConfirmModal from './ConfirmModal';
+import { HADITHS } from '../constants/hadiths';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -18,6 +20,7 @@ export default function Dashboard() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
   const [selectedHalaqoh, setSelectedHalaqoh] = useState('');
   const [themeColor, setThemeColor] = useState('emerald');
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchStats = () => {
@@ -54,6 +57,11 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [currentDate, selectedHalaqoh]);
 
+  const confirmResetTotal = () => {
+    storage.factoryReset();
+    window.location.reload();
+  };
+
   const cards = [
     { label: 'Total Siswa', value: stats.students, icon: Users, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
     { label: 'Total Halaqoh', value: stats.halaqoh, icon: BookOpen, color: 'blue', gradient: 'from-blue-500 to-indigo-600' },
@@ -61,20 +69,10 @@ export default function Dashboard() {
     { label: 'Total Ujian', value: stats.exams, icon: GraduationCap, color: 'purple', gradient: 'from-purple-500 to-pink-600' },
   ];
 
-  const tips = [
-    "Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya.",
-    "Al-Qur'an akan menjadi syafaat bagi pembacanya di hari kiamat nanti.",
-    "Satu huruf Al-Qur'an bernilai sepuluh kebaikan. Teruslah membaca dan menghafal.",
-    "Hati yang di dalamnya terdapat Al-Qur'an tidak akan pernah merasa kesepian.",
-    "Istiqomah dalam murojaah adalah kunci menjaga hafalan agar tetap melekat.",
-    "Jangan biarkan hari berlalu tanpa membaca atau menghafal ayat-ayat Allah.",
-    "Al-Qur'an adalah cahaya bagi hati dan petunjuk bagi jalan kehidupan.",
-    "Menghafal Al-Qur'an butuh kesabaran, namun hasilnya adalah kemuliaan di dunia dan akhirat.",
-    "Jadikan Al-Qur'an sebagai sahabat terbaikmu dalam setiap langkah.",
-    "Setiap ayat yang dihafal adalah satu anak tangga menuju surga."
-  ];
-
-  const currentTip = tips[currentDate.getDate() % tips.length];
+  // Stable daily index based on date string
+  const dateStr = format(currentDate, 'yyyyMMdd');
+  const hash = dateStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const currentHadith = HADITHS[hash % HADITHS.length];
 
   const academicYear = storage.getInstitution().academic_year || '2025/2026';
   const [yearStart, yearEnd] = academicYear.split('/').map(y => parseInt(y));
@@ -172,6 +170,60 @@ export default function Dashboard() {
           <span className="font-semibold text-stone-700">
             {format(currentDate, 'EEEE, dd MMMM yyyy', { locale: id })}
           </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8">
+        <div className={cn("rounded-3xl p-8 text-white relative overflow-hidden shadow-xl", theme.mainBg, theme.mainShadow)}>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 blur-2xl rounded-full -ml-24 -mb-24" />
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <BookOpen size={18} className="text-white" />
+              </div>
+              <h2 className="text-xl font-bold">Hadits Hari Ini</h2>
+            </div>
+
+            <div className="space-y-6">
+              {currentHadith.arabic && (
+                <p 
+                  className="text-2xl md:text-3xl font-serif text-right leading-loose tracking-wide" 
+                  style={{ direction: 'rtl' }}
+                >
+                  {currentHadith.arabic}
+                </p>
+              )}
+              
+              <div className="space-y-2">
+                <p className={cn("text-lg md:text-xl font-medium leading-relaxed italic", theme.mainLightText)}>
+                  "{currentHadith.content}"
+                </p>
+                <p className="text-sm font-bold opacity-80 flex items-center gap-2">
+                  <span className="w-4 h-px bg-white/40" />
+                  {currentHadith.source}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-4">
+              <a 
+                href="https://wa.me/6285869372879" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={cn("px-6 py-3 bg-white font-bold rounded-xl text-sm hover:opacity-90 transition-all hover:scale-105 active:scale-95", theme.mainBtn)}
+              >
+                Hubungi Bantuan
+              </a>
+              <button 
+                onClick={() => setIsResetModalOpen(true)}
+                className="px-6 py-3 bg-red-500/20 text-white border border-red-500/30 font-bold rounded-xl text-sm hover:bg-red-500/40 transition-all hover:scale-105 active:scale-95"
+              >
+                Reset Total
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -292,38 +344,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
-        <div className={cn("rounded-3xl p-8 text-white relative overflow-hidden shadow-xl", theme.mainBg, theme.mainShadow)}>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16" />
-          <h2 className="text-xl font-bold mb-4 relative z-10">Tips Hari Ini</h2>
-          <p className={cn("text-sm leading-relaxed relative z-10", theme.mainLightText)}>
-            "{currentTip}"
-            <br /><br />
-            Pastikan setiap setoran dicatat dengan detail untuk memudahkan pembuatan rapor di akhir semester.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4 relative z-10">
-            <a 
-              href="https://wa.me/6285869372879" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={cn("px-6 py-3 bg-white font-bold rounded-xl text-sm hover:opacity-90 transition-colors", theme.mainBtn)}
-            >
-              Hubungi Bantuan
-            </a>
-            <button 
-              onClick={() => {
-                if (confirm('Apakah Anda yakin ingin menghapus SEMUA data (termasuk profil lembaga) dan mereset total sistem?')) {
-                  storage.factoryReset();
-                  window.location.reload();
-                }
-              }}
-              className="px-6 py-3 bg-red-500/20 text-white border border-red-500/30 font-bold rounded-xl text-sm hover:bg-red-500/40 transition-colors"
-            >
-              Reset Total
-            </button>
-          </div>
-        </div>
-      </div>
+      <ConfirmModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={confirmResetTotal}
+        title="Reset Total (Pabrik)"
+        message="Apakah Anda yakin ingin menghapus SEMUA data (termasuk profil lembaga) dan mereset total sistem? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Reset Sekarang"
+        themeColor={themeColor}
+        variant="danger"
+      />
     </div>
   );
 }

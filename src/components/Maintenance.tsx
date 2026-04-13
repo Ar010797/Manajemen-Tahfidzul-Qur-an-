@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Database, Download, Upload, ClipboardPaste } from 'lucide-react';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
+import ConfirmModal from './ConfirmModal';
 
 export default function Maintenance() {
   const [pasteText, setPasteText] = useState('');
   const [showPasteArea, setShowPasteArea] = useState(false);
   const [themeColor, setThemeColor] = useState('emerald');
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isFactoryResetModalOpen, setIsFactoryResetModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importContent, setImportContent] = useState<string | null>(null);
 
   useEffect(() => {
     const inst = storage.getInstitution();
@@ -105,16 +110,32 @@ export default function Maintenance() {
       alert('Silakan tempel teks cadangan terlebih dahulu.');
       return;
     }
+    setImportContent(pasteText);
+    setIsImportModalOpen(true);
+  };
 
-    if (confirm('Peringatan: Ini akan menimpa semua data saat ini. Lanjutkan?')) {
-      const success = storage.importData(pasteText);
+  const confirmImport = () => {
+    if (importContent) {
+      const success = storage.importData(importContent);
       if (success) {
-        alert('Database berhasil diimpor dari teks. Aplikasi akan memuat ulang.');
+        alert('Database berhasil diimpor. Aplikasi akan memuat ulang.');
         window.location.reload();
       } else {
         alert('Gagal mengimpor database. Teks yang Anda tempel mungkin tidak lengkap, salah format, atau memori perangkat penuh.');
       }
     }
+  };
+
+  const confirmResetData = () => {
+    storage.resetData();
+    alert('Data berhasil direset.');
+    window.location.reload();
+  };
+
+  const confirmFactoryReset = () => {
+    storage.factoryReset();
+    alert('Sistem berhasil direset total.');
+    window.location.href = '/';
   };
 
   return (
@@ -166,7 +187,7 @@ export default function Maintenance() {
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file && confirm('Peringatan: Ini akan menimpa semua data saat ini. Lanjutkan?')) {
+                if (file) {
                   const reader = new FileReader();
                   reader.onload = () => {
                     const content = reader.result as string;
@@ -174,13 +195,8 @@ export default function Maintenance() {
                       alert('Gagal mengimpor: File kosong.');
                       return;
                     }
-                    const success = storage.importData(content);
-                    if (success) {
-                      alert('Database berhasil diimpor. Aplikasi akan memuat ulang.');
-                      window.location.reload();
-                    } else {
-                      alert('Gagal mengimpor database. File mungkin rusak, bukan format JSON yang benar, atau memori perangkat penuh. Pastikan Anda mengunggah file .json yang diunduh dari aplikasi ini.');
-                    }
+                    setImportContent(content);
+                    setIsImportModalOpen(true);
                   };
                   reader.onerror = () => {
                     alert('Gagal membaca file. Silakan coba lagi.');
@@ -238,13 +254,7 @@ export default function Maintenance() {
               </p>
             </div>
             <button 
-              onClick={() => {
-                if (confirm('Apakah Anda yakin ingin menghapus semua data siswa dan setoran? Profil lembaga akan tetap ada.')) {
-                  storage.resetData();
-                  alert('Data berhasil direset.');
-                  window.location.reload();
-                }
-              }}
+              onClick={() => setIsResetModalOpen(true)}
               className={cn("w-full py-3 text-white rounded-xl font-bold transition-all shadow-lg", theme.bg, theme.hover, theme.shadow)}
             >
               Reset Data
@@ -259,13 +269,7 @@ export default function Maintenance() {
               </p>
             </div>
             <button 
-              onClick={() => {
-                if (confirm('PERINGATAN: Seluruh data akan dihapus permanen dan Anda akan dikeluarkan. Anda yakin ingin melanjutkan?')) {
-                  storage.factoryReset();
-                  alert('Sistem berhasil direset total.');
-                  window.location.href = '/';
-                }
-              }}
+              onClick={() => setIsFactoryResetModalOpen(true)}
               className="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all shadow-lg shadow-red-500/20"
             >
               Reset Total
@@ -280,6 +284,39 @@ export default function Maintenance() {
           </p>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onConfirm={confirmImport}
+        title="Impor Database"
+        message="Peringatan: Ini akan menimpa semua data saat ini. Data yang ada akan digantikan dengan data dari file cadangan. Lanjutkan?"
+        confirmText="Impor Sekarang"
+        themeColor={themeColor}
+        variant="warning"
+      />
+
+      <ConfirmModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={confirmResetData}
+        title="Reset Data"
+        message="Apakah Anda yakin ingin menghapus semua data siswa, halaqoh, setoran, dan ujian? Profil lembaga dan tanda tangan akan tetap disimpan."
+        confirmText="Reset Data"
+        themeColor={themeColor}
+        variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={isFactoryResetModalOpen}
+        onClose={() => setIsFactoryResetModalOpen(false)}
+        onConfirm={confirmFactoryReset}
+        title="Reset Total (Pabrik)"
+        message="PERINGATAN: Seluruh data akan dihapus permanen termasuk profil lembaga, logo, dan tanda tangan. Anda akan dikeluarkan dari sistem. Anda yakin ingin melanjutkan?"
+        confirmText="Reset Total"
+        themeColor={themeColor}
+        variant="danger"
+      />
     </div>
   );
 }

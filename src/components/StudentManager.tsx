@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, UserCircle, Search, Edit2, Check, X } from 'lucide-react';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
+import ConfirmModal from './ConfirmModal';
 
 export default function StudentManager() {
   const [students, setStudents] = useState<any[]>([]);
@@ -12,6 +13,9 @@ export default function StudentManager() {
   const [editData, setEditData] = useState({ name: '', halaqoh_id: '' });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('emerald');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<any>(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const inst = storage.getInstitution();
@@ -36,24 +40,32 @@ export default function StudentManager() {
     fetchData();
   };
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm('Hapus siswa ini? Seluruh data setoran dan ujian siswa ini juga akan terhapus.')) return;
-    storage.deleteStudent(id);
-    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-    fetchData();
+  const handleDeleteClick = (s: any) => {
+    setStudentToDelete(s);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleBulkDelete = () => {
+  const confirmDelete = () => {
+    if (studentToDelete) {
+      storage.deleteStudent(studentToDelete.id);
+      setSelectedIds(prev => prev.filter(selectedId => selectedId !== studentToDelete.id));
+      fetchData();
+      setStudentToDelete(null);
+    }
+  };
+
+  const handleBulkDeleteClick = () => {
     if (selectedIds.length === 0) return;
-    if (!window.confirm(`Hapus ${selectedIds.length} siswa terpilih? Seluruh data setoran dan ujian mereka juga akan terhapus.`)) return;
-    
+    setIsBulkDeleteModalOpen(true);
+  };
+
+  const confirmBulkDelete = () => {
     selectedIds.forEach(id => {
       storage.deleteStudent(id);
     });
     
     setSelectedIds([]);
     fetchData();
-    alert(`${selectedIds.length} siswa berhasil dihapus.`);
   };
 
   const toggleSelectAll = () => {
@@ -218,7 +230,7 @@ export default function StudentManager() {
             </h3>
             {selectedIds.length > 0 && (
               <button
-                onClick={handleBulkDelete}
+                onClick={handleBulkDeleteClick}
                 className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-bold border border-red-100 hover:bg-red-100 transition-colors"
               >
                 <Trash2 size={14} />
@@ -331,7 +343,7 @@ export default function StudentManager() {
                               <Edit2 size={18} />
                             </button>
                             <button 
-                              onClick={() => handleDelete(s.id)}
+                              onClick={() => handleDeleteClick(s)}
                               className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                               title="Hapus"
                             >
@@ -358,6 +370,24 @@ export default function StudentManager() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Hapus Siswa"
+        message={`Apakah Anda yakin ingin menghapus siswa "${studentToDelete?.name}"? Seluruh data setoran dan ujian siswa ini juga akan terhapus.`}
+        themeColor={themeColor}
+      />
+
+      <ConfirmModal 
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={confirmBulkDelete}
+        title="Hapus Banyak Siswa"
+        message={`Apakah Anda yakin ingin menghapus ${selectedIds.length} siswa terpilih? Seluruh data setoran dan ujian mereka juga akan terhapus.`}
+        themeColor={themeColor}
+      />
     </div>
   );
 }

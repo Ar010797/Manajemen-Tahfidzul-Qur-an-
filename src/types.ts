@@ -12,6 +12,8 @@ export interface Institution {
   coordinator_name: string;
   logo: string;
   watermark: string;
+  reminder_enabled?: boolean;
+  reminder_time?: string; // HH:mm format
 }
 
 export interface Halaqoh {

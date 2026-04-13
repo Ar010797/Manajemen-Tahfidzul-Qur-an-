@@ -1,8 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Trash2, Save, CheckCircle2, Clock, Calendar, GraduationCap, Search, ChevronLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Trash2, Save, CheckCircle2, Clock, Calendar, GraduationCap, Search, ChevronLeft, TrendingUp, BarChart3 } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
 const GRADES = [
   { value: 'A+', label: 'MUMTAAZ' },
@@ -225,6 +235,23 @@ export default function ExamHafalan() {
     setShowListOnMobile(false);
   };
 
+  const progressData = useMemo(() => {
+    if (!selectedStudent) return [];
+    const exams = storage.getStudentExams(selectedStudent.id).hafalan;
+    return [...exams]
+      .filter(e => e.status === 'completed')
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(e => ({
+        date: format(parseISO(e.date), 'dd/MM'),
+        fullDate: format(parseISO(e.date), 'dd MMM yyyy'),
+        surahCount: e.surahs.length,
+        avgGrade: e.surahs.reduce((acc: number, s: any) => {
+          const gradeMap: Record<string, number> = { 'A+': 5, 'A': 4, 'B+': 3, 'B': 2, 'C': 1 };
+          return acc + (gradeMap[s.grade] || 0);
+        }, 0) / e.surahs.length
+      }));
+  }, [selectedStudent]);
+
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
       <div className={cn(
@@ -306,6 +333,18 @@ export default function ExamHafalan() {
                 </div>
               </div>
 
+              {progressData.length > 0 && (
+                <div className="hidden md:flex items-center gap-4">
+                  <div className="bg-stone-50 p-4 rounded-2xl border border-stone-100 w-48">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp size={14} className={theme.text} />
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Total Ujian</span>
+                    </div>
+                    <div className="text-2xl font-black text-stone-900">{progressData.length}</div>
+                  </div>
+                </div>
+              )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div>
                 <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Target Hafalan</label>
@@ -362,6 +401,52 @@ export default function ExamHafalan() {
             </div>
 
             <div className="space-y-8">
+              {progressData.length > 1 && (
+                <div className="p-6 bg-stone-50 rounded-2xl border border-stone-100">
+                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <BarChart3 size={14} className={theme.text} />
+                    Statistik Jumlah Surat per Ujian
+                  </h4>
+                  <div className="h-48 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={progressData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                        <XAxis 
+                          dataKey="date" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          dy={10}
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fontSize: 10, fill: '#9ca3af' }}
+                        />
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                          labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                          formatter={(value: number) => [value, 'Jumlah Surat']}
+                        />
+                        <Bar 
+                          dataKey="surahCount" 
+                          radius={[6, 6, 0, 0]}
+                          barSize={32}
+                        >
+                          {progressData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={themeColor === 'emerald' ? '#10b981' : themeColor === 'blue' ? '#3b82f6' : '#f59e0b'} 
+                              fillOpacity={0.6 + (index / progressData.length) * 0.4}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
               {/* 6-Day Progress Tracking */}
               <div className="p-6 bg-stone-50 rounded-2xl border border-stone-100">
                 <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">

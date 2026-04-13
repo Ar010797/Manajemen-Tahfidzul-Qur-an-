@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Users, Edit2, Check, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import ConfirmModal from './ConfirmModal';
 
 export default function HalaqohManager() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
@@ -9,6 +10,8 @@ export default function HalaqohManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [themeColor, setThemeColor] = useState('emerald');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [halaqohToDelete, setHalaqohToDelete] = useState<any>(null);
 
   useEffect(() => {
     const inst = storage.getInstitution();
@@ -30,10 +33,17 @@ export default function HalaqohManager() {
     fetchHalaqohs();
   };
 
-  const handleDelete = (id: string) => {
-    if (!confirm('Hapus halaqoh ini? Siswa yang terdaftar di halaqoh ini akan dipindahkan ke kategori "Tanpa Halaqoh".')) return;
-    storage.deleteHalaqoh(id);
-    fetchHalaqohs();
+  const handleDeleteClick = (h: any) => {
+    setHalaqohToDelete(h);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (halaqohToDelete) {
+      storage.deleteHalaqoh(halaqohToDelete.id);
+      fetchHalaqohs();
+      setHalaqohToDelete(null);
+    }
   };
 
   const handleUpdate = (id: string) => {
@@ -154,7 +164,7 @@ export default function HalaqohManager() {
                       <Edit2 size={18} />
                     </button>
                     <button 
-                      onClick={() => handleDelete(h.id)}
+                      onClick={() => handleDeleteClick(h)}
                       className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
@@ -171,6 +181,15 @@ export default function HalaqohManager() {
           )}
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Hapus Halaqoh"
+        message={`Apakah Anda yakin ingin menghapus halaqoh "${halaqohToDelete?.name}"? Siswa yang terdaftar di halaqoh ini akan dipindahkan ke kategori "Tanpa Halaqoh".`}
+        themeColor={themeColor}
+      />
     </div>
   );
 }

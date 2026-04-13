@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft } from 'lucide-react';
+import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion, Reorder } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import ConfirmModal from './ConfirmModal';
 
 export default function DailyInput() {
   const [students, setStudents] = useState<any[]>([]);
@@ -14,6 +15,7 @@ export default function DailyInput() {
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [themeColor, setThemeColor] = useState('emerald');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const institution = storage.getInstitution();
@@ -92,6 +94,13 @@ export default function DailyInput() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleDeleteDeposit = () => {
+    if (!selectedStudent) return;
+    storage.deleteDeposit(selectedStudent.id, type, date);
+    setDetails({});
+    alert('Setoran berhasil dihapus.');
   };
 
   const [isSavingOrder, setIsSavingOrder] = useState(false);
@@ -497,18 +506,28 @@ export default function DailyInput() {
                 </div>
               )}
 
-              <button 
-                type="submit"
-                disabled={isSaving}
-                className={cn(
-                  "w-full text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
-                  theme.bg, "hover:opacity-90", theme.shadow,
-                  "disabled:opacity-50"
-                )}
-              >
-                <Save size={20} />
-                {isSaving ? 'Menyimpan...' : 'Simpan Setoran'}
-              </button>
+              <div className="flex gap-4">
+                <button 
+                  type="submit"
+                  disabled={isSaving}
+                  className={cn(
+                    "flex-1 text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
+                    theme.bg, "hover:opacity-90", theme.shadow,
+                    "disabled:opacity-50"
+                  )}
+                >
+                  <Save size={20} />
+                  {isSaving ? 'Menyimpan...' : 'Simpan Setoran'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="px-6 py-4 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-all flex items-center justify-center gap-2 border border-red-100"
+                  title="Hapus Setoran Hari Ini"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
             </form>
           </div>
         ) : (
@@ -518,6 +537,15 @@ export default function DailyInput() {
           </div>
         )}
       </div>
+
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteDeposit}
+        title="Hapus Setoran"
+        message={`Apakah Anda yakin ingin menghapus data setoran ${type} untuk ${selectedStudent?.name} pada tanggal ${format(new Date(date), 'dd MMMM yyyy')}?`}
+        themeColor={themeColor}
+      />
     </div>
   );
 }

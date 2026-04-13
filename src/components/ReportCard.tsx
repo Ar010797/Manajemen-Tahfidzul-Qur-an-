@@ -8,6 +8,7 @@ import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import ConfirmModal from './ConfirmModal';
 
 export default function ReportCard() {
   const [students, setStudents] = useState<any[]>([]);
@@ -27,6 +28,8 @@ export default function ReportCard() {
     const saved = localStorage.getItem('coordinatorSigSize');
     return saved ? parseInt(saved, 10) : 80;
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [examToDelete, setExamToDelete] = useState<{ type: 'ummi' | 'hafalan', id: string } | null>(null);
 
   useEffect(() => {
     localStorage.setItem('principalSigSize', principalSigSize.toString());
@@ -91,11 +94,17 @@ export default function ReportCard() {
   };
 
   const resetExam = (type: 'ummi' | 'hafalan', id: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus data ujian ${type} ini? Data yang sudah dihapus tidak dapat dikembalikan.`)) return;
-    
-    storage.deleteExam(type, id);
-    alert('Data ujian berhasil dihapus.');
-    if (selectedStudent) fetchExamData(selectedStudent);
+    setExamToDelete({ type, id });
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmResetExam = () => {
+    if (examToDelete) {
+      storage.deleteExam(examToDelete.type, examToDelete.id);
+      alert('Data ujian berhasil dihapus.');
+      if (selectedStudent) fetchExamData(selectedStudent);
+      setExamToDelete(null);
+    }
   };
 
   const handleUpdateExam = (e: React.FormEvent) => {
@@ -1085,6 +1094,17 @@ export default function ReportCard() {
           </motion.div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmResetExam}
+        title={`Hapus Data Ujian ${examToDelete?.type === 'ummi' ? 'Ummi' : 'Hafalan'}`}
+        message={`Apakah Anda yakin ingin menghapus data ujian ${examToDelete?.type === 'ummi' ? 'Ummi' : 'Hafalan'} ini? Data yang sudah dihapus tidak dapat dikembalikan.`}
+        confirmText="Hapus Data"
+        themeColor={themeColor}
+        variant="danger"
+      />
     </div>
   );
 }

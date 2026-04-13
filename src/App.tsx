@@ -27,6 +27,7 @@ import ReportCard from './components/ReportCard';
 import MonthlyRecap from './components/MonthlyRecap';
 import SettingsHub from './components/SettingsHub';
 import SplashScreen from './components/SplashScreen';
+import NotificationSystem from './components/NotificationSystem';
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -149,6 +150,7 @@ export default function App() {
 
   return (
     <>
+      <NotificationSystem />
       <AnimatePresence mode="wait">
         {showSplash ? (
           <SplashScreen key="splash" />

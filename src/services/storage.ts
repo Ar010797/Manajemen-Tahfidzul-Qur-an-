@@ -22,6 +22,8 @@ export interface DataSchema {
     principal_signature?: string;
     coordinator_signature?: string;
     theme_color?: 'emerald' | 'blue' | 'amber' | 'indigo' | 'purple' | 'rose' | 'slate';
+    reminder_enabled?: boolean;
+    reminder_time?: string;
   };
   halaqoh: Array<{ id: string; name: string }>;
   students: Array<{ id: string; name: string; halaqoh_id: string | null; order_index: number }>;
@@ -40,7 +42,9 @@ const defaultData: DataSchema = {
     coordinator_name: "",
     halaqoh_teacher_name: "",
     academic_year: "2025/2026",
-    theme_color: "emerald"
+    theme_color: "emerald",
+    reminder_enabled: false,
+    reminder_time: "15:00"
   },
   halaqoh: [],
   students: [],
@@ -158,6 +162,11 @@ export const storage = {
     } else {
       data.daily_deposits.push({ student_id, type, date, details });
     }
+    saveRawData(data);
+  },
+  deleteDeposit: (student_id: string, type: string, date: string) => {
+    const data = getRawData();
+    data.daily_deposits = data.daily_deposits.filter(d => !(d.student_id === student_id && d.type === type && d.date === date));
     saveRawData(data);
   },
   getMonthlyRecapData: (month: string, halaqoh_id: string) => {

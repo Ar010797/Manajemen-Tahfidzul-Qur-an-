@@ -16,7 +16,9 @@ export default function InstitutionProfile() {
     watermark: '',
     principal_signature: '',
     coordinator_signature: '',
-    theme_color: 'emerald' as const
+    theme_color: 'emerald' as const,
+    reminder_enabled: false,
+    reminder_time: '15:00'
   });
 
   useEffect(() => {
@@ -26,7 +28,9 @@ export default function InstitutionProfile() {
         ...data,
         principal_signature: data.principal_signature || '',
         coordinator_signature: data.coordinator_signature || '',
-        theme_color: data.theme_color || 'emerald'
+        theme_color: data.theme_color || 'emerald',
+        reminder_enabled: data.reminder_enabled ?? false,
+        reminder_time: data.reminder_time || '15:00'
       });
     };
     fetchProfile();
@@ -198,6 +202,48 @@ export default function InstitutionProfile() {
                 />
                 <p className="text-[10px] text-stone-400 ml-1 italic">Jika dikosongkan, akan menggunakan tanggal hari ini otomatis.</p>
               </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-stone-100">
+            <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1 mb-4 block">Pengingat Input Harian</label>
+            <div className="bg-stone-50 p-6 rounded-2xl border border-stone-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-stone-800">Aktifkan Pengingat</h4>
+                  <p className="text-xs text-stone-500">Munculkan notifikasi jika ada siswa yang belum setor pada jam tertentu.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setProfile({ ...profile, reminder_enabled: !profile.reminder_enabled })}
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-all relative",
+                    profile.reminder_enabled ? theme.bg : "bg-stone-300"
+                  )}
+                >
+                  <div className={cn(
+                    "absolute top-1 w-4 h-4 bg-white rounded-full transition-all",
+                    profile.reminder_enabled ? "right-1" : "left-1"
+                  )} />
+                </button>
+              </div>
+              
+              {profile.reminder_enabled && (
+                <div className="pt-4 border-t border-stone-200 flex items-center gap-4">
+                  <div className="flex-1 space-y-1">
+                    <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider ml-1">Waktu Pengingat</label>
+                    <input 
+                      type="time"
+                      className="w-full bg-white border border-stone-200 rounded-xl px-4 py-2 text-sm"
+                      value={profile.reminder_time}
+                      onChange={e => setProfile({...profile, reminder_time: e.target.value})}
+                    />
+                  </div>
+                  <div className="flex-[2] text-xs text-stone-500 italic pt-4">
+                    Sistem akan mengecek setiap menit dan memberikan peringatan jika sudah melewati jam ini dan masih ada siswa yang belum memiliki catatan setoran hari ini.
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
