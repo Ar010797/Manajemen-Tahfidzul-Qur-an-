@@ -11,6 +11,12 @@ export default function StudentManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState({ name: '', halaqoh_id: '' });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+  }, []);
 
   const fetchData = () => {
     const sData = storage.getStudents();
@@ -78,22 +84,95 @@ export default function StudentManager() {
 
   const filteredStudents = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
 
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    hover: themeColor === 'emerald' ? 'hover:bg-emerald-500' :
+           themeColor === 'blue' ? 'hover:bg-blue-500' :
+           themeColor === 'amber' ? 'hover:bg-amber-500' :
+           themeColor === 'indigo' ? 'hover:bg-indigo-500' :
+           themeColor === 'purple' ? 'hover:bg-purple-500' :
+           themeColor === 'rose' ? 'hover:bg-rose-500' :
+           'hover:bg-slate-500',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    lightText: themeColor === 'emerald' ? 'text-emerald-700' :
+               themeColor === 'blue' ? 'text-blue-700' :
+               themeColor === 'amber' ? 'text-amber-700' :
+               themeColor === 'indigo' ? 'text-indigo-700' :
+               themeColor === 'purple' ? 'text-purple-700' :
+               themeColor === 'rose' ? 'text-rose-700' :
+               'text-slate-700',
+    border: themeColor === 'emerald' ? 'border-emerald-200' :
+            themeColor === 'blue' ? 'border-blue-200' :
+            themeColor === 'amber' ? 'border-amber-200' :
+            themeColor === 'indigo' ? 'border-indigo-200' :
+            themeColor === 'purple' ? 'border-purple-200' :
+            themeColor === 'rose' ? 'border-rose-200' :
+            'border-slate-200',
+    lightBorder: themeColor === 'emerald' ? 'border-emerald-100' :
+                 themeColor === 'blue' ? 'border-blue-100' :
+                 themeColor === 'amber' ? 'border-amber-100' :
+                 themeColor === 'indigo' ? 'border-indigo-100' :
+                 themeColor === 'purple' ? 'border-purple-100' :
+                 themeColor === 'rose' ? 'border-rose-100' :
+                 'border-slate-100',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/10' :
+            themeColor === 'blue' ? 'shadow-blue-500/10' :
+            themeColor === 'amber' ? 'shadow-amber-500/10' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/10' :
+            themeColor === 'purple' ? 'shadow-purple-500/10' :
+            themeColor === 'rose' ? 'shadow-rose-500/10' :
+            'shadow-slate-500/10',
+    accent: themeColor === 'emerald' ? 'text-emerald-600 focus:ring-emerald-500' :
+            themeColor === 'blue' ? 'text-blue-600 focus:ring-blue-500' :
+            themeColor === 'amber' ? 'text-amber-600 focus:ring-amber-500' :
+            themeColor === 'indigo' ? 'text-indigo-600 focus:ring-indigo-500' :
+            themeColor === 'purple' ? 'text-purple-600 focus:ring-purple-500' :
+            themeColor === 'rose' ? 'text-rose-600 focus:ring-rose-500' :
+            'text-slate-600 focus:ring-slate-500',
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
       <div className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <h2 className="text-2xl font-bold text-stone-900 flex items-center gap-3">
-            <UserCircle className="text-emerald-600 w-8 h-8" />
+            <UserCircle className={cn("w-8 h-8", theme.text)} />
             Manajemen Siswa
           </h2>
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-2xl text-sm font-bold border border-emerald-100">
+          <div className={cn("flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold border", theme.lightBg, theme.lightText, theme.lightBorder)}>
             Total: {students.length} Siswa
           </div>
         </div>
         
         <div className="mb-10 p-6 bg-stone-50 rounded-3xl border border-stone-100 shadow-inner">
           <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <Plus size={16} className="text-emerald-600" />
+            <Plus size={16} className={theme.text} />
             Tambah Siswa Baru
           </h3>
           <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -101,7 +180,7 @@ export default function StudentManager() {
               <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Lengkap</label>
               <input 
                 type="text"
-                className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                className={cn("w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all", theme.ring)}
                 placeholder="Masukkan nama lengkap"
                 value={formData.name}
                 onChange={e => setFormData({...formData, name: e.target.value})}
@@ -122,7 +201,7 @@ export default function StudentManager() {
               <button 
                 type="submit"
                 disabled={!formData.name || !formData.halaqoh_id}
-                className="w-full bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95"
+                className={cn("w-full bg-white text-white px-6 py-3 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95", theme.bg, theme.hover, theme.shadow.replace('10', '20'))}
               >
                 <Plus size={20} />
                 Simpan Siswa
@@ -152,7 +231,7 @@ export default function StudentManager() {
             <input 
               type="text"
               placeholder="Cari nama siswa..."
-              className="w-full bg-stone-50 border border-stone-200 rounded-2xl py-2.5 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-sm"
+              className={cn("w-full bg-stone-50 border border-stone-200 rounded-2xl py-2.5 pl-11 pr-4 focus:outline-none focus:ring-2 transition-all text-sm", theme.ring)}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -168,7 +247,7 @@ export default function StudentManager() {
                     <th className="px-6 py-4 text-left w-10">
                       <input 
                         type="checkbox"
-                        className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        className={cn("w-4 h-4 rounded border-stone-300 cursor-pointer", theme.accent)}
                         checked={filteredStudents.length > 0 && selectedIds.length === filteredStudents.length}
                         onChange={toggleSelectAll}
                       />
@@ -190,7 +269,7 @@ export default function StudentManager() {
                       <td className="px-6 py-4">
                         <input 
                           type="checkbox"
-                          className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                          className={cn("w-4 h-4 rounded border-stone-300 cursor-pointer", theme.accent)}
                           checked={selectedIds.includes(s.id)}
                           onChange={() => toggleSelect(s.id)}
                         />
@@ -199,7 +278,7 @@ export default function StudentManager() {
                         {editingId === s.id ? (
                           <input 
                             type="text"
-                            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
                             value={editData.name}
                             onChange={e => setEditData({...editData, name: e.target.value})}
                             autoFocus
@@ -211,7 +290,7 @@ export default function StudentManager() {
                       <td className="px-6 py-4">
                         {editingId === s.id ? (
                           <select 
-                            className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
                             value={editData.halaqoh_id}
                             onChange={e => setEditData({...editData, halaqoh_id: e.target.value})}
                           >
@@ -229,7 +308,7 @@ export default function StudentManager() {
                           <div className="flex justify-end gap-2">
                             <button 
                               onClick={() => handleUpdate(s.id)}
-                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                              className={cn("p-2 rounded-xl transition-colors", theme.text, theme.lightBg)}
                               title="Simpan"
                             >
                               <Check size={20} />
@@ -246,7 +325,7 @@ export default function StudentManager() {
                           <div className="flex justify-end gap-2 transition-opacity">
                             <button 
                               onClick={() => startEditing(s)}
-                              className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
+                              className={cn("p-2 text-stone-400 transition-all rounded-xl", `hover:${theme.text}`, `hover:${theme.lightBg}`)}
                               title="Edit"
                             >
                               <Edit2 size={18} />

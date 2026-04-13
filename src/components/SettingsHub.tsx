@@ -1,13 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, UserCircle, Settings, Database, ChevronRight, LayoutGrid } from 'lucide-react';
 import HalaqohManager from './HalaqohManager';
 import StudentManager from './StudentManager';
 import InstitutionProfile from './InstitutionProfile';
 import Maintenance from './Maintenance';
 import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '../lib/utils';
+import { storage } from '../services/storage';
 
 export default function SettingsHub() {
   const [activeSubTab, setActiveSubTab] = useState<string | null>(null);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+  }, []);
+
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+  };
 
   const settingsOptions = [
     { 
@@ -51,9 +83,9 @@ export default function SettingsHub() {
         <div className="flex items-center justify-between">
           <button 
             onClick={() => setActiveSubTab(null)}
-            className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors font-medium group"
+            className={cn("flex items-center gap-2 transition-colors font-medium group", theme.text)}
           >
-            <div className="p-2 rounded-lg group-hover:bg-stone-100 transition-colors">
+            <div className={cn("p-2 rounded-lg transition-colors", `group-hover:${theme.lightBg}`)}>
               <ChevronRight className="rotate-180" size={20} />
             </div>
             Kembali ke Pengaturan Utama

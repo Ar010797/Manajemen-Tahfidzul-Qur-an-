@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [activeDays, setActiveDays] = useState<Record<string, number>>({});
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
   const [selectedHalaqoh, setSelectedHalaqoh] = useState('');
+  const [themeColor, setThemeColor] = useState('emerald');
 
   useEffect(() => {
     const fetchStats = () => {
@@ -26,6 +27,8 @@ export default function Dashboard() {
       const today = format(new Date(), 'yyyy-MM-dd');
       const deposits = storage.getDailyDepositsCount(today);
       const exams = storage.getExamsCount();
+      const institution = storage.getInstitution();
+      setThemeColor(institution.theme_color || 'emerald');
       
       setStats({
         students: students.length,
@@ -98,6 +101,65 @@ export default function Dashboard() {
     return monthList.reduce((acc, m) => acc + (activeDays[m.value] || 0), 0);
   };
 
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    mainBg: themeColor === 'emerald' ? 'bg-emerald-900' :
+            themeColor === 'blue' ? 'bg-blue-900' :
+            themeColor === 'amber' ? 'bg-amber-900' :
+            themeColor === 'indigo' ? 'bg-indigo-900' :
+            themeColor === 'purple' ? 'bg-purple-900' :
+            themeColor === 'rose' ? 'bg-rose-900' :
+            'bg-slate-900',
+    mainLightText: themeColor === 'emerald' ? 'text-emerald-100/80' :
+                   themeColor === 'blue' ? 'text-blue-100/80' :
+                   themeColor === 'amber' ? 'text-amber-100/80' :
+                   themeColor === 'indigo' ? 'text-indigo-100/80' :
+                   themeColor === 'purple' ? 'text-purple-100/80' :
+                   themeColor === 'rose' ? 'text-rose-100/80' :
+                   'text-slate-100/80',
+    mainBtn: themeColor === 'emerald' ? 'text-emerald-900' :
+             themeColor === 'blue' ? 'text-blue-900' :
+             themeColor === 'amber' ? 'text-amber-900' :
+             themeColor === 'indigo' ? 'text-indigo-900' :
+             themeColor === 'purple' ? 'text-purple-900' :
+             themeColor === 'rose' ? 'text-rose-900' :
+             'text-slate-900',
+    mainShadow: themeColor === 'emerald' ? 'shadow-emerald-900/20' :
+                themeColor === 'blue' ? 'shadow-blue-900/20' :
+                themeColor === 'amber' ? 'shadow-amber-900/20' :
+                themeColor === 'indigo' ? 'shadow-indigo-900/20' :
+                themeColor === 'purple' ? 'shadow-purple-900/20' :
+                themeColor === 'rose' ? 'shadow-rose-900/20' :
+                'shadow-slate-900/20',
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -106,7 +168,7 @@ export default function Dashboard() {
           <p className="text-stone-500 mt-1">Pantau perkembangan tahfidz siswa Anda hari ini.</p>
         </div>
         <div className="flex items-center gap-3 px-4 py-2 bg-white border border-stone-200 rounded-2xl shadow-sm">
-          <Calendar className="text-emerald-600 w-5 h-5" />
+          <Calendar className={cn("w-5 h-5", theme.text)} />
           <span className="font-semibold text-stone-700">
             {format(currentDate, 'EEEE, dd MMMM yyyy', { locale: id })}
           </span>
@@ -151,8 +213,8 @@ export default function Dashboard() {
         <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-50 rounded-xl">
-                <Calendar className="text-emerald-600 w-5 h-5" />
+              <div className={cn("p-2 rounded-xl", theme.lightBg)}>
+                <Calendar className={cn("w-5 h-5", theme.text)} />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-stone-900">Hari Aktif Belajar</h3>
@@ -162,7 +224,7 @@ export default function Dashboard() {
             
             <div className="w-full sm:w-48">
               <select 
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2", theme.ring)}
                 value={selectedHalaqoh}
                 onChange={(e) => setSelectedHalaqoh(e.target.value)}
               >
@@ -231,10 +293,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
-        <div className="bg-emerald-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-emerald-900/20">
+        <div className={cn("rounded-3xl p-8 text-white relative overflow-hidden shadow-xl", theme.mainBg, theme.mainShadow)}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16" />
           <h2 className="text-xl font-bold mb-4 relative z-10">Tips Hari Ini</h2>
-          <p className="text-emerald-100/80 text-sm leading-relaxed relative z-10">
+          <p className={cn("text-sm leading-relaxed relative z-10", theme.mainLightText)}>
             "{currentTip}"
             <br /><br />
             Pastikan setiap setoran dicatat dengan detail untuk memudahkan pembuatan rapor di akhir semester.
@@ -244,7 +306,7 @@ export default function Dashboard() {
               href="https://wa.me/6285869372879" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-white text-emerald-900 font-bold rounded-xl text-sm hover:bg-emerald-50 transition-colors"
+              className={cn("px-6 py-3 bg-white font-bold rounded-xl text-sm hover:opacity-90 transition-colors", theme.mainBtn)}
             >
               Hubungi Bantuan
             </a>

@@ -21,6 +21,7 @@ export interface DataSchema {
     watermark?: string;
     principal_signature?: string;
     coordinator_signature?: string;
+    theme_color?: 'emerald' | 'blue' | 'amber' | 'indigo' | 'purple' | 'rose' | 'slate';
   };
   halaqoh: Array<{ id: string; name: string }>;
   students: Array<{ id: string; name: string; halaqoh_id: string | null; order_index: number }>;
@@ -38,7 +39,8 @@ const defaultData: DataSchema = {
     principal_name: "",
     coordinator_name: "",
     halaqoh_teacher_name: "",
-    academic_year: "2025/2026"
+    academic_year: "2025/2026",
+    theme_color: "emerald"
   },
   halaqoh: [],
   students: [],

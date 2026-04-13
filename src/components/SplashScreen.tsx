@@ -1,8 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { BookOpen, Sparkles } from 'lucide-react';
+import { storage } from '../services/storage';
+import { cn } from '../lib/utils';
 
 export default function SplashScreen() {
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+  }, []);
+
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'from-emerald-600 via-emerald-700 to-teal-800' :
+        themeColor === 'blue' ? 'from-blue-600 via-blue-700 to-indigo-800' :
+        themeColor === 'amber' ? 'from-amber-600 via-amber-700 to-orange-800' :
+        themeColor === 'indigo' ? 'from-indigo-600 via-indigo-700 to-violet-800' :
+        themeColor === 'purple' ? 'from-purple-600 via-purple-700 to-fuchsia-800' :
+        themeColor === 'rose' ? 'from-rose-600 via-rose-700 to-pink-800' :
+        'from-slate-600 via-slate-700 to-slate-800',
+    glow: themeColor === 'emerald' ? 'rgba(5,150,105,0.3)' :
+          themeColor === 'blue' ? 'rgba(37,99,235,0.3)' :
+          themeColor === 'amber' ? 'rgba(217,119,6,0.3)' :
+          themeColor === 'indigo' ? 'rgba(79,70,229,0.3)' :
+          themeColor === 'purple' ? 'rgba(147,51,234,0.3)' :
+          themeColor === 'rose' ? 'rgba(225,29,72,0.3)' :
+          'rgba(71,85,105,0.3)',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-200/30' :
+             themeColor === 'blue' ? 'bg-blue-200/30' :
+             themeColor === 'amber' ? 'bg-amber-200/30' :
+             themeColor === 'indigo' ? 'bg-indigo-200/30' :
+             themeColor === 'purple' ? 'bg-purple-200/30' :
+             themeColor === 'rose' ? 'bg-rose-200/30' :
+             'bg-slate-200/30',
+    glowBg: themeColor === 'emerald' ? 'bg-emerald-100/50' :
+            themeColor === 'blue' ? 'bg-blue-100/50' :
+            themeColor === 'amber' ? 'bg-amber-100/50' :
+            themeColor === 'indigo' ? 'bg-indigo-100/50' :
+            themeColor === 'purple' ? 'bg-purple-100/50' :
+            themeColor === 'rose' ? 'bg-rose-100/50' :
+            'bg-slate-100/50',
+    dot: themeColor === 'emerald' ? 'bg-emerald-200' :
+         themeColor === 'blue' ? 'bg-blue-200' :
+         themeColor === 'amber' ? 'bg-amber-200' :
+         themeColor === 'indigo' ? 'bg-indigo-200' :
+         themeColor === 'purple' ? 'bg-purple-200' :
+         themeColor === 'rose' ? 'bg-rose-200' :
+         'bg-slate-200',
+    arabic: themeColor === 'emerald' ? 'text-emerald-700/80' :
+            themeColor === 'blue' ? 'text-blue-700/80' :
+            themeColor === 'amber' ? 'text-amber-700/80' :
+            themeColor === 'indigo' ? 'text-indigo-700/80' :
+            themeColor === 'purple' ? 'text-purple-700/80' :
+            themeColor === 'rose' ? 'text-rose-700/80' :
+            'text-slate-700/80',
+    progress: themeColor === 'emerald' ? 'via-emerald-600' :
+              themeColor === 'blue' ? 'via-blue-600' :
+              themeColor === 'amber' ? 'via-amber-600' :
+              themeColor === 'indigo' ? 'via-indigo-600' :
+              themeColor === 'purple' ? 'via-purple-600' :
+              themeColor === 'rose' ? 'via-rose-600' :
+              'via-slate-600',
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 1 }}
@@ -28,7 +96,7 @@ export default function SplashScreen() {
               delay: i * 0.5,
               ease: "easeInOut" 
             }}
-            className="absolute left-1/2 top-1/2 w-32 h-32 bg-emerald-200/30 rounded-full blur-3xl"
+            className={cn("absolute left-1/2 top-1/2 w-32 h-32 rounded-full blur-3xl", theme.lightBg)}
           />
         ))}
       </div>
@@ -51,10 +119,10 @@ export default function SplashScreen() {
               opacity: [0.3, 0.6, 0.3]
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-[-20px] bg-emerald-100/50 rounded-full blur-2xl"
+            className={cn("absolute inset-[-20px] rounded-full blur-2xl", theme.glowBg)}
           />
           
-          <div className="w-28 h-28 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_50px_rgba(5,150,105,0.3)] relative overflow-hidden border border-white/20">
+          <div className={cn("w-28 h-28 bg-gradient-to-br rounded-[2.5rem] flex items-center justify-center relative overflow-hidden border border-white/20", theme.bg)} style={{ boxShadow: `0 20px 50px ${theme.glow}` }}>
             <motion.div 
               animate={{ 
                 x: ["-100%", "200%"],
@@ -73,17 +141,17 @@ export default function SplashScreen() {
                 <motion.div 
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-1 h-1 bg-emerald-200 rounded-full" 
+                  className={cn("w-1 h-1 rounded-full", theme.dot)} 
                 />
                 <motion.div 
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                  className="w-1 h-1 bg-emerald-200 rounded-full" 
+                  className={cn("w-1 h-1 rounded-full", theme.dot)} 
                 />
                 <motion.div 
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-                  className="w-1 h-1 bg-emerald-200 rounded-full" 
+                  className={cn("w-1 h-1 rounded-full", theme.dot)} 
                 />
               </div>
             </div>
@@ -106,7 +174,7 @@ export default function SplashScreen() {
             transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
             className="mb-4"
           >
-            <p className="text-2xl sm:text-3xl font-arabic text-emerald-700/80 tracking-normal leading-relaxed">
+            <p className={cn("text-2xl sm:text-3xl font-arabic tracking-normal leading-relaxed", theme.arabic)}>
               بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
             </p>
           </motion.div>
@@ -118,7 +186,7 @@ export default function SplashScreen() {
               transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="text-4xl font-black text-stone-900 tracking-tighter flex items-center gap-2"
             >
-              Manager <span className="text-emerald-600">Tahfidz</span>
+              Manager <span className={theme.text}>Tahfidz</span>
             </motion.h1>
           </div>
           
@@ -126,13 +194,13 @@ export default function SplashScreen() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 240, opacity: 1 }}
             transition={{ duration: 1.5, delay: 1, ease: "easeInOut" }}
-            className="h-1 bg-emerald-600/10 rounded-full mt-4 relative overflow-hidden"
+            className={cn("h-1 rounded-full mt-4 relative overflow-hidden", theme.text.replace('text', 'bg') + '/10')}
           >
             <motion.div 
               initial={{ left: "-100%" }}
               animate={{ left: "100%" }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-emerald-600 to-transparent"
+              className={cn("absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent to-transparent", theme.progress)}
             />
           </motion.div>
 

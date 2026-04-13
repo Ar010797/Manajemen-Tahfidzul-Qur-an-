@@ -13,6 +13,12 @@ export default function DailyInput() {
   const [details, setDetails] = useState<any>({});
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const institution = storage.getInstitution();
+    setThemeColor(institution.theme_color || 'emerald');
+  }, []);
 
   const fetchExistingDeposit = () => {
     if (!selectedStudent || !date || !type) return;
@@ -141,6 +147,72 @@ export default function DailyInput() {
     setShowListOnMobile(false);
   };
 
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    lightText: themeColor === 'emerald' ? 'text-emerald-700' :
+               themeColor === 'blue' ? 'text-blue-700' :
+               themeColor === 'amber' ? 'text-amber-700' :
+               themeColor === 'indigo' ? 'text-indigo-700' :
+               themeColor === 'purple' ? 'text-purple-700' :
+               themeColor === 'rose' ? 'text-rose-700' :
+               'text-slate-700',
+    border: themeColor === 'emerald' ? 'border-emerald-200' :
+            themeColor === 'blue' ? 'border-blue-200' :
+            themeColor === 'amber' ? 'border-amber-200' :
+            themeColor === 'indigo' ? 'border-indigo-200' :
+            themeColor === 'purple' ? 'border-purple-200' :
+            themeColor === 'rose' ? 'border-rose-200' :
+            'border-slate-200',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/10' :
+            themeColor === 'blue' ? 'shadow-blue-500/10' :
+            themeColor === 'amber' ? 'shadow-amber-500/10' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/10' :
+            themeColor === 'purple' ? 'shadow-purple-500/10' :
+            themeColor === 'rose' ? 'shadow-rose-500/10' :
+            'shadow-slate-500/10',
+    hoverBorder: themeColor === 'emerald' ? 'hover:border-emerald-200' :
+                 themeColor === 'blue' ? 'hover:border-blue-200' :
+                 themeColor === 'amber' ? 'hover:border-amber-200' :
+                 themeColor === 'indigo' ? 'hover:border-indigo-200' :
+                 themeColor === 'purple' ? 'hover:border-purple-200' :
+                 themeColor === 'rose' ? 'hover:border-rose-200' :
+                 'hover:border-slate-200',
+    pillShadow: themeColor === 'emerald' ? 'shadow-emerald-100' :
+                themeColor === 'blue' ? 'shadow-blue-100' :
+                themeColor === 'amber' ? 'shadow-amber-100' :
+                themeColor === 'indigo' ? 'shadow-indigo-100' :
+                themeColor === 'purple' ? 'shadow-purple-100' :
+                themeColor === 'rose' ? 'shadow-rose-100' :
+                'shadow-slate-100',
+  };
+
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
       <div className={cn(
@@ -149,11 +221,11 @@ export default function DailyInput() {
       )}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-stone-900 flex items-center gap-2">
-            <Search size={18} className="text-emerald-600" />
+            <Search size={18} className={theme.text} />
             Pilih Siswa
           </h3>
           {isSavingOrder && (
-            <span className="text-[10px] text-emerald-600 font-bold animate-pulse">
+            <span className={cn("text-[10px] font-bold animate-pulse", theme.text)}>
               Menyimpan urutan...
             </span>
           )}
@@ -161,7 +233,7 @@ export default function DailyInput() {
         <input 
           type="text"
           placeholder="Cari nama..."
-          className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-4 mb-6 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-4 mb-6 focus:outline-none focus:ring-2", theme.ring)}
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -191,12 +263,12 @@ export default function DailyInput() {
                     className={cn(
                       "w-full text-left p-3 rounded-xl transition-all border flex items-center gap-3 cursor-pointer group",
                       selectedStudent?.id === s.id 
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-bold shadow-sm shadow-emerald-100" 
-                        : "bg-white border-stone-100 hover:border-emerald-200 hover:bg-stone-50 text-stone-600"
+                        ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm ${theme.pillShadow}` 
+                        : `bg-white border-stone-100 ${theme.hoverBorder} hover:bg-stone-50 text-stone-600`
                     )}
                     onClick={() => handleSelectStudent(s)}
                   >
-                    <div className="text-stone-300 group-hover:text-emerald-400 transition-colors">
+                    <div className={cn("text-stone-300 transition-colors", `group-hover:${theme.text.replace('text-', 'text-')}`)}>
                       <GripVertical size={16} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -245,7 +317,7 @@ export default function DailyInput() {
                   <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Tanggal</label>
                   <input 
                     type="date"
-                    className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    className={cn("bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-600 focus:outline-none focus:ring-2", theme.ring)}
                     value={date}
                     onChange={e => setDate(e.target.value)}
                   />
@@ -257,7 +329,7 @@ export default function DailyInput() {
                       onClick={() => { setType(t); setDetails({}); }}
                       className={cn(
                         "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all capitalize",
-                        type === t ? "bg-white text-emerald-700 shadow-sm" : "text-stone-400 hover:text-stone-600"
+                        type === t ? `bg-white ${theme.lightText} shadow-sm` : "text-stone-400 hover:text-stone-600"
                       )}
                     >
                       {t}
@@ -428,7 +500,11 @@ export default function DailyInput() {
               <button 
                 type="submit"
                 disabled={isSaving}
-                className="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+                className={cn(
+                  "w-full text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
+                  theme.bg, "hover:opacity-90", theme.shadow,
+                  "disabled:opacity-50"
+                )}
               >
                 <Save size={20} />
                 {isSaving ? 'Menyimpan...' : 'Simpan Setoran'}

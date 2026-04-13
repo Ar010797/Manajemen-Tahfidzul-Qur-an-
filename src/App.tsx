@@ -15,6 +15,7 @@ import {
   Settings
 } from 'lucide-react';
 import { cn } from './lib/utils';
+import { storage } from './services/storage';
 
 // Components
 import Login from './components/Login';
@@ -33,6 +34,14 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [isLoading, setIsLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const data = storage.getInstitution();
+    if (data.theme_color) {
+      setThemeColor(data.theme_color);
+    }
+  }, []);
 
   useEffect(() => {
     // Show splash for 2.5 seconds
@@ -121,6 +130,21 @@ export default function App() {
     }
   };
 
+  const getThemeClasses = () => {
+    switch (themeColor) {
+      case 'emerald': return { text: 'text-emerald-600', bg: 'bg-emerald-600', from: 'from-emerald-600', to: 'to-teal-700', shadow: 'shadow-emerald-200' };
+      case 'blue': return { text: 'text-blue-600', bg: 'bg-blue-600', from: 'from-blue-600', to: 'to-indigo-700', shadow: 'shadow-blue-200' };
+      case 'amber': return { text: 'text-amber-600', bg: 'bg-amber-600', from: 'from-amber-600', to: 'to-orange-700', shadow: 'shadow-amber-200' };
+      case 'indigo': return { text: 'text-indigo-600', bg: 'bg-indigo-600', from: 'from-indigo-600', to: 'to-blue-700', shadow: 'shadow-indigo-200' };
+      case 'purple': return { text: 'text-purple-600', bg: 'bg-purple-600', from: 'from-purple-600', to: 'to-pink-700', shadow: 'shadow-purple-200' };
+      case 'rose': return { text: 'text-rose-600', bg: 'bg-rose-600', from: 'from-rose-600', to: 'to-red-700', shadow: 'shadow-rose-200' };
+      case 'slate': return { text: 'text-slate-600', bg: 'bg-slate-600', from: 'from-slate-600', to: 'to-stone-700', shadow: 'shadow-slate-200' };
+      default: return { text: 'text-emerald-600', bg: 'bg-emerald-600', from: 'from-emerald-600', to: 'to-teal-700', shadow: 'shadow-emerald-200' };
+    }
+  };
+
+  const theme = getThemeClasses();
+
   if (isLoading) return null;
 
   return (
@@ -173,12 +197,12 @@ export default function App() {
                     animate={{ opacity: isSidebarOpen ? 1 : 0 }}
                     className={cn("flex items-center gap-3", !isSidebarOpen && "hidden")}
                   >
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                    <div className={cn("w-10 h-10 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg", theme.from, theme.to, theme.shadow)}>
                       <BookOpen className="text-white w-6 h-6" />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-extrabold text-stone-900 leading-tight tracking-tight">Manager</span>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-600 font-black">Tahfidz 2026</span>
+                      <span className={cn("text-[10px] uppercase tracking-[0.2em] font-black", theme.text)}>Tahfidz 2026</span>
                     </div>
                   </motion.div>
                 )}
@@ -235,7 +259,7 @@ export default function App() {
                   "flex items-center gap-3 p-3 rounded-2xl bg-stone-50 border border-stone-100",
                   !isSidebarOpen && "justify-center"
                 )}>
-                  <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-emerald-100">
+                  <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md", theme.bg, theme.shadow)}>
                     {user.username[0].toUpperCase()}
                   </div>
                   {isSidebarOpen && (
@@ -270,7 +294,7 @@ export default function App() {
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-stone-400">
                     <span className="hidden sm:inline">Manager Tahfidz</span>
                     <ChevronRight size={12} className="hidden sm:inline opacity-50" />
-                    <span className="text-emerald-600 font-black">
+                    <span className={cn("font-black", theme.text)}>
                       {activeTab.replace('-', ' ')}
                     </span>
                   </div>

@@ -37,6 +37,12 @@ export default function ReportCard() {
   }, [coordinatorSigSize]);
 
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+  }, []);
 
   useEffect(() => {
     const fetchData = () => {
@@ -516,6 +522,79 @@ export default function ReportCard() {
     );
   };
 
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    lightText: themeColor === 'emerald' ? 'text-emerald-700' :
+               themeColor === 'blue' ? 'text-blue-700' :
+               themeColor === 'amber' ? 'text-amber-700' :
+               themeColor === 'indigo' ? 'text-indigo-700' :
+               themeColor === 'purple' ? 'text-purple-700' :
+               themeColor === 'rose' ? 'text-rose-700' :
+               'text-slate-700',
+    border: themeColor === 'emerald' ? 'border-emerald-200' :
+            themeColor === 'blue' ? 'border-blue-200' :
+            themeColor === 'amber' ? 'border-amber-200' :
+            themeColor === 'indigo' ? 'border-indigo-200' :
+            themeColor === 'purple' ? 'border-purple-200' :
+            themeColor === 'rose' ? 'border-rose-200' :
+            'border-slate-200',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/10' :
+            themeColor === 'blue' ? 'shadow-blue-500/10' :
+            themeColor === 'amber' ? 'shadow-amber-500/10' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/10' :
+            themeColor === 'purple' ? 'shadow-purple-500/10' :
+            themeColor === 'rose' ? 'shadow-rose-500/10' :
+            'shadow-slate-500/10',
+    hoverBorder: themeColor === 'emerald' ? 'hover:border-emerald-200' :
+                 themeColor === 'blue' ? 'hover:border-blue-200' :
+                 themeColor === 'amber' ? 'hover:border-amber-200' :
+                 themeColor === 'indigo' ? 'hover:border-indigo-200' :
+                 themeColor === 'purple' ? 'hover:border-purple-200' :
+                 themeColor === 'rose' ? 'hover:border-rose-200' :
+                 'hover:border-slate-200',
+    pillShadow: themeColor === 'emerald' ? 'shadow-emerald-100' :
+                themeColor === 'blue' ? 'shadow-blue-100' :
+                themeColor === 'amber' ? 'shadow-amber-100' :
+                themeColor === 'indigo' ? 'shadow-indigo-100' :
+                themeColor === 'purple' ? 'shadow-purple-100' :
+                themeColor === 'rose' ? 'shadow-rose-100' :
+                'shadow-slate-100',
+    accent: themeColor === 'emerald' ? 'accent-emerald-600' :
+            themeColor === 'blue' ? 'accent-blue-600' :
+            themeColor === 'amber' ? 'accent-amber-600' :
+            themeColor === 'indigo' ? 'accent-indigo-600' :
+            themeColor === 'purple' ? 'accent-purple-600' :
+            themeColor === 'rose' ? 'accent-rose-600' :
+            'accent-slate-600',
+  };
+
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
       <div className={cn(
@@ -523,7 +602,7 @@ export default function ReportCard() {
         !showListOnMobile && "hidden lg:block"
       )}>
         <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
-          <Search size={18} className="text-emerald-600" />
+          <Search size={18} className={theme.text} />
           Cari Siswa
         </h3>
         <div className="relative mb-6">
@@ -531,7 +610,7 @@ export default function ReportCard() {
           <input 
             type="text"
             placeholder="Nama siswa..."
-            className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 pl-10 pr-4 focus:outline-none focus:ring-2", theme.ring)}
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -559,8 +638,8 @@ export default function ReportCard() {
                     className={cn(
                       "w-full text-left p-3 rounded-xl transition-all border group",
                       selectedStudent?.id === s.id 
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-bold shadow-sm shadow-emerald-100" 
-                        : "bg-white border-stone-100 hover:border-emerald-200 hover:bg-stone-50 text-stone-600"
+                        ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm ${theme.pillShadow}` 
+                        : `bg-white border-stone-100 ${theme.hoverBorder} hover:bg-stone-50 text-stone-600`
                     )}
                   >
                     <p className="text-sm group-hover:translate-x-1 transition-transform">{s.name}</p>
@@ -604,7 +683,7 @@ export default function ReportCard() {
                   onClick={() => setSemester('Ganjil')}
                   className={cn(
                     "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Ganjil' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    semester === 'Ganjil' ? `bg-white ${theme.text} shadow-sm` : "text-stone-500 hover:text-stone-700"
                   )}
                 >
                   Ganjil
@@ -613,7 +692,7 @@ export default function ReportCard() {
                   onClick={() => setSemester('Genap')}
                   className={cn(
                     "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Genap' ? "bg-white text-emerald-600 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                    semester === 'Genap' ? `bg-white ${theme.text} shadow-sm` : "text-stone-500 hover:text-stone-700"
                   )}
                 >
                   Genap
@@ -624,7 +703,10 @@ export default function ReportCard() {
                 <button 
                   onClick={generatePDF}
                   disabled={isGenerating}
-                  className="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                  className={cn(
+                    "flex-1 sm:flex-none text-white px-4 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50",
+                    theme.bg, "hover:opacity-90", theme.shadow.replace('10', '20')
+                  )}
                   title="Unduh PDF Kualitas Tinggi (HDR)"
                 >
                   <Download size={18} />

@@ -1,10 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Database, Download, Upload, ClipboardPaste } from 'lucide-react';
 import { storage } from '../services/storage';
+import { cn } from '../lib/utils';
 
 export default function Maintenance() {
   const [pasteText, setPasteText] = useState('');
   const [showPasteArea, setShowPasteArea] = useState(false);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+  }, []);
+
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    hover: themeColor === 'emerald' ? 'hover:bg-emerald-500' :
+           themeColor === 'blue' ? 'hover:bg-blue-500' :
+           themeColor === 'amber' ? 'hover:bg-amber-500' :
+           themeColor === 'indigo' ? 'hover:bg-indigo-500' :
+           themeColor === 'purple' ? 'hover:bg-purple-500' :
+           themeColor === 'rose' ? 'hover:bg-rose-500' :
+           'hover:bg-slate-500',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    lightText: themeColor === 'emerald' ? 'text-emerald-700' :
+               themeColor === 'blue' ? 'text-blue-700' :
+               themeColor === 'amber' ? 'text-amber-700' :
+               themeColor === 'indigo' ? 'text-indigo-700' :
+               themeColor === 'purple' ? 'text-purple-700' :
+               themeColor === 'rose' ? 'text-rose-700' :
+               'text-slate-700',
+    border: themeColor === 'emerald' ? 'border-emerald-100' :
+            themeColor === 'blue' ? 'border-blue-100' :
+            themeColor === 'amber' ? 'border-amber-100' :
+            themeColor === 'indigo' ? 'border-indigo-100' :
+            themeColor === 'purple' ? 'border-purple-100' :
+            themeColor === 'rose' ? 'border-rose-100' :
+            'border-slate-100',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/20' :
+            themeColor === 'blue' ? 'shadow-blue-500/20' :
+            themeColor === 'amber' ? 'shadow-amber-500/20' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/20' :
+            themeColor === 'purple' ? 'shadow-purple-500/20' :
+            themeColor === 'rose' ? 'shadow-rose-500/20' :
+            'shadow-slate-500/20',
+  };
 
   const handleExport = () => {
     const data = storage.exportData();
@@ -55,30 +121,30 @@ export default function Maintenance() {
     <div className="max-w-4xl mx-auto">
       <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
         <h2 className="text-2xl font-bold text-stone-900 mb-8 flex items-center gap-3">
-          <Database className="text-emerald-600" />
+          <Database className={theme.text} />
           Pemeliharaan Sistem
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col items-center text-center">
+          <div className={cn("p-8 rounded-3xl border flex flex-col items-center text-center", theme.lightBg, theme.border)}>
             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6">
-              <Download className="text-emerald-600 w-8 h-8" />
+              <Download className={cn("w-8 h-8", theme.text)} />
             </div>
-            <h3 className="text-lg font-bold text-emerald-900 mb-2">Ekspor Database</h3>
-            <p className="text-emerald-700/70 text-sm mb-8">
+            <h3 className={cn("text-lg font-bold mb-2", theme.lightText.replace('700', '900'))}>Ekspor Database</h3>
+            <p className={cn("text-sm mb-8 opacity-70", theme.lightText)}>
               Unduh salinan database (.json) untuk cadangan manual. Simpan file ini di tempat yang aman.
             </p>
             <div className="grid grid-cols-1 gap-3 w-full">
               <button 
                 onClick={handleExport}
-                className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2"
+                className={cn("w-full text-white py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2", theme.bg, theme.hover)}
               >
                 <Download size={18} />
                 Unduh Backup (.json)
               </button>
               <button 
                 onClick={handleCopyToClipboard}
-                className="w-full bg-white text-emerald-600 border-2 border-emerald-100 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors text-sm"
+                className={cn("w-full bg-white border-2 py-3 rounded-xl font-bold transition-colors text-sm", theme.text, theme.border)}
               >
                 Salin ke Clipboard (Teks)
               </button>
@@ -149,7 +215,7 @@ export default function Maintenance() {
               Jika unggah file bermasalah, buka file cadangan Anda dengan aplikasi teks, salin isinya, lalu tempel di bawah ini.
             </p>
             <textarea 
-              className="w-full h-32 bg-white border border-stone-200 rounded-xl p-4 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-stone-500/50 mb-4"
+              className={cn("w-full h-32 bg-white border border-stone-200 rounded-xl p-4 text-xs font-mono focus:outline-none focus:ring-2 mb-4", theme.ring)}
               placeholder='Tempel teks JSON di sini (diawali dengan {"institution": ...)'
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
@@ -179,7 +245,7 @@ export default function Maintenance() {
                   window.location.reload();
                 }
               }}
-              className="w-full py-3 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-500 transition-all shadow-lg shadow-amber-500/20"
+              className={cn("w-full py-3 text-white rounded-xl font-bold transition-all shadow-lg", theme.bg, theme.hover, theme.shadow)}
             >
               Reset Data
             </button>

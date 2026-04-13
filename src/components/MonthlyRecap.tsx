@@ -19,6 +19,12 @@ export default function MonthlyRecap() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
+  const [themeColor, setThemeColor] = useState('emerald');
+
+  useEffect(() => {
+    const institution = storage.getInstitution();
+    setThemeColor(institution.theme_color || 'emerald');
+  }, []);
 
   useEffect(() => {
     const fetchData = () => {
@@ -403,6 +409,51 @@ export default function MonthlyRecap() {
 
   const activeDaysCount = storage.getActiveDays(selectedMonth, selectedHalaqoh);
 
+  const theme = {
+    text: themeColor === 'emerald' ? 'text-emerald-600' :
+          themeColor === 'blue' ? 'text-blue-600' :
+          themeColor === 'amber' ? 'text-amber-600' :
+          themeColor === 'indigo' ? 'text-indigo-600' :
+          themeColor === 'purple' ? 'text-purple-600' :
+          themeColor === 'rose' ? 'text-rose-600' :
+          'text-slate-600',
+    bg: themeColor === 'emerald' ? 'bg-emerald-600' :
+        themeColor === 'blue' ? 'bg-blue-600' :
+        themeColor === 'amber' ? 'bg-amber-600' :
+        themeColor === 'indigo' ? 'bg-indigo-600' :
+        themeColor === 'purple' ? 'bg-purple-600' :
+        themeColor === 'rose' ? 'bg-rose-600' :
+        'bg-slate-600',
+    lightBg: themeColor === 'emerald' ? 'bg-emerald-50' :
+             themeColor === 'blue' ? 'bg-blue-50' :
+             themeColor === 'amber' ? 'bg-amber-50' :
+             themeColor === 'indigo' ? 'bg-indigo-50' :
+             themeColor === 'purple' ? 'bg-purple-50' :
+             themeColor === 'rose' ? 'bg-rose-50' :
+             'bg-slate-50',
+    lightText: themeColor === 'emerald' ? 'text-emerald-700' :
+               themeColor === 'blue' ? 'text-blue-700' :
+               themeColor === 'amber' ? 'text-amber-700' :
+               themeColor === 'indigo' ? 'text-indigo-700' :
+               themeColor === 'purple' ? 'text-purple-700' :
+               themeColor === 'rose' ? 'text-rose-700' :
+               'text-slate-700',
+    ring: themeColor === 'emerald' ? 'focus:ring-emerald-500/50' :
+          themeColor === 'blue' ? 'focus:ring-blue-500/50' :
+          themeColor === 'amber' ? 'focus:ring-amber-500/50' :
+          themeColor === 'indigo' ? 'focus:ring-indigo-500/50' :
+          themeColor === 'purple' ? 'focus:ring-purple-500/50' :
+          themeColor === 'rose' ? 'focus:ring-rose-500/50' :
+          'focus:ring-slate-500/50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/10' :
+            themeColor === 'blue' ? 'shadow-blue-500/10' :
+            themeColor === 'amber' ? 'shadow-amber-500/10' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/10' :
+            themeColor === 'purple' ? 'shadow-purple-500/10' :
+            themeColor === 'rose' ? 'shadow-rose-500/10' :
+            'shadow-slate-500/10',
+  };
+
   return (
     <div className="space-y-8">
       <div className="bg-white p-4 sm:p-8 rounded-3xl border border-stone-200 shadow-sm">
@@ -415,7 +466,10 @@ export default function MonthlyRecap() {
             <button 
               onClick={generatePDF}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
-              className="flex-1 lg:flex-none bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+              className={cn(
+                "flex-1 lg:flex-none text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50",
+                theme.bg, "hover:opacity-90", theme.shadow.replace('10', '20')
+              )}
               title="Unduh PDF Kualitas Tinggi (HDR)"
             >
               <Download size={20} />
@@ -437,7 +491,7 @@ export default function MonthlyRecap() {
           <div>
             <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Pilih Halaqoh</label>
             <select 
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2", theme.ring)}
               value={selectedHalaqoh}
               onChange={(e) => setSelectedHalaqoh(e.target.value)}
             >
@@ -451,7 +505,7 @@ export default function MonthlyRecap() {
             <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Pilih Bulan</label>
             <input 
               type="month"
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2", theme.ring)}
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
             />
@@ -525,7 +579,7 @@ export default function MonthlyRecap() {
                           <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
                         </>
                       )}
-                      <td className="px-4 py-3 border-r border-stone-100 text-center font-bold text-emerald-600">{activeDaysCount}</td>
+                      <td className={cn("px-4 py-3 border-r border-stone-100 text-center font-bold", theme.text)}>{activeDaysCount}</td>
                       <td className="px-4 py-3 border-r border-stone-100">
                         <input 
                           type="text"
