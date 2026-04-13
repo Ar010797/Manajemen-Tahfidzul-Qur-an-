@@ -15,11 +15,14 @@ export default function Dashboard() {
   });
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activeDays, setActiveDays] = useState<Record<string, number>>({});
+  const [halaqohs, setHalaqohs] = useState<any[]>([]);
+  const [selectedHalaqoh, setSelectedHalaqoh] = useState('');
 
   useEffect(() => {
     const fetchStats = () => {
       const students = storage.getStudents();
       const halaqoh = storage.getHalaqoh();
+      setHalaqohs(halaqoh);
       const today = format(new Date(), 'yyyy-MM-dd');
       const deposits = storage.getDailyDepositsCount(today);
       const exams = storage.getExamsCount();
@@ -31,7 +34,7 @@ export default function Dashboard() {
         exams
       });
 
-      setActiveDays(storage.getAllActiveDays());
+      setActiveDays(storage.getAllActiveDays(selectedHalaqoh));
     };
 
     fetchStats();
@@ -46,7 +49,7 @@ export default function Dashboard() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [currentDate]);
+  }, [currentDate, selectedHalaqoh]);
 
   const cards = [
     { label: 'Total Siswa', value: stats.students, icon: Users, color: 'emerald', gradient: 'from-emerald-500 to-teal-600' },
@@ -146,7 +149,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-50 rounded-xl">
                 <Calendar className="text-emerald-600 w-5 h-5" />
@@ -155,6 +158,19 @@ export default function Dashboard() {
                 <h3 className="text-lg font-bold text-stone-900">Hari Aktif Belajar</h3>
                 <p className="text-stone-500 text-xs">Tahun Ajaran {academicYear}</p>
               </div>
+            </div>
+            
+            <div className="w-full sm:w-48">
+              <select 
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                value={selectedHalaqoh}
+                onChange={(e) => setSelectedHalaqoh(e.target.value)}
+              >
+                <option value="">Semua Halaqoh</option>
+                {halaqohs.map(h => (
+                  <option key={h.id} value={h.id}>{h.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 

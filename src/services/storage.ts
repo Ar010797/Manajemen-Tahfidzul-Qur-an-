@@ -321,31 +321,42 @@ export const storage = {
   },
 
   // Active Days
-  getActiveDays: (month: string) => {
+  getActiveDays: (month: string, halaqoh_id?: string) => {
     const data = getRawData();
-    // Get unique dates in this month that have at least one deposit
-    const uniqueDates = new Set(
-      data.daily_deposits
-        .filter(d => d.date.startsWith(month))
-        .map(d => d.date)
-    );
+    let filteredDeposits = data.daily_deposits.filter(d => d.date.startsWith(month));
+    
+    if (halaqoh_id) {
+      const studentIdsInHalaqoh = data.students
+        .filter(s => s.halaqoh_id === halaqoh_id)
+        .map(s => s.id);
+      filteredDeposits = filteredDeposits.filter(d => studentIdsInHalaqoh.includes(d.student_id));
+    }
+
+    const uniqueDates = new Set(filteredDeposits.map(d => d.date));
     return uniqueDates.size;
   },
-  getAllActiveDays: () => {
+  getAllActiveDays: (halaqoh_id?: string) => {
     const data = getRawData();
     const activeDays: Record<string, number> = {};
     
+    let deposits = data.daily_deposits;
+    if (halaqoh_id) {
+      const studentIdsInHalaqoh = data.students
+        .filter(s => s.halaqoh_id === halaqoh_id)
+        .map(s => s.id);
+      deposits = deposits.filter(d => studentIdsInHalaqoh.includes(d.student_id));
+    }
+
     // Group all deposits by month and count unique dates
-    data.daily_deposits.forEach(d => {
-      const month = d.date.substring(0, 7); // YYYY-MM
-      if (!activeDays[month]) {
-        const uniqueDatesInMonth = new Set(
-          data.daily_deposits
-            .filter(dep => dep.date.startsWith(month))
-            .map(dep => dep.date)
-        );
-        activeDays[month] = uniqueDatesInMonth.size;
-      }
+    const months = Array.from(new Set(deposits.map(d => d.date.substring(0, 7))));
+    
+    months.forEach(month => {
+      const uniqueDatesInMonth = new Set(
+        deposits
+          .filter(dep => dep.date.startsWith(month))
+          .map(dep => dep.date)
+      );
+      activeDays[month] = uniqueDatesInMonth.size;
     });
     
     return activeDays;

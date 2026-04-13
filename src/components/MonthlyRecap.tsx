@@ -401,7 +401,7 @@ export default function MonthlyRecap() {
   const hasTilawah = recapData.some(s => s.tilawah.awl !== '-' || s.tilawah.akh !== '-' || s.tilawah.jml > 0);
   const hasUmmi = recapData.some(s => s.ummi.awl !== '-' || s.ummi.akh !== '-' || s.ummi.jml > 0);
 
-  const activeDaysCount = storage.getActiveDays(selectedMonth);
+  const activeDaysCount = storage.getActiveDays(selectedMonth, selectedHalaqoh);
 
   return (
     <div className="space-y-8">
