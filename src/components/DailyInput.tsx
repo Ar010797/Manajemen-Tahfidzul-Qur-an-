@@ -1,10 +1,40 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { motion, Reorder } from 'motion/react';
+import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 import ConfirmModal from './ConfirmModal';
+
+function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: any) {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={s}
+      dragListener={false}
+      dragControls={controls}
+      className={cn(
+        "w-full text-left p-3 rounded-xl transition-all border flex items-center gap-3 cursor-pointer group",
+        selectedStudent?.id === s.id 
+          ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm ${theme.pillShadow}` 
+          : `bg-white border-stone-100 ${theme.hoverBorder} hover:bg-stone-50 text-stone-600`
+      )}
+      onClick={() => handleSelectStudent(s)}
+    >
+      <div 
+        className={cn("text-stone-300 transition-colors cursor-grab active:cursor-grabbing p-1 -ml-1 rounded hover:bg-stone-100", `group-hover:${theme.text}`)}
+        onPointerDown={(e) => controls.start(e)}
+        style={{ touchAction: 'none' }}
+      >
+        <GripVertical size={16} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm truncate">{s.name}</p>
+      </div>
+    </Reorder.Item>
+  );
+}
 
 export default function DailyInput() {
   const [students, setStudents] = useState<any[]>([]);
@@ -266,24 +296,13 @@ export default function DailyInput() {
                 className="space-y-2"
               >
                 {(halaqohStudents as any[]).map(s => (
-                  <Reorder.Item
+                  <StudentReorderItem 
                     key={s.id}
-                    value={s}
-                    className={cn(
-                      "w-full text-left p-3 rounded-xl transition-all border flex items-center gap-3 cursor-pointer group",
-                      selectedStudent?.id === s.id 
-                        ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm ${theme.pillShadow}` 
-                        : `bg-white border-stone-100 ${theme.hoverBorder} hover:bg-stone-50 text-stone-600`
-                    )}
-                    onClick={() => handleSelectStudent(s)}
-                  >
-                    <div className={cn("text-stone-300 transition-colors", `group-hover:${theme.text.replace('text-', 'text-')}`)}>
-                      <GripVertical size={16} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm truncate">{s.name}</p>
-                    </div>
-                  </Reorder.Item>
+                    s={s}
+                    selectedStudent={selectedStudent}
+                    theme={theme}
+                    handleSelectStudent={handleSelectStudent}
+                  />
                 ))}
               </Reorder.Group>
             </div>
