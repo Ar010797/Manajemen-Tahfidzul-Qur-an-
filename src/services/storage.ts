@@ -334,7 +334,12 @@ export const storage = {
   // Active Days
   getActiveDays: (month: string, halaqoh_id?: string) => {
     const data = getRawData();
-    let filteredDeposits = data.daily_deposits.filter(d => d.date.startsWith(month));
+    let filteredDeposits = data.daily_deposits.filter(d => 
+      d.date.startsWith(month) && 
+      d.details && 
+      d.details.grade && 
+      d.details.grade !== ''
+    );
     
     if (halaqoh_id) {
       const studentIdsInHalaqoh = data.students
@@ -350,7 +355,12 @@ export const storage = {
     const data = getRawData();
     const activeDays: Record<string, number> = {};
     
-    let deposits = data.daily_deposits;
+    let deposits = data.daily_deposits.filter(d => 
+      d.details && 
+      d.details.grade && 
+      d.details.grade !== ''
+    );
+    
     if (halaqoh_id) {
       const studentIdsInHalaqoh = data.students
         .filter(s => s.halaqoh_id === halaqoh_id)

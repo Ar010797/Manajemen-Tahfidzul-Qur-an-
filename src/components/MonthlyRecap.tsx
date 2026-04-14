@@ -52,14 +52,21 @@ export default function MonthlyRecap() {
           name: curr.student_name,
           hafalan: { awl: '-', akh: '-', jml: 0 },
           ummi: { awl: '-', akh: '-', jml: 0 },
-          tilawah: { awl: '-', akh: '-', jml: 0 }
+          tilawah: { awl: '-', akh: '-', jml: 0 },
+          activeDays: new Set()
         };
       }
       const details = curr.details || {};
       const target = acc[curr.student_id][curr.type];
       
-      // CRITICAL: Exclude BL and C from ALL calculations as requested
       const grade = details.grade || '';
+      
+      // Check if there is a grade to count as active day
+      if (grade !== '') {
+        acc[curr.student_id].activeDays.add(curr.date);
+      }
+      
+      // CRITICAL: Exclude BL and C from ALL calculations as requested
       const isExcluded = grade === 'BL' || grade === 'C';
       
       if (curr.type === 'hafalan') {
@@ -75,7 +82,9 @@ export default function MonthlyRecap() {
           const start = parseInt(startStr) || 0;
           const end = parseInt(endStr) || 0;
           if (start > 0) {
-            target.jml += (end >= start) ? (end - start + 1) : 1;
+            // If end is provided and valid, count the range. Otherwise count as 1 verse.
+            const count = (end >= start) ? (end - start + 1) : 1;
+            target.jml += count;
           }
         }
       } else if (curr.type === 'ummi') {
