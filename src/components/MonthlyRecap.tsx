@@ -22,8 +22,10 @@ export default function MonthlyRecap() {
   const [themeColor, setThemeColor] = useState('emerald');
 
   useEffect(() => {
-    const institution = storage.getInstitution();
-    setThemeColor(institution.theme_color || 'emerald');
+    const inst = storage.getInstitution();
+    setThemeColor(inst.theme_color || 'emerald');
+    setPrincipalSigSize(inst.principal_signature_size || 80);
+    setCoordinatorSigSize(inst.coordinator_signature_size || 80);
   }, []);
 
   useEffect(() => {
@@ -79,11 +81,11 @@ export default function MonthlyRecap() {
         target.akh = label;
         
         if (!isExcluded) {
-          const start = parseInt(startStr) || 0;
-          const end = parseInt(endStr) || 0;
-          if (start > 0) {
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
+          if (!isNaN(start) && start > 0) {
             // If end is provided and valid, count the range. Otherwise count as 1 verse.
-            const count = (end >= start) ? (end - start + 1) : 1;
+            const count = (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
             target.jml += count;
           }
         }
@@ -106,11 +108,14 @@ export default function MonthlyRecap() {
         target.akh = label;
         
         if (!isExcluded) {
-          const start = parseInt(startStr) || 0;
-          const end = parseInt(endStr) || 0;
-          if (start > 0) {
-            target.jml += (end >= start) ? (end - start + 1) : 1;
-          } else if (level) {
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
+          if (!isNaN(start) && start > 0) {
+            target.jml += (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
+          } else if (level && isNaN(start)) {
+            // If level is provided but page is text (like Muroja'ah), don't count
+            // Only count if level is provided and page is empty or numeric
+          } else if (level && !startStr) {
             target.jml += 1;
           }
         }
@@ -127,11 +132,13 @@ export default function MonthlyRecap() {
         target.akh = label;
         
         if (!isExcluded) {
-          const start = parseInt(startStr) || 0;
-          const end = parseInt(endStr) || 0;
-          if (start > 0) {
-            target.jml += (end >= start) ? (end - start + 1) : 1;
-          } else if (surah) {
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
+          if (!isNaN(start) && start > 0) {
+            target.jml += (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
+          } else if (surah && isNaN(start)) {
+            // If surah is provided but verse is text, don't count
+          } else if (surah && !startStr) {
             target.jml += 1;
           }
         }
@@ -418,6 +425,16 @@ export default function MonthlyRecap() {
 
   const activeDaysCount = storage.getActiveDays(selectedMonth, selectedHalaqoh);
 
+  const handlePrincipalSigSizeChange = (size: number) => {
+    setPrincipalSigSize(size);
+    storage.updateInstitution({ principal_signature_size: size });
+  };
+
+  const handleCoordinatorSigSizeChange = (size: number) => {
+    setCoordinatorSigSize(size);
+    storage.updateInstitution({ coordinator_signature_size: size });
+  };
+
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
           themeColor === 'blue' ? 'text-blue-600' :
@@ -632,11 +649,11 @@ export default function MonthlyRecap() {
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-stone-500 font-medium">Kepala Sekolah</span>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setPrincipalSigSize(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handlePrincipalSigSizeChange(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} className="scale-[-1]" />
                         </button>
                         <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
-                        <button onClick={() => setPrincipalSigSize(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handlePrincipalSigSizeChange(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} />
                         </button>
                       </div>
@@ -646,7 +663,7 @@ export default function MonthlyRecap() {
                       min="40" 
                       max="300" 
                       value={principalSigSize} 
-                      onChange={e => setPrincipalSigSize(parseInt(e.target.value))}
+                      onChange={e => handlePrincipalSigSizeChange(parseInt(e.target.value))}
                       className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                     />
                   </div>
@@ -654,11 +671,11 @@ export default function MonthlyRecap() {
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setCoordinatorSigSize(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handleCoordinatorSigSizeChange(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} className="scale-[-1]" />
                         </button>
                         <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
-                        <button onClick={() => setCoordinatorSigSize(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handleCoordinatorSigSizeChange(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} />
                         </button>
                       </div>
@@ -668,7 +685,7 @@ export default function MonthlyRecap() {
                       min="40" 
                       max="300" 
                       value={coordinatorSigSize} 
-                      onChange={e => setCoordinatorSigSize(parseInt(e.target.value))}
+                      onChange={e => handleCoordinatorSigSizeChange(parseInt(e.target.value))}
                       className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                     />
                   </div>

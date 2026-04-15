@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2 } from 'lucide-react';
+import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
-import { motion, Reorder, useDragControls } from 'motion/react';
+import { motion, Reorder, useDragControls, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 import ConfirmModal from './ConfirmModal';
@@ -186,6 +186,20 @@ export default function DailyInput() {
     setShowListOnMobile(false);
   };
 
+  const handleNextStudent = () => {
+    if (!selectedStudent || students.length === 0) return;
+    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
+    const nextIndex = (currentIndex + 1) % students.length;
+    setSelectedStudent(students[nextIndex]);
+  };
+
+  const handlePrevStudent = () => {
+    if (!selectedStudent || students.length === 0) return;
+    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
+    const prevIndex = (currentIndex - 1 + students.length) % students.length;
+    setSelectedStudent(students[prevIndex]);
+  };
+
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
           themeColor === 'blue' ? 'text-blue-600' :
@@ -321,25 +335,58 @@ export default function DailyInput() {
         showListOnMobile && "hidden lg:block"
       )}>
         {selectedStudent ? (
-          <div className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setShowListOnMobile(true)}
-                  className="lg:hidden flex items-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-colors text-xs font-bold"
-                >
-                  <ChevronLeft size={16} />
-                  Daftar
-                </button>
-                <div>
-                  <h2 className="text-xl lg:text-2xl font-bold text-stone-900 leading-tight">{selectedStudent.name}</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="px-2 py-0.5 bg-stone-100 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                      {selectedStudent.halaqoh_name || 'Tanpa Halaqoh'}
-                    </span>
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={selectedStudent.id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -100) handleNextStudent();
+                if (info.offset.x > 100) handlePrevStudent();
+              }}
+              className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowListOnMobile(true)}
+                    className="lg:hidden flex items-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-colors text-xs font-bold"
+                  >
+                    <ChevronLeft size={16} />
+                    Daftar
+                  </button>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={handlePrevStudent}
+                        className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
+                        title="Siswa Sebelumnya"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      <div>
+                        <h2 className="text-xl lg:text-2xl font-bold text-stone-900 leading-tight">{selectedStudent.name}</h2>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="px-2 py-0.5 bg-stone-100 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                            {selectedStudent.halaqoh_name || 'Tanpa Halaqoh'}
+                          </span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={handleNextStudent}
+                        className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
+                        title="Siswa Selanjutnya"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <div className="flex flex-col">
                   <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Tanggal</label>
@@ -384,7 +431,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Ayat Awal</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.verse_start || ''}
                         onChange={e => setDetails({...details, verse_start: e.target.value})}
@@ -393,7 +440,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Ayat Akhir</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.verse_end || ''}
                         onChange={e => setDetails({...details, verse_end: e.target.value})}
@@ -433,7 +480,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Hal Awal</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.page_start || ''}
                         onChange={e => setDetails({...details, page_start: e.target.value})}
@@ -442,7 +489,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Hal Akhir</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.page_end || ''}
                         onChange={e => setDetails({...details, page_end: e.target.value})}
@@ -493,7 +540,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Ayat Awal</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.verse_start || ''}
                         onChange={e => setDetails({...details, verse_start: e.target.value})}
@@ -502,7 +549,7 @@ export default function DailyInput() {
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-stone-400 uppercase tracking-wider">Ayat Akhir</label>
                       <input 
-                        type="number"
+                        type="text"
                         className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                         value={details.verse_end || ''}
                         onChange={e => setDetails({...details, verse_end: e.target.value})}
@@ -548,7 +595,17 @@ export default function DailyInput() {
                 </button>
               </div>
             </form>
-          </div>
+            
+            {/* Swipe Indicator for Mobile */}
+            <div className="mt-8 flex justify-center lg:hidden">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-stone-300 uppercase tracking-widest">
+                <ChevronLeft size={12} />
+                Geser untuk navigasi siswa
+                <ChevronRight size={12} />
+              </div>
+            </div>
+          </motion.div>
+          </AnimatePresence>
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-stone-200 border-dashed text-stone-400">
             <ClipboardCheck size={48} className="mb-4 opacity-20" />

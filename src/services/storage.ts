@@ -24,6 +24,8 @@ export interface DataSchema {
     theme_color?: 'emerald' | 'blue' | 'amber' | 'indigo' | 'purple' | 'rose' | 'slate';
     reminder_enabled?: boolean;
     reminder_time?: string;
+    principal_signature_size?: number;
+    coordinator_signature_size?: number;
   };
   halaqoh: Array<{ id: string; name: string }>;
   students: Array<{ id: string; name: string; halaqoh_id: string | null; order_index: number }>;
@@ -44,7 +46,9 @@ const defaultData: DataSchema = {
     academic_year: "2025/2026",
     theme_color: "emerald",
     reminder_enabled: false,
-    reminder_time: "15:00"
+    reminder_time: "15:00",
+    principal_signature_size: 80,
+    coordinator_signature_size: 80
   },
   halaqoh: [],
   students: [],
