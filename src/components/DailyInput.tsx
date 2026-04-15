@@ -188,16 +188,20 @@ export default function DailyInput() {
 
   const handleNextStudent = () => {
     if (!selectedStudent || students.length === 0) return;
-    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
-    const nextIndex = (currentIndex + 1) % students.length;
-    setSelectedStudent(students[nextIndex]);
+    const halaqohStudents = students.filter(s => s.halaqoh_id === selectedStudent.halaqoh_id);
+    if (halaqohStudents.length === 0) return;
+    const currentIndex = halaqohStudents.findIndex(s => s.id === selectedStudent.id);
+    const nextIndex = (currentIndex + 1) % halaqohStudents.length;
+    setSelectedStudent(halaqohStudents[nextIndex]);
   };
 
   const handlePrevStudent = () => {
     if (!selectedStudent || students.length === 0) return;
-    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
-    const prevIndex = (currentIndex - 1 + students.length) % students.length;
-    setSelectedStudent(students[prevIndex]);
+    const halaqohStudents = students.filter(s => s.halaqoh_id === selectedStudent.halaqoh_id);
+    if (halaqohStudents.length === 0) return;
+    const currentIndex = halaqohStudents.findIndex(s => s.id === selectedStudent.id);
+    const prevIndex = (currentIndex - 1 + halaqohStudents.length) % halaqohStudents.length;
+    setSelectedStudent(halaqohStudents[prevIndex]);
   };
 
   const theme = {
