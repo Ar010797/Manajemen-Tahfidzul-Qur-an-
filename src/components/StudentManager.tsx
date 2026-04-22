@@ -96,6 +96,17 @@ export default function StudentManager() {
 
   const filteredStudents = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
 
+  // Group filtered students by halaqoh
+  const groupedStudents = React.useMemo(() => {
+    const groups: Record<string, any[]> = {};
+    filteredStudents.forEach(s => {
+      const groupName = s.halaqoh_name || 'Tanpa Halaqoh';
+      if (!groups[groupName]) groups[groupName] = [];
+      groups[groupName].push(s);
+    });
+    return groups;
+  }, [filteredStudents]);
+
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
           themeColor === 'blue' ? 'text-blue-600' :
@@ -281,108 +292,126 @@ export default function StudentManager() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-stone-100">
-                  {filteredStudents.map(s => (
-                    <tr 
-                      key={s.id} 
-                      className={cn(
-                        "hover:bg-stone-50/50 transition-colors group",
-                        selectedIds.includes(s.id) && "bg-emerald-50/30"
-                      )}
-                    >
-                      <td className="px-6 py-4">
-                        <input 
-                          type="checkbox"
-                          className={cn("w-4 h-4 rounded border-stone-300 cursor-pointer", theme.accent)}
-                          checked={selectedIds.includes(s.id)}
-                          onChange={() => toggleSelect(s.id)}
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        {editingId === s.id ? (
-                          <input 
-                            type="text"
-                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
-                            value={editData.name || ''}
-                            onChange={e => setEditData({...editData, name: e.target.value})}
-                            autoFocus
-                          />
-                        ) : (
-                          <span className="text-sm font-semibold text-stone-800 tracking-tight">{s.name}</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {editingId === s.id ? (
-                          <select 
-                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
-                            value={editData.halaqoh_id || ''}
-                            onChange={e => setEditData({...editData, halaqoh_id: e.target.value})}
-                          >
-                            <option value="">Pilih Halaqoh</option>
-                            {halaqohs.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
-                          </select>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                            {s.halaqoh_name}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {editingId === s.id ? (
-                          <input 
-                            type="text"
-                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
-                            value={editData.parent_phone || ''}
-                            onChange={e => setEditData({...editData, parent_phone: e.target.value})}
-                            placeholder="No. HP WA"
-                          />
-                        ) : (
-                          <span className="text-sm font-medium text-stone-500 whitespace-nowrap">
-                            {s.parent_phone || '-'}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {editingId === s.id ? (
-                          <div className="flex justify-end gap-2">
-                            <button 
-                              onClick={() => handleUpdate(s.id)}
-                              className={cn("p-2 rounded-xl transition-colors", theme.text, theme.lightBg)}
-                              title="Simpan"
-                            >
-                              <Check size={20} />
-                            </button>
-                            <button 
-                              onClick={() => setEditingId(null)}
-                              className="p-2 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
-                              title="Batal"
-                            >
-                              <X size={20} />
-                            </button>
+                  {Object.entries(groupedStudents).map(([groupName, groupStudents]) => (
+                    <React.Fragment key={groupName}>
+                      {/* Group Header Row */}
+                      <tr className="bg-stone-50/80">
+                        <td colSpan={5} className="px-6 py-2">
+                          <div className="flex items-center gap-2">
+                            <span className={cn("text-[10px] font-black uppercase tracking-[0.2em]", theme.text)}>
+                              {groupName}
+                            </span>
+                            <div className="h-px flex-1 bg-stone-200" />
+                            <span className="text-[10px] text-stone-400 font-bold">
+                              {groupStudents.length} Siswa
+                            </span>
                           </div>
-                        ) : (
-                          <div className="flex justify-end gap-2 transition-opacity">
-                            <button 
-                              onClick={() => startEditing(s)}
-                              className={cn("p-2 text-stone-400 transition-all rounded-xl", `hover:${theme.text}`, `hover:${theme.lightBg}`)}
-                              title="Edit"
-                            >
-                              <Edit2 size={18} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteClick(s)}
-                              className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                              title="Hapus"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
+                      {groupStudents.map(s => (
+                        <tr 
+                          key={s.id} 
+                          className={cn(
+                            "hover:bg-stone-50/50 transition-colors group",
+                            selectedIds.includes(s.id) && "bg-emerald-50/30"
+                          )}
+                        >
+                          <td className="px-6 py-4">
+                            <input 
+                              type="checkbox"
+                              className={cn("w-4 h-4 rounded border-stone-300 cursor-pointer", theme.accent)}
+                              checked={selectedIds.includes(s.id)}
+                              onChange={() => toggleSelect(s.id)}
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            {editingId === s.id ? (
+                              <input 
+                                type="text"
+                                className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
+                                value={editData.name || ''}
+                                onChange={e => setEditData({...editData, name: e.target.value})}
+                                autoFocus
+                              />
+                            ) : (
+                              <span className="text-sm font-semibold text-stone-800 tracking-tight">{s.name}</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {editingId === s.id ? (
+                              <select 
+                                className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
+                                value={editData.halaqoh_id || ''}
+                                onChange={e => setEditData({...editData, halaqoh_id: e.target.value})}
+                              >
+                                <option value="">Pilih Halaqoh</option>
+                                {halaqohs.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
+                              </select>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                {s.halaqoh_name}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {editingId === s.id ? (
+                              <input 
+                                type="text"
+                                className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
+                                value={editData.parent_phone || ''}
+                                onChange={e => setEditData({...editData, parent_phone: e.target.value})}
+                                placeholder="No. HP WA"
+                              />
+                            ) : (
+                              <span className="text-sm font-medium text-stone-500 whitespace-nowrap">
+                                {s.parent_phone || '-'}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {editingId === s.id ? (
+                              <div className="flex justify-end gap-2">
+                                <button 
+                                  onClick={() => handleUpdate(s.id)}
+                                  className={cn("p-2 rounded-xl transition-colors", theme.text, theme.lightBg)}
+                                  title="Simpan"
+                                >
+                                  <Check size={20} />
+                                </button>
+                                <button 
+                                  onClick={() => setEditingId(null)}
+                                  className="p-2 text-stone-400 hover:bg-stone-100 rounded-xl transition-colors"
+                                  title="Batal"
+                                >
+                                  <X size={20} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex justify-end gap-2 transition-opacity">
+                                <button 
+                                  onClick={() => startEditing(s)}
+                                  className={cn("p-2 text-stone-400 transition-all rounded-xl", `hover:${theme.text}`, `hover:${theme.lightBg}`)}
+                                  title="Edit"
+                                >
+                                  <Edit2 size={18} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteClick(s)}
+                                  className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                  title="Hapus"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
                   ))}
                   {filteredStudents.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-6 py-16 text-center">
+                      <td colSpan={5} className="px-6 py-16 text-center">
                         <div className="flex flex-col items-center justify-center text-stone-400">
                           <Search size={40} className="mb-2 opacity-20" />
                           <p className="text-sm italic">Data siswa tidak ditemukan.</p>
