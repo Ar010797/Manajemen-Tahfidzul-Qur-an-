@@ -16,6 +16,8 @@ export default function InstitutionProfile() {
     watermark: '',
     principal_signature: '',
     coordinator_signature: '',
+    principal_signature_size: 80,
+    coordinator_signature_size: 80,
     theme_color: 'emerald' as const,
     reminder_enabled: false,
     reminder_time: '15:00'
@@ -305,21 +307,35 @@ export default function InstitutionProfile() {
               </div>
             </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah</label>
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.principal_signature ? <img src={profile.principal_signature} alt="TTD Kepsek" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
                 </div>
-                <input 
-                  type="file"
-                  accept="image/*"
-                  onChange={e => handleFileUpload(e, 'principal_signature')}
-                  className={cn(
-                    "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
-                    `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
-                  )}
-                />
+                <div className="flex-1 space-y-4">
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleFileUpload(e, 'principal_signature')}
+                    className={cn(
+                      "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                      `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                    )}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.principal_signature_size || 80}px</span>
+                    </div>
+                    <input 
+                      type="range" min="40" max="300" step="10"
+                      value={profile.principal_signature_size || 80}
+                      onChange={e => setProfile({...profile, principal_signature_size: parseInt(e.target.value)})}
+                      className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -329,17 +345,31 @@ export default function InstitutionProfile() {
                 <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.coordinator_signature ? <img src={profile.coordinator_signature} alt="TTD Koord" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
                 </div>
-                <input 
-                  type="file"
-                  accept="image/*"
-                  onChange={e => handleFileUpload(e, 'coordinator_signature')}
-                  className={cn(
-                    "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
-                    `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
-                  )}
-                />
+                <div className="flex-1 space-y-4">
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleFileUpload(e, 'coordinator_signature')}
+                    className={cn(
+                      "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                      `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                    )}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.coordinator_signature_size || 80}px</span>
+                    </div>
+                    <input 
+                      type="range" min="40" max="300" step="10"
+                      value={profile.coordinator_signature_size || 80}
+                      onChange={e => setProfile({...profile, coordinator_signature_size: parseInt(e.target.value)})}
+                      className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
           </div>
 
           <button 

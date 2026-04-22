@@ -20,32 +20,29 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [principalSigSize, setPrincipalSigSize] = useState(() => {
-    const saved = localStorage.getItem('principalSigSize');
-    return saved ? parseInt(saved, 10) : 80;
-  });
-  const [coordinatorSigSize, setCoordinatorSigSize] = useState(() => {
-    const saved = localStorage.getItem('coordinatorSigSize');
-    return saved ? parseInt(saved, 10) : 80;
-  });
+  const [principalSigSize, setPrincipalSigSize] = useState(80);
+  const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<{ type: 'ummi' | 'hafalan', id: string } | null>(null);
-
-  useEffect(() => {
-    localStorage.setItem('principalSigSize', principalSigSize.toString());
-  }, [principalSigSize]);
-
-  useEffect(() => {
-    localStorage.setItem('coordinatorSigSize', coordinatorSigSize.toString());
-  }, [coordinatorSigSize]);
-
   const [editingExam, setEditingExam] = useState<{ type: 'ummi' | 'hafalan', data: any } | null>(null);
   const [themeColor, setThemeColor] = useState('emerald');
 
   useEffect(() => {
     const inst = storage.getInstitution();
     setThemeColor(inst.theme_color || 'emerald');
+    if (inst.principal_signature_size) setPrincipalSigSize(inst.principal_signature_size);
+    if (inst.coordinator_signature_size) setCoordinatorSigSize(inst.coordinator_signature_size);
   }, []);
+
+  const handlePrincipalSigSizeChange = (newSize: number) => {
+    setPrincipalSigSize(newSize);
+    storage.updateInstitution({ principal_signature_size: newSize });
+  };
+
+  const handleCoordinatorSigSizeChange = (newSize: number) => {
+    setCoordinatorSigSize(newSize);
+    storage.updateInstitution({ coordinator_signature_size: newSize });
+  };
 
   useEffect(() => {
     const fetchData = () => {
@@ -785,11 +782,11 @@ export default function ReportCard() {
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-stone-500 font-medium">Kepala Sekolah</span>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setPrincipalSigSize(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handlePrincipalSigSizeChange(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} className="scale-[-1]" />
                         </button>
                         <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
-                        <button onClick={() => setPrincipalSigSize(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handlePrincipalSigSizeChange(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} />
                         </button>
                       </div>
@@ -799,7 +796,7 @@ export default function ReportCard() {
                       min="40" 
                       max="300" 
                       value={principalSigSize} 
-                      onChange={e => setPrincipalSigSize(parseInt(e.target.value))}
+                      onChange={e => handlePrincipalSigSizeChange(parseInt(e.target.value))}
                       className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                     />
                   </div>
@@ -807,11 +804,11 @@ export default function ReportCard() {
                     <div className="flex justify-between text-[10px] mb-2">
                       <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setCoordinatorSigSize(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handleCoordinatorSigSizeChange(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} className="scale-[-1]" />
                         </button>
                         <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
-                        <button onClick={() => setCoordinatorSigSize(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
+                        <button onClick={() => handleCoordinatorSigSizeChange(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
                           <Search size={12} />
                         </button>
                       </div>
@@ -821,7 +818,7 @@ export default function ReportCard() {
                       min="40" 
                       max="300" 
                       value={coordinatorSigSize} 
-                      onChange={e => setCoordinatorSigSize(parseInt(e.target.value))}
+                      onChange={e => handleCoordinatorSigSizeChange(parseInt(e.target.value))}
                       className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                     />
                   </div>

@@ -28,7 +28,7 @@ export interface DataSchema {
     coordinator_signature_size?: number;
   };
   halaqoh: Array<{ id: string; name: string }>;
-  students: Array<{ id: string; name: string; halaqoh_id: string | null; order_index: number }>;
+  students: Array<{ id: string; name: string; halaqoh_id: string | null; parent_phone?: string; order_index: number }>;
   daily_deposits: Array<{ student_id: string; type: string; date: string; details: any }>;
   exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string; target?: string }>;
   exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string; target?: string }>;
@@ -120,18 +120,18 @@ export const storage = {
       halaqoh_name: data.halaqoh.find(h => h.id === s.halaqoh_id)?.name || null
     })).sort((a, b) => (a.order_index - b.order_index) || a.name.localeCompare(b.name));
   },
-  addStudent: (name: string, halaqoh_id: string | null) => {
+  addStudent: (name: string, halaqoh_id: string | null, parent_phone: string = '') => {
     const data = getRawData();
-    const newStudent = { id: Date.now().toString(), name, halaqoh_id, order_index: data.students.length };
+    const newStudent = { id: Date.now().toString(), name, halaqoh_id, parent_phone, order_index: data.students.length };
     data.students.push(newStudent);
     saveRawData(data);
     return newStudent;
   },
-  updateStudent: (id: string, name: string, halaqoh_id: string | null) => {
+  updateStudent: (id: string, name: string, halaqoh_id: string | null, parent_phone: string = '') => {
     const data = getRawData();
     const index = data.students.findIndex(s => s.id === id);
     if (index !== -1) {
-      data.students[index] = { ...data.students[index], name, halaqoh_id };
+      data.students[index] = { ...data.students[index], name, halaqoh_id, parent_phone };
       saveRawData(data);
     }
   },

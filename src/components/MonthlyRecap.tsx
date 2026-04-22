@@ -28,6 +28,16 @@ export default function MonthlyRecap() {
     setCoordinatorSigSize(inst.coordinator_signature_size || 80);
   }, []);
 
+  const handlePrincipalSigSizeChange = (newSize: number) => {
+    setPrincipalSigSize(newSize);
+    storage.updateInstitution({ principal_signature_size: newSize });
+  };
+
+  const handleCoordinatorSigSizeChange = (newSize: number) => {
+    setCoordinatorSigSize(newSize);
+    storage.updateInstitution({ coordinator_signature_size: newSize });
+  };
+
   useEffect(() => {
     const fetchData = () => {
       const hData = storage.getHalaqoh();
@@ -424,16 +434,6 @@ export default function MonthlyRecap() {
   const hasUmmi = recapData.some(s => s.ummi.awl !== '-' || s.ummi.akh !== '-' || s.ummi.jml > 0);
 
   const activeDaysCount = storage.getActiveDays(selectedMonth, selectedHalaqoh);
-
-  const handlePrincipalSigSizeChange = (size: number) => {
-    setPrincipalSigSize(size);
-    storage.updateInstitution({ principal_signature_size: size });
-  };
-
-  const handleCoordinatorSigSizeChange = (size: number) => {
-    setCoordinatorSigSize(size);
-    storage.updateInstitution({ coordinator_signature_size: size });
-  };
 
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :

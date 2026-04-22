@@ -7,10 +7,10 @@ import ConfirmModal from './ConfirmModal';
 export default function StudentManager() {
   const [students, setStudents] = useState<any[]>([]);
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
-  const [formData, setFormData] = useState({ name: '', halaqoh_id: '' });
+  const [formData, setFormData] = useState({ name: '', halaqoh_id: '', parent_phone: '' });
   const [search, setSearch] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({ name: '', halaqoh_id: '' });
+  const [editData, setEditData] = useState({ name: '', halaqoh_id: '', parent_phone: '' });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('emerald');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -35,8 +35,8 @@ export default function StudentManager() {
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.halaqoh_id) return;
-    storage.addStudent(formData.name, formData.halaqoh_id);
-    setFormData({ name: '', halaqoh_id: '' });
+    storage.addStudent(formData.name, formData.halaqoh_id, formData.parent_phone);
+    setFormData({ name: '', halaqoh_id: '', parent_phone: '' });
     fetchData();
   };
 
@@ -84,14 +84,14 @@ export default function StudentManager() {
 
   const handleUpdate = (id: string) => {
     if (!editData.name || !editData.halaqoh_id) return;
-    storage.updateStudent(id, editData.name, editData.halaqoh_id);
+    storage.updateStudent(id, editData.name, editData.halaqoh_id, editData.parent_phone);
     setEditingId(null);
     fetchData();
   };
 
   const startEditing = (s: any) => {
     setEditingId(s.id);
-    setEditData({ name: s.name, halaqoh_id: s.halaqoh_id });
+    setEditData({ name: s.name, halaqoh_id: s.halaqoh_id, parent_phone: s.parent_phone || '' });
   };
 
   const filteredStudents = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
@@ -187,7 +187,7 @@ export default function StudentManager() {
             <Plus size={16} className={theme.text} />
             Tambah Siswa Baru
           </h3>
-          <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Lengkap</label>
               <input 
@@ -208,6 +208,16 @@ export default function StudentManager() {
                 <option value="">Pilih Halaqoh</option>
                 {halaqohs.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
               </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider ml-1">No. HP Orang Tua (WA)</label>
+              <input 
+                type="text"
+                className={cn("w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 transition-all", theme.ring)}
+                placeholder="Contoh: 08123456789"
+                value={formData.parent_phone || ''}
+                onChange={e => setFormData({...formData, parent_phone: e.target.value})}
+              />
             </div>
             <div className="flex items-end">
               <button 
@@ -266,6 +276,7 @@ export default function StudentManager() {
                     </th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-stone-400 uppercase tracking-widest">Nama Siswa</th>
                     <th className="px-6 py-4 text-left text-[10px] font-bold text-stone-400 uppercase tracking-widest">Halaqoh</th>
+                    <th className="px-6 py-4 text-left text-[10px] font-bold text-stone-400 uppercase tracking-widest">No. HP Orang Tua</th>
                     <th className="px-6 py-4 text-right text-[10px] font-bold text-stone-400 uppercase tracking-widest">Aksi</th>
                   </tr>
                 </thead>
@@ -312,6 +323,21 @@ export default function StudentManager() {
                         ) : (
                           <span className="inline-flex items-center px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
                             {s.halaqoh_name}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {editingId === s.id ? (
+                          <input 
+                            type="text"
+                            className={cn("w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-all", theme.ring)}
+                            value={editData.parent_phone || ''}
+                            onChange={e => setEditData({...editData, parent_phone: e.target.value})}
+                            placeholder="No. HP WA"
+                          />
+                        ) : (
+                          <span className="text-sm font-medium text-stone-500 whitespace-nowrap">
+                            {s.parent_phone || '-'}
                           </span>
                         )}
                       </td>

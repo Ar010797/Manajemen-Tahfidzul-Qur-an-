@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight } from 'lucide-react';
+import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
-import { motion, Reorder, useDragControls, AnimatePresence } from 'motion/react';
+import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import { SURAH_LIST } from '../constants/surahs';
 import ConfirmModal from './ConfirmModal';
 
 function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: any) {
@@ -58,7 +59,6 @@ export default function DailyInput() {
     if (data && data.details) {
       setDetails(data.details);
     } else {
-      // If no deposit for today, try to auto-fill "Awal" from the last deposit
       const lastDeposit = storage.getLastDeposit(selectedStudent.id, type);
       if (lastDeposit && lastDeposit.details) {
         const lastDetails = lastDeposit.details;
@@ -107,6 +107,101 @@ export default function DailyInput() {
     fetchStudents();
   }, []);
 
+  const handleSendMessage = () => {
+    if (!selectedStudent) return;
+
+    const institution = storage.getInstitution();
+    const studentName = selectedStudent.name;
+    const parentPhone = selectedStudent.parent_phone;
+
+    if (!parentPhone) {
+      alert('Nomor HP orang tua belum diatur untuk siswa ini. Silakan atur di Manajemen Siswa.');
+      return;
+    }
+
+    // Fetch all types of deposits for this student and date
+    const hafalanData = storage.getDeposit(selectedStudent.id, 'hafalan', date);
+    const ummiData = storage.getDeposit(selectedStudent.id, 'ummi', date);
+    const tilawahData = storage.getDeposit(selectedStudent.id, 'tilawah', date);
+
+    if (!hafalanData && !ummiData && !tilawahData) {
+      alert('Belum ada data setoran (Hafalan/Ummi/Tilawah) yang disimpan untuk tanggal ini.');
+      return;
+    }
+
+    let reportSegments = [];
+
+    // Hafalan Segment
+    if (hafalanData && hafalanData.details && hafalanData.details.grade) {
+      const d = hafalanData.details;
+      const isGoodGrade = ['L', 'CL'].includes(d.grade);
+      let homework = '';
+      if (isGoodGrade) {
+        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+        homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+      } else {
+        homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+      }
+      reportSegments.push(`📚 *Hafalan Al-Qur'an*
+📖 Materi: Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}
+⭐ Nilai: *${d.grade}*
+📝 PR: ${homework}`);
+    }
+
+    // Ummi Segment
+    if (ummiData && ummiData.details && ummiData.details.grade) {
+      const d = ummiData.details;
+      const isGoodGrade = ['A', 'B'].includes(d.grade);
+      let homework = '';
+      if (isGoodGrade) {
+        const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+        homework = `Lanjut halaman berikutnya (hlm ${nextPage})`;
+      } else {
+        homework = `Mengulang halaman yang sama (hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''})`;
+      }
+      reportSegments.push(`📚 *Metode Ummi*
+📖 Materi: Jilid ${d.level}, hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}
+⭐ Nilai: *${d.grade}*
+📝 PR: ${homework}`);
+    }
+
+    // Tilawah Segment
+    if (tilawahData && tilawahData.details && tilawahData.details.grade) {
+      const d = tilawahData.details;
+      const isGoodGrade = ['A', 'B'].includes(d.grade);
+      let homework = '';
+      if (isGoodGrade) {
+        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+        homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+      } else {
+        homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+      }
+      reportSegments.push(`📚 *Tilawah/BTQ*
+📖 Materi: Juz ${d.juz}, Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}
+⭐ Nilai: *${d.grade}*
+📝 PR: ${homework}`);
+    }
+
+    const message = `*LAPORAN SETORAN HARIAN*
+*${institution.name}*
+
+Assalamu'alaikum Warahmatullahi Wabarakatuh,
+Ayah/Bunda dari Ananda *${studentName}*, berikut adalah laporan perkembangan hari ini:
+
+📅 Tanggal: ${format(new Date(date), 'dd MMMM yyyy')}
+
+${reportSegments.join('\n\n')}
+
+Mohon bimbingan dan motivasinya di rumah. Syukron, Jazakumullahu Khairan.
+
+Halaqoh: ${selectedStudent.halaqoh_name || '-'}
+Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${parentPhone.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,7 +212,6 @@ export default function DailyInput() {
     try {
       storage.saveDeposit(selectedStudent.id, type, date, details);
       alert('Setoran berhasil disimpan!');
-      // setDetails({}); // Keep details for quick editing if needed
     } catch (error) {
       console.error('Save error:', error);
       alert('Terjadi kesalahan saat menyimpan.');
@@ -133,11 +227,7 @@ export default function DailyInput() {
     alert('Setoran berhasil dihapus.');
   };
 
-  const [isSavingOrder, setIsSavingOrder] = useState(false);
-
   const handleReorder = (halaqohName: string, newOrder: any[]) => {
-    setIsSavingOrder(true);
-    // Update local state first for responsiveness
     setStudents(prev => {
       const otherStudents = prev.filter(s => (s.halaqoh_name || 'Tanpa Halaqoh') !== halaqohName);
       return [...otherStudents, ...newOrder];
@@ -150,10 +240,8 @@ export default function DailyInput() {
 
     try {
       storage.reorderStudents(orders);
-      setTimeout(() => setIsSavingOrder(false), 500);
     } catch (error) {
       console.error('Failed to save order:', error);
-      setIsSavingOrder(false);
       fetchStudents();
     }
   };
@@ -168,7 +256,6 @@ export default function DailyInput() {
       groups[groupName].push(s);
     });
     
-    // Sort halaqoh names alphabetically, but keep 'Tanpa Halaqoh' at the end
     return Object.keys(groups)
       .sort((a, b) => {
         if (a === 'Tanpa Halaqoh') return 1;
@@ -188,21 +275,18 @@ export default function DailyInput() {
 
   const handleNextStudent = () => {
     if (!selectedStudent || students.length === 0) return;
-    const halaqohStudents = students.filter(s => s.halaqoh_id === selectedStudent.halaqoh_id);
-    if (halaqohStudents.length === 0) return;
-    const currentIndex = halaqohStudents.findIndex(s => s.id === selectedStudent.id);
-    const nextIndex = (currentIndex + 1) % halaqohStudents.length;
-    setSelectedStudent(halaqohStudents[nextIndex]);
+    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
+    const nextIndex = (currentIndex + 1) % students.length;
+    setSelectedStudent(students[nextIndex]);
   };
 
   const handlePrevStudent = () => {
     if (!selectedStudent || students.length === 0) return;
-    const halaqohStudents = students.filter(s => s.halaqoh_id === selectedStudent.halaqoh_id);
-    if (halaqohStudents.length === 0) return;
-    const currentIndex = halaqohStudents.findIndex(s => s.id === selectedStudent.id);
-    const prevIndex = (currentIndex - 1 + halaqohStudents.length) % halaqohStudents.length;
-    setSelectedStudent(halaqohStudents[prevIndex]);
+    const currentIndex = students.findIndex(s => s.id === selectedStudent.id);
+    const prevIndex = (currentIndex - 1 + students.length) % students.length;
+    setSelectedStudent(students[prevIndex]);
   };
+
 
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
@@ -281,11 +365,6 @@ export default function DailyInput() {
             <Search size={18} className={theme.text} />
             Pilih Siswa
           </h3>
-          {isSavingOrder && (
-            <span className={cn("text-[10px] font-bold animate-pulse", theme.text)}>
-              Menyimpan urutan...
-            </span>
-          )}
         </div>
         <input 
           type="text"
@@ -339,58 +418,32 @@ export default function DailyInput() {
         showListOnMobile && "hidden lg:block"
       )}>
         {selectedStudent ? (
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={selectedStudent.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -100) handleNextStudent();
-                if (info.offset.x > 100) handlePrevStudent();
-              }}
-              className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
-                <div className="flex items-center gap-3">
+          <div className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setShowListOnMobile(true)}
+                  className="lg:hidden flex items-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-colors text-xs font-bold"
+                >
+                  <ChevronLeft size={16} />
+                  Daftar
+                </button>
+                <div className="flex items-center gap-4">
                   <button 
-                    onClick={() => setShowListOnMobile(true)}
-                    className="lg:hidden flex items-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-colors text-xs font-bold"
+                    onClick={handlePrevStudent}
+                    className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
                   >
-                    <ChevronLeft size={16} />
-                    Daftar
+                    <ChevronLeft size={24} />
                   </button>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={handlePrevStudent}
-                        className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
-                        title="Siswa Sebelumnya"
-                      >
-                        <ChevronLeft size={24} />
-                      </button>
-                      <div>
-                        <h2 className="text-xl lg:text-2xl font-bold text-stone-900 leading-tight">{selectedStudent.name}</h2>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="px-2 py-0.5 bg-stone-100 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                            {selectedStudent.halaqoh_name || 'Tanpa Halaqoh'}
-                          </span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={handleNextStudent}
-                        className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
-                        title="Siswa Selanjutnya"
-                      >
-                        <ChevronRight size={24} />
-                      </button>
-                    </div>
-                  </div>
+                  <h2 className="text-xl lg:text-2xl font-bold text-stone-900 leading-tight">{selectedStudent.name}</h2>
+                  <button 
+                    onClick={handleNextStudent}
+                    className="p-2 hover:bg-stone-100 rounded-full text-stone-400 hover:text-stone-600 transition-colors"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
                 </div>
+              </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <div className="flex flex-col">
                   <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Tanggal</label>
@@ -576,18 +629,28 @@ export default function DailyInput() {
                 </div>
               )}
 
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <button 
                   type="submit"
                   disabled={isSaving}
                   className={cn(
-                    "flex-1 text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
+                    "flex-1 min-w-[200px] text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
                     theme.bg, "hover:opacity-90", theme.shadow,
                     "disabled:opacity-50"
                   )}
                 >
                   <Save size={20} />
                   {isSaving ? 'Menyimpan...' : 'Simpan Setoran'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleSendMessage}
+                  disabled={!selectedStudent || !details.grade}
+                  className="flex-1 min-w-[150px] bg-white text-emerald-600 border-2 border-emerald-500 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+                  title="Kirim laporan ke WhatsApp orang tua"
+                >
+                  <MessageCircle size={20} />
+                  Kirim WA
                 </button>
                 <button 
                   type="button"
@@ -599,17 +662,7 @@ export default function DailyInput() {
                 </button>
               </div>
             </form>
-            
-            {/* Swipe Indicator for Mobile */}
-            <div className="mt-8 flex justify-center lg:hidden">
-              <div className="flex items-center gap-2 text-[10px] font-bold text-stone-300 uppercase tracking-widest">
-                <ChevronLeft size={12} />
-                Geser untuk navigasi siswa
-                <ChevronRight size={12} />
-              </div>
-            </div>
-          </motion.div>
-          </AnimatePresence>
+          </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-stone-200 border-dashed text-stone-400">
             <ClipboardCheck size={48} className="mb-4 opacity-20" />
