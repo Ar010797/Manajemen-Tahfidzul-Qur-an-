@@ -100,7 +100,21 @@ export default function DailyInput() {
 
   const fetchStudents = () => {
     const data = storage.getStudents();
-    setStudents(data);
+    // Sort by halaqoh name first, then by the default order
+    const sorted = [...data].sort((a, b) => {
+      const halaqohA = a.halaqoh_name || 'Tanpa Halaqoh';
+      const halaqohB = b.halaqoh_name || 'Tanpa Halaqoh';
+      
+      // Keep "Tanpa Halaqoh" at the end if you want
+      if (halaqohA === 'Tanpa Halaqoh' && halaqohB !== 'Tanpa Halaqoh') return 1;
+      if (halaqohA !== 'Tanpa Halaqoh' && halaqohB === 'Tanpa Halaqoh') return -1;
+      
+      const halaqohCompare = halaqohA.localeCompare(halaqohB);
+      if (halaqohCompare !== 0) return halaqohCompare;
+      
+      return (a.order_index - b.order_index) || a.name.localeCompare(b.name);
+    });
+    setStudents(sorted);
   };
 
   useEffect(() => {
