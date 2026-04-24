@@ -183,7 +183,11 @@ export default function Dashboard() {
               <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                 <BookOpen size={18} className="text-white" />
               </div>
-              <h2 className="text-xl font-bold">Hadits Hari Ini</h2>
+              <h2 className="text-xl font-bold">
+                {currentHadith.type === 'ayah' ? 'Ayat Hari Ini' : 
+                 currentHadith.type === 'hadith' ? 'Hadits Hari Ini' : 
+                 'Nasihat Hari Ini'}
+              </h2>
             </div>
 
             <div className="space-y-6">

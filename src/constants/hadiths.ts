@@ -2,38 +2,152 @@ export interface Hadith {
   content: string;
   source: string;
   arabic?: string;
+  type?: 'hadith' | 'ayah' | 'wisdom';
 }
 
 export const HADITHS: Hadith[] = [
   {
     content: "Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya.",
     source: "HR. Bukhari",
-    arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ"
+    arabic: "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
+    type: 'hadith'
+  },
+  {
+    content: "Dan Kami turunkan dari Al-Qur'an suatu yang menjadi penawar/obat dan rahmat bagi orang-orang yang beriman.",
+    source: "QS. Al-Isra: 82",
+    arabic: "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِلْمُؤْمِنِينَ",
+    type: 'ayah'
   },
   {
     content: "Barangsiapa yang menempuh jalan untuk mencari ilmu, maka Allah akan mudahkan baginya jalan menuju surga.",
     source: "HR. Muslim",
-    arabic: "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ"
+    arabic: "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    type: 'hadith'
+  },
+  {
+    content: "Maka sesungguhnya bersama kesulitan itu ada kemudahan.",
+    source: "QS. Al-Insyirah: 5",
+    arabic: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    type: 'ayah'
   },
   {
     content: "Sesungguhnya amalan itu tergantung pada niatnya.",
     source: "HR. Bukhari & Muslim",
-    arabic: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ"
+    arabic: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ",
+    type: 'hadith'
+  },
+  {
+    content: "Wahai orang-orang yang beriman, mintalah pertolongan (kepada Allah) dengan sabar dan shalat.",
+    source: "QS. Al-Baqarah: 153",
+    arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
+    type: 'ayah'
   },
   {
     content: "Sampaikanlah dariku walau hanya satu ayat.",
     source: "HR. Bukhari",
-    arabic: "بَلِّغُوا عَنِّي وَلَوْ آيَةً"
+    arabic: "بَلِّغُوا عَنِّي وَلَوْ آيَةً",
+    type: 'hadith'
+  },
+  {
+    content: "Ingatlah, hanya dengan mengingati Allah-lah hati menjadi tenteram.",
+    source: "QS. Ar-Ra'd: 28",
+    arabic: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+    type: 'ayah'
   },
   {
     content: "Bacalah Al-Qur'an, karena ia akan datang pada hari kiamat sebagai syafaat bagi pembacanya.",
     source: "HR. Muslim",
-    arabic: "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ"
+    arabic: "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    type: 'hadith'
+  },
+  {
+    content: "Karena itu, ingatlah kamu kepada-Ku niscaya Aku ingat (pula) kepadamu.",
+    source: "QS. Al-Baqarah: 152",
+    arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ",
+    type: 'ayah'
   },
   {
     content: "Senyummu di depan saudaramu adalah sedekah.",
     source: "HR. Tirmidzi",
-    arabic: "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ"
+    arabic: "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
+    type: 'hadith'
+  },
+  {
+    content: "Berlaku adillah, karena adil itu lebih dekat kepada takwa.",
+    source: "QS. Al-Ma'idah: 8",
+    arabic: "اعْدِلُوا هُوَ أَقْرَبُ لِلتَّقْوَى",
+    type: 'ayah'
+  },
+  {
+    content: "Tangan yang di atas lebih baik daripada tangan yang di bawah.",
+    source: "HR. Bukhari & Muslim",
+    arabic: "الْيَدُ الْعُلْيَا خَيْرٌ مِنَ الْيَدِ السُّفْلَى",
+    type: 'hadith'
+  },
+  {
+    content: "Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya.",
+    source: "QS. Al-Baqarah: 286",
+    arabic: "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
+    type: 'ayah'
+  },
+  {
+    content: "Orang yang paling dicintai Allah adalah yang paling bermanfaat bagi manusia.",
+    source: "HR. Thabrani",
+    arabic: "أَحَبُّ النَّاسِ إِلَى اللَّهِ أَنْفَعُهُمْ لِلنَّASِ",
+    type: 'hadith'
+  },
+  {
+    content: "Dan berpeganglah kamu semuanya kepada tali (agama) Allah, dan janganlah kamu bercerai berai.",
+    source: "QS. Ali Imran: 103",
+    arabic: "وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا وَلَا تَفَرَّقُوا",
+    type: 'ayah'
+  },
+  {
+    content: "Barangsiapa yang beriman kepada Allah dan hari akhir, hendaklah ia berkata baik atau diam.",
+    source: "HR. Bukhari & Muslim",
+    arabic: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْIَوْمِ الآخِرِ فَلْIَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    type: 'hadith'
+  },
+  {
+    content: "Dan Kami berpesan kepada manusia (agar berbuat baik) kepada kedua orang tuanya.",
+    source: "QS. Luqman: 14",
+    arabic: "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
+    type: 'ayah'
+  },
+  {
+    content: "Kebaikan itu adalah akhlak yang baik.",
+    source: "HR. Muslim",
+    arabic: "الْبِرُّ حُسْنُ الْخُلُقِ",
+    type: 'hadith'
+  },
+  {
+    content: "Maka nikmat Tuhanmu yang manakah yang kamu dustakan?",
+    source: "QS. Ar-Rahman: 13",
+    arabic: "فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ",
+    type: 'ayah'
+  },
+  {
+    content: "Jika kamu bersyukur, niscaya Aku akan menambah (nikmat) kepadamu.",
+    source: "QS. Ibrahim: 7",
+    arabic: "لئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
+    type: 'ayah'
+  },
+  {
+    content: "Sesungguhnya Allah itu Indah dan menyukai keindahan.",
+    source: "HR. Muslim",
+    arabic: "إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ",
+    type: 'hadith'
+  },
+  {
+    content: "Bekerjalah untuk duniamu seakan-akan engkau hidup selamanya, dan beramallah untuk akhiratmu seakan-akan engkau mati besok.",
+    source: "Ali bin Abi Thalib",
+    type: 'wisdom'
+  },
+  {
+    content: "Senyummu di depan saudaramu adalah sedekah.",
+    source: "HR. Tirmidzi",
+    arabic: "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
+    type: 'hadith'
   },
   {
     content: "Tangan yang di atas lebih baik daripada tangan yang di bawah.",
@@ -324,5 +438,46 @@ export const HADITHS: Hadith[] = [
     content: "Menuntut ilmu itu wajib bagi setiap muslim.",
     source: "HR. Ibnu Majah",
     arabic: "طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ"
+  },
+  {
+    content: "Maka berlomba-lombalah kamu dalam kebaikan.",
+    source: "QS. Al-Baqarah: 148",
+    arabic: "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    type: 'ayah'
+  },
+  {
+    content: "Sesungguhnya Allah tidak akan mengubah nasib suatu kaum kecuali kaum itu sendiri yang mengubah apa yang ada pada diri mereka.",
+    source: "QS. Ar-Ra'd: 11",
+    arabic: "إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّى يُغَيِّرُوا مَا بِأَنْفُسِهِمْ",
+    type: 'ayah'
+  },
+  {
+    content: "Dan barangsiapa bertakwa kepada Allah niscaya Dia akan mengadakan baginya jalan keluar.",
+    source: "QS. At-Talaq: 2",
+    arabic: "وَمَنْ يَتَّقِ اللَّهَ يَجْعَلْ لَهُ مَخْرَجًا",
+    type: 'ayah'
+  },
+  {
+    content: "Dan Dia memberinya rezeki dari arah yang tiada disangka-sangkanya.",
+    source: "QS. At-Talaq: 3",
+    arabic: "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ",
+    type: 'ayah'
+  },
+  {
+    content: "Cukuplah Allah bagi kami dan Dia adalah sebaik-baik pelindung.",
+    source: "QS. Ali Imran: 173",
+    arabic: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+    type: 'ayah'
+  },
+  {
+    content: "Janganlah kamu berputus asa dari rahmat Allah.",
+    source: "QS. Az-Zumar: 53",
+    arabic: "لَا تَقْنَطُوا مِنْ رَحْمَةِ اللَّهِ",
+    type: 'ayah'
+  },
+  {
+    content: "Ilmu itu adalah buruan dan tulisan adalah pengikatnya.",
+    source: "Imam Syafi'i",
+    type: 'wisdom'
   }
 ];
