@@ -64,29 +64,57 @@ export default function DailyInput() {
         const lastDetails = lastDeposit.details;
         if (type === 'hafalan') {
           const shouldAdvance = lastDetails.grade === 'L' || lastDetails.grade === 'CL';
-          const lastEnd = lastDetails.verse_end ? parseInt(lastDetails.verse_end) : 0;
-          setDetails({
-            surah: lastDetails.surah,
-            verse_start: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : '',
-            verse_end: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : ''
-          });
+          const lastEnd = parseInt(lastDetails.verse_end) || parseInt(lastDetails.verse_start) || 0;
+          
+          if (shouldAdvance) {
+            setDetails({
+              surah: lastDetails.surah,
+              verse_start: lastEnd ? lastEnd + 1 : '',
+              verse_end: lastEnd ? lastEnd + 1 : ''
+            });
+          } else {
+            setDetails({
+              surah: lastDetails.surah,
+              verse_start: lastDetails.verse_start || '',
+              verse_end: lastDetails.verse_end || ''
+            });
+          }
         } else if (type === 'ummi') {
           const shouldAdvance = lastDetails.grade === 'A' || lastDetails.grade === 'B';
-          const lastEnd = lastDetails.page_end ? parseInt(lastDetails.page_end) : 0;
-          setDetails({
-            level: lastDetails.level,
-            page_start: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : '',
-            page_end: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : ''
-          });
+          const lastEnd = parseInt(lastDetails.page_end) || parseInt(lastDetails.page_start) || 0;
+          
+          if (shouldAdvance) {
+            setDetails({
+              level: lastDetails.level,
+              page_start: lastEnd ? lastEnd + 1 : '',
+              page_end: lastEnd ? lastEnd + 1 : ''
+            });
+          } else {
+            setDetails({
+              level: lastDetails.level,
+              page_start: lastDetails.page_start || '',
+              page_end: lastDetails.page_end || ''
+            });
+          }
         } else if (type === 'tilawah') {
           const shouldAdvance = lastDetails.grade === 'A' || lastDetails.grade === 'B';
-          const lastEnd = lastDetails.verse_end ? parseInt(lastDetails.verse_end) : 0;
-          setDetails({
-            juz: lastDetails.juz,
-            surah: lastDetails.surah,
-            verse_start: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : '',
-            verse_end: lastEnd ? (shouldAdvance ? lastEnd + 1 : lastEnd) : ''
-          });
+          const lastEnd = parseInt(lastDetails.verse_end) || parseInt(lastDetails.verse_start) || 0;
+          
+          if (shouldAdvance) {
+            setDetails({
+              juz: lastDetails.juz,
+              surah: lastDetails.surah,
+              verse_start: lastEnd ? lastEnd + 1 : '',
+              verse_end: lastEnd ? lastEnd + 1 : ''
+            });
+          } else {
+            setDetails({
+              juz: lastDetails.juz,
+              surah: lastDetails.surah,
+              verse_start: lastDetails.verse_start || '',
+              verse_end: lastDetails.verse_end || ''
+            });
+          }
         }
       } else {
         setDetails({});
