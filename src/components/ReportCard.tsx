@@ -160,7 +160,6 @@ export default function ReportCard() {
       const canvas = await html2canvas(element, {
         scale: 4, // Ultra-high resolution (HDR-like quality)
         useCORS: true,
-        allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
         imageTimeout: 0,
@@ -320,7 +319,6 @@ export default function ReportCard() {
       const canvas = await html2canvas(element, {
         scale: 4, // Ultra-high resolution
         useCORS: true,
-        allowTaint: true,
         logging: false,
         imageTimeout: 0,
         backgroundColor: '#ffffff',
@@ -850,7 +848,13 @@ export default function ReportCard() {
                   {/* Header */}
                   <div className="flex items-center border-b-4 border-black pb-4 mb-6 relative" style={{ borderBottomColor: '#000000' }}>
                     {institution?.logo && (
-                      <img src={institution.logo} alt="Logo" className="absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 object-contain" />
+                      <img 
+                        src={institution.logo} 
+                        alt="Logo" 
+                        crossOrigin="anonymous" 
+                        className="absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 object-contain" 
+                        style={{ backgroundColor: '#ffffff' }}
+                      />
                     )}
                     <div className="flex-1 text-center px-20 sm:px-24">
                       <p className="text-3xl mb-2" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
@@ -914,13 +918,13 @@ export default function ReportCard() {
                     <div>
                       <p className="mb-2">Mengetahui,</p>
                       <p className="mb-6 sm:mb-8">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: 'transparent' }}>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: '#ffffff' }}>
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
-                            alt="" 
-                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
-                            style={{ height: `${principalSigSize}px`, maxWidth: 'none', backgroundColor: 'transparent' }} 
+                            alt="Principal Signature" 
+                            className="object-contain" 
+                            style={{ height: `${principalSigSize}px` }} 
                           />
                         )}
                       </div>
@@ -931,13 +935,13 @@ export default function ReportCard() {
                         {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
                       </p>
                       <p className="mb-6 sm:mb-8">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: 'transparent' }}>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: '#ffffff' }}>
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
-                            alt="" 
-                            className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
-                            style={{ height: `${coordinatorSigSize}px`, maxWidth: 'none', backgroundColor: 'transparent' }} 
+                            alt="Coordinator Signature" 
+                            className="object-contain" 
+                            style={{ height: `${coordinatorSigSize}px` }} 
                           />
                         )}
                       </div>
