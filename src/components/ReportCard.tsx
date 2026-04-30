@@ -841,7 +841,13 @@ export default function ReportCard() {
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04, backgroundColor: 'transparent' }}>
-                      <img src={institution.watermark} alt="" className="w-[140mm] h-[140mm] object-contain" style={{ backgroundColor: 'transparent' }} />
+                      <img 
+                        src={institution.watermark} 
+                        alt="" 
+                        crossOrigin="anonymous"
+                        className="w-[140mm] h-[140mm] object-contain" 
+                        style={{ backgroundColor: 'transparent' }} 
+                      />
                     </div>
                   )}
 
@@ -923,8 +929,9 @@ export default function ReportCard() {
                           <img 
                             src={institution.principal_signature} 
                             alt="Principal Signature" 
+                            crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${principalSigSize}px` }} 
+                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
                           />
                         )}
                       </div>
@@ -940,8 +947,9 @@ export default function ReportCard() {
                           <img 
                             src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
+                            crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${coordinatorSigSize}px` }} 
+                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
                           />
                         )}
                       </div>

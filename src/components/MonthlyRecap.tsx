@@ -719,7 +719,12 @@ export default function MonthlyRecap() {
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
-                      <img src={institution.watermark} alt="" className="w-[120mm] h-[120mm] object-contain" />
+                      <img 
+                        src={institution.watermark} 
+                        alt="" 
+                        crossOrigin="anonymous"
+                        className="w-[120mm] h-[120mm] object-contain" 
+                      />
                     </div>
                   )}
 
@@ -869,8 +874,9 @@ export default function MonthlyRecap() {
                           <img 
                             src={institution.principal_signature} 
                             alt="Principal Signature" 
+                            crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${principalSigSize}px` }} 
+                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
                           />
                         )}
                       </div>
@@ -884,8 +890,9 @@ export default function MonthlyRecap() {
                           <img 
                             src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
+                            crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${coordinatorSigSize}px` }} 
+                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
                           />
                         )}
                       </div>

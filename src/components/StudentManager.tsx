@@ -292,7 +292,7 @@ export default function StudentManager() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-stone-100">
-                  {Object.entries(groupedStudents).map(([groupName, groupStudents]) => (
+                  {(Object.entries(groupedStudents) as [string, any[]][]).map(([groupName, groupStudents]) => (
                     <React.Fragment key={groupName}>
                       {/* Group Header Row */}
                       <tr className="bg-stone-50/80">
