@@ -274,7 +274,7 @@ export default function InstitutionProfile() {
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Logo Lembaga (Kop Surat)</label>
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.logo ? <img src={profile.logo} alt="Logo" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
                 </div>
                 <input 
@@ -292,7 +292,7 @@ export default function InstitutionProfile() {
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Watermark Rapor</label>
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.watermark ? <img src={profile.watermark} alt="Watermark" className="w-full h-full object-contain opacity-50" /> : <Upload className="text-stone-300" />}
                 </div>
                 <input 
@@ -311,7 +311,7 @@ export default function InstitutionProfile() {
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah</label>
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.principal_signature ? <img src={profile.principal_signature} alt="TTD Kepsek" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
                 </div>
                 <div className="flex-1 space-y-4">
@@ -342,7 +342,7 @@ export default function InstitutionProfile() {
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Koordinator Tahfidz</label>
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.coordinator_signature ? <img src={profile.coordinator_signature} alt="TTD Koord" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
                 </div>
                 <div className="flex-1 space-y-4">

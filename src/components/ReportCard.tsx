@@ -160,6 +160,7 @@ export default function ReportCard() {
       const canvas = await html2canvas(element, {
         scale: 4, // Ultra-high resolution (HDR-like quality)
         useCORS: true,
+        allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
         imageTimeout: 0,
@@ -170,6 +171,10 @@ export default function ReportCard() {
             clonedImages[i].style.visibility = 'visible';
             clonedImages[i].style.display = 'block';
             clonedImages[i].style.opacity = '1';
+            // Force white background behind transparent images except watermark
+            if (!clonedImages[i].parentElement?.classList.contains('pointer-events-none')) {
+              clonedImages[i].style.backgroundColor = '#ffffff';
+            }
           }
 
           const clonedElement = clonedDoc.getElementById('report-card-preview');
@@ -181,6 +186,7 @@ export default function ReportCard() {
             clonedElement.style.margin = '0';
             clonedElement.style.boxShadow = 'none';
             clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.background = '#ffffff';
             clonedElement.style.color = '#000000';
             clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
           }
@@ -314,6 +320,7 @@ export default function ReportCard() {
       const canvas = await html2canvas(element, {
         scale: 4, // Ultra-high resolution
         useCORS: true,
+        allowTaint: true,
         logging: false,
         imageTimeout: 0,
         backgroundColor: '#ffffff',
@@ -324,6 +331,10 @@ export default function ReportCard() {
             clonedImages[i].style.visibility = 'visible';
             clonedImages[i].style.display = 'block';
             clonedImages[i].style.opacity = '1';
+            // Force white background behind transparent images except watermark
+            if (!clonedImages[i].parentElement?.classList.contains('pointer-events-none')) {
+              clonedImages[i].style.backgroundColor = '#ffffff';
+            }
           }
 
           const clonedElement = clonedDoc.getElementById('report-card-preview');
@@ -335,6 +346,7 @@ export default function ReportCard() {
             clonedElement.style.margin = '0';
             clonedElement.style.boxShadow = 'none';
             clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.background = '#ffffff';
             clonedElement.style.color = '#000000';
             clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
           }
@@ -827,11 +839,11 @@ export default function ReportCard() {
 
             {/* Report Card Preview (HTML) */}
               <div className="border border-stone-200 rounded-2xl overflow-x-auto shadow-inner bg-stone-100 p-4 lg:p-12">
-                <div id="report-card-preview" className="bg-white shadow-2xl mx-auto p-[10mm] sm:p-[15mm] relative" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Times New Roman', Times, serif", color: '#000000' }}>
+                <div id="report-card-preview" className="bg-white shadow-2xl mx-auto p-[10mm] sm:p-[15mm] relative" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Times New Roman', Times, serif", color: '#000000', backgroundColor: '#ffffff' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
-                      <img src={institution.watermark} alt="" className="w-[140mm] h-[140mm] object-contain" />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04, backgroundColor: 'transparent' }}>
+                      <img src={institution.watermark} alt="" className="w-[140mm] h-[140mm] object-contain" style={{ backgroundColor: 'transparent' }} />
                     </div>
                   )}
 
@@ -902,13 +914,13 @@ export default function ReportCard() {
                     <div>
                       <p className="mb-2">Mengetahui,</p>
                       <p className="mb-6 sm:mb-8">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: 'transparent' }}>
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
                             alt="" 
                             className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
-                            style={{ height: `${principalSigSize}px`, maxWidth: 'none' }} 
+                            style={{ height: `${principalSigSize}px`, maxWidth: 'none', backgroundColor: 'transparent' }} 
                           />
                         )}
                       </div>
@@ -919,13 +931,13 @@ export default function ReportCard() {
                         {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
                       </p>
                       <p className="mb-6 sm:mb-8">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
+                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px', backgroundColor: 'transparent' }}>
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
                             alt="" 
                             className="object-contain absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
-                            style={{ height: `${coordinatorSigSize}px`, maxWidth: 'none' }} 
+                            style={{ height: `${coordinatorSigSize}px`, maxWidth: 'none', backgroundColor: 'transparent' }} 
                           />
                         )}
                       </div>
