@@ -303,12 +303,12 @@ export default function StudentManager() {
                             </span>
                             <div className="h-px flex-1 bg-stone-200" />
                             <span className="text-[10px] text-stone-400 font-bold">
-                              {groupStudents.length} Siswa
+                              {(groupStudents as any[]).length} Siswa
                             </span>
                           </div>
                         </td>
                       </tr>
-                      {groupStudents.map(s => (
+                      {(groupStudents as any[]).map(s => (
                         <tr 
                           key={s.id} 
                           className={cn(

@@ -236,10 +236,6 @@ export default function MonthlyRecap() {
               clonedImages[i].style.visibility = 'visible';
               clonedImages[i].style.display = 'block';
               clonedImages[i].style.opacity = '1';
-              // Force white background behind transparent images except watermark
-              if (!clonedImages[i].parentElement?.classList.contains('pointer-events-none')) {
-                clonedImages[i].style.backgroundColor = '#ffffff';
-              }
             }
 
             const clonedElement = clonedDoc.getElementById('recap-preview-container');
@@ -355,10 +351,6 @@ export default function MonthlyRecap() {
             clonedImages[i].style.visibility = 'visible';
             clonedImages[i].style.display = 'block';
             clonedImages[i].style.opacity = '1';
-            // Force white background behind transparent images except watermark
-            if (!clonedImages[i].parentElement?.classList.contains('pointer-events-none')) {
-              clonedImages[i].style.backgroundColor = '#ffffff';
-            }
           }
 
           const clonedElement = clonedDoc.getElementById('recap-preview-container');
@@ -869,14 +861,14 @@ export default function MonthlyRecap() {
                     <div>
                       <p>Mengetahui,</p>
                       <p className="mb-6">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-20 bg-white" style={{ height: '80px', backgroundColor: '#ffffff' }}>
+                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
                             alt="Principal Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
+                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block' }} 
                           />
                         )}
                       </div>
@@ -885,14 +877,14 @@ export default function MonthlyRecap() {
                     <div>
                       <p className="invisible">.</p>
                       <p className="mb-6">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-20 bg-white" style={{ height: '80px', backgroundColor: '#ffffff' }}>
+                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block', backgroundColor: '#ffffff' }} 
+                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block' }} 
                           />
                         )}
                       </div>
