@@ -225,15 +225,14 @@ export default function MonthlyRecap() {
 
         // Use html-to-image which handles modern CSS (OKLCH, etc) much better
         const canvas = await htmlToImage.toCanvas(element, {
-          width: element.scrollWidth,
-          height: element.scrollHeight,
-          pixelRatio: 4, // Ultra-high resolution
-          cacheBust: true,
+          width: 1122.52,
+          pixelRatio: 4,
           backgroundColor: '#ffffff',
           style: {
             transform: 'none',
             margin: '0',
-            padding: '0'
+            padding: '15mm',
+            borderRadius: '0'
           }
         });
         
@@ -275,43 +274,32 @@ export default function MonthlyRecap() {
         });
       }));
 
-      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+      // High-end capture for PDF
       const canvas = await htmlToImage.toCanvas(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
-        pixelRatio: 4, // Ultra-high resolution
-        cacheBust: true,
+        width: 1122.52, // Fixed A4 width
+        pixelRatio: 4, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           margin: '0',
-          padding: '0'
+          padding: '15mm',
+          borderRadius: '0',
+          boxShadow: 'none'
         }
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('l', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
       
-      const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const ratio = imgProps.width / imgProps.height;
-      const width = pdfWidth;
-      const height = pdfWidth / ratio;
-      
-      let finalWidth = width;
-      let finalHeight = height;
-      
-      if (finalHeight > pdfHeight) {
-        finalHeight = pdfHeight;
-        finalWidth = pdfHeight * ratio;
-      }
-      
-      const x = (pdfWidth - finalWidth) / 2;
-      const y = (pdfHeight - finalHeight) / 2;
-      
-      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      // Direct fit for A4 Landscape
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       const fileName = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.pdf`;
       pdf.save(fileName);
     } catch (error) {

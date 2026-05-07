@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
-import { motion, Reorder, useDragControls, AnimatePresence } from 'motion/react';
+import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 import { SURAH_LIST } from '../constants/surahs';
@@ -474,16 +474,8 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         "lg:col-span-8 space-y-8",
         showListOnMobile && "hidden lg:block"
       )}>
-        <AnimatePresence mode="wait">
-          {selectedStudent ? (
-            <motion.div 
-              key={selectedStudent.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white p-8 lg:p-12 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5 transition-all"
-            >
+        {selectedStudent ? (
+          <div className="bg-white p-8 lg:p-12 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5 transition-all">
               <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-12">
               <div className="flex items-center gap-6">
                 <button 
@@ -541,15 +533,7 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-10">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={type}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-stone-50/50 p-8 lg:p-10 rounded-[2.5rem] border border-stone-200/40"
-                >
+              <div className="bg-stone-50/50 p-8 lg:p-10 rounded-[2.5rem] border border-stone-200/40">
                   {type === 'hafalan' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div className="space-y-3">
@@ -730,8 +714,7 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                     </div>
                   </div>
                 )}
-                </motion.div>
-              </AnimatePresence>
+                </div>
 
               <div className="flex flex-col sm:flex-row gap-6">
                 <button 
@@ -768,15 +751,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 </div>
               </div>
             </form>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div 
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 bg-white rounded-[3.5rem] border border-stone-200 border-dashed text-stone-400 space-y-6"
-          >
+          <div className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 bg-white rounded-[3.5rem] border border-stone-200 border-dashed text-stone-400 space-y-6">
             <div className="w-24 h-24 bg-stone-50 rounded-[2rem] flex items-center justify-center shadow-inner">
               <ClipboardCheck size={40} className="opacity-20" />
             </div>
@@ -784,9 +761,8 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
               <h3 className="text-2xl font-display font-black text-stone-950 uppercase tracking-tighter">Ready to start?</h3>
               <p className="font-medium text-stone-400">Pilih salah satu siswa di panel kiri untuk mulai mencatat progress hari ini.</p>
             </div>
-          </motion.div>
+          </div>
         )}
-        </AnimatePresence>
       </div>
 
       <ConfirmModal 

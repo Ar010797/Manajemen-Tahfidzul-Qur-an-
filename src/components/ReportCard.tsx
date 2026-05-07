@@ -157,17 +157,17 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+      // High-end capture for Image
       const canvas = await htmlToImage.toCanvas(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
-        pixelRatio: 4, // Ultra-high resolution (HDR-like quality)
-        cacheBust: true,
+        width: 793.7, // Fixed A4 Portrait Width (approx)
+        pixelRatio: 4, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           margin: '0',
-          padding: '0'
+          padding: '10mm',
+          borderRadius: '0',
+          boxShadow: 'none'
         }
       });
       
@@ -235,44 +235,30 @@ export default function ReportCard() {
 
       // Use html-to-image which handles modern CSS (OKLCH, etc) much better
       const canvas = await htmlToImage.toCanvas(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
-        pixelRatio: 4, // Ultra-high resolution
-        cacheBust: true,
+        width: 793.7, // Fixed A4 Portrait Width
+        pixelRatio: 4, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           margin: '0',
-          padding: '0'
+          padding: '10mm',
+          borderRadius: '0',
+          boxShadow: 'none'
         }
       });
       
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
       
-      const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate scaling to fit the page
-      const ratio = imgProps.width / imgProps.height;
-      const width = pdfWidth;
-      const height = pdfWidth / ratio;
-      
-      // If height is still more than page height, scale down further
-      let finalWidth = width;
-      let finalHeight = height;
-      
-      if (finalHeight > pdfHeight) {
-        finalHeight = pdfHeight;
-        finalWidth = pdfHeight * ratio;
-      }
-      
-      // Center the image on the page
-      const x = (pdfWidth - finalWidth) / 2;
-      const y = (pdfHeight - finalHeight) / 2;
-      
-      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      // Add image to PDF - force fit to page
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
       
       const pdfBlob = pdf.output('blob');
