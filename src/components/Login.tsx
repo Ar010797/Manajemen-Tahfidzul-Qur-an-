@@ -57,6 +57,13 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
             themeColor === 'purple' ? 'bg-purple-500/20' :
             themeColor === 'rose' ? 'bg-rose-500/20' :
             'bg-slate-500/20',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/20' :
+            themeColor === 'blue' ? 'shadow-blue-500/20' :
+            themeColor === 'amber' ? 'shadow-amber-500/20' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/20' :
+            themeColor === 'purple' ? 'shadow-purple-500/20' :
+            themeColor === 'rose' ? 'shadow-rose-500/20' :
+            'shadow-slate-500/20',
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -114,46 +121,46 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
             whileHover={{ scale: 1.1, rotate: 5 }}
             className="relative mb-8"
           >
-            <div className={cn("w-24 h-24 bg-gradient-to-br rounded-[2rem] flex items-center justify-center relative overflow-hidden", theme.bg)} style={{ boxShadow: `0 20px 40px ${theme.glow}` }}>
+            <div className={cn("w-28 h-28 bg-gradient-to-br rounded-[2.5rem] flex items-center justify-center relative overflow-hidden", theme.bg)} style={{ boxShadow: `0 30px 60px ${theme.glow}` }}>
               <motion.div 
                 animate={{ x: ["-100%", "200%"] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
               />
-              <BookOpen className="text-white w-12 h-12 relative z-10" />
+              <BookOpen className="text-white w-14 h-14 relative z-10" />
             </div>
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-2 -right-2 bg-amber-400 p-2 rounded-xl shadow-lg"
+              className="absolute -top-2 -right-2 bg-amber-400 p-2.5 rounded-2xl shadow-xl border-2 border-[#1e293b]"
             >
-              <Sparkles className="text-white w-4 h-4" />
+              <Sparkles className="text-white w-5 h-5" />
             </motion.div>
           </motion.div>
           
-          <h1 className="text-4xl font-black text-white tracking-tighter text-center leading-none">
+          <h1 className="text-4xl font-display font-black text-white tracking-tight text-center leading-none uppercase">
             Manager <span className={theme.text}>Tahfidz</span>
           </h1>
-          <div className={cn("h-1 w-16 rounded-full mt-6 mb-2 overflow-hidden", theme.bgBlur.replace('20', '30'))}>
+          <div className={cn("h-1.5 w-20 rounded-full mt-8 mb-3 overflow-hidden", theme.bgBlur.replace('20', '30'))}>
             <motion.div 
               animate={{ x: ["-100%", "100%"] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
               className={cn("h-full w-1/2", theme.text.replace('text', 'bg'))}
             />
           </div>
-          <p className="text-stone-400 text-[10px] font-black tracking-[0.4em] uppercase opacity-60">Sistem Monitoring Qur'an</p>
+          <p className="text-stone-500 text-[10px] font-display font-black tracking-[0.5em] uppercase">PROFESSIONAL MONITORING</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em] ml-2">Nama Pengguna / Guru</label>
+            <label className="text-[10px] font-display font-black text-stone-500 uppercase tracking-[0.3em] ml-2">Identitas Pengajar</label>
             <div className="relative group">
-              <User className={cn("absolute left-5 top-1/2 -translate-y-1/2 text-stone-500 transition-colors w-5 h-5", `group-focus-within:${theme.text}`)} />
+              <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 text-stone-600 transition-colors w-6 h-6", `group-focus-within:${theme.text}`)} />
               <input 
                 type="text"
                 required
-                className={cn("w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:bg-white/10 transition-all text-lg font-medium", theme.ring)}
-                placeholder="Masukkan Nama Anda"
+                className={cn("w-full bg-white/5 border border-white/10 rounded-[1.75rem] py-6 pl-16 pr-8 text-white placeholder:text-stone-700 focus:outline-none focus:ring-4 focus:bg-white/10 transition-all text-xl font-bold tracking-tight", theme.ring)}
+                placeholder="Nama Lengkap Anda"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
               />
@@ -161,30 +168,30 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em] ml-2">Jabatan</label>
+            <label className="text-[10px] font-display font-black text-stone-500 uppercase tracking-[0.3em] ml-2">Role Akses</label>
             <div className="relative">
               <select 
-                className={cn("w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-white focus:outline-none focus:ring-2 transition-all appearance-none text-lg font-medium cursor-pointer", theme.ring)}
+                className={cn("w-full bg-white/5 border border-white/10 rounded-[1.75rem] py-6 px-8 text-white focus:outline-none focus:ring-4 transition-all appearance-none text-xl font-bold tracking-tight cursor-pointer", theme.ring)}
                 value={role}
                 onChange={e => setRole(e.target.value)}
               >
-                <option value="guru" className="bg-stone-900">Guru Halaqoh</option>
-                <option value="admin" className="bg-stone-900">Administrator</option>
+                <option value="guru" className="bg-stone-950 font-bold">Guru Halaqoh</option>
+                <option value="admin" className="bg-stone-950 font-bold">Administrator</option>
               </select>
-              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-stone-500">
-                <ArrowRight size={20} className="rotate-90" />
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-stone-600">
+                <ArrowRight size={24} className="rotate-90" />
               </div>
             </div>
           </div>
 
           <motion.button 
-            whileHover={{ scale: 1.02, y: -2 }}
+            whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className={cn("w-full bg-gradient-to-r text-white font-black py-5 rounded-2xl transition-all mt-6 flex items-center justify-center gap-4 text-lg tracking-tight", theme.btn)}
+            className={cn("w-full bg-stone-950 hover:bg-stone-900 border border-white/10 text-white font-display font-black py-7 rounded-[2rem] transition-all mt-10 flex items-center justify-center gap-6 text-xl tracking-[0.2em] shadow-2xl", theme.shadow?.replace('shadow-', 'shadow-stone-950/'))}
           >
-            <span>MASUK KE SISTEM</span>
-            <ArrowRight size={22} />
+            <span>MASUK</span>
+            <ArrowRight size={24} />
           </motion.button>
         </form>
 

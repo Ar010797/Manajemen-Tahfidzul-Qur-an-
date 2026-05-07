@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 
@@ -223,80 +223,17 @@ export default function MonthlyRecap() {
           });
         }));
 
-        const canvas = await html2canvas(element, {
-          scale: 4, // Ultra-high resolution
-          useCORS: true,
+        // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+        const canvas = await htmlToImage.toCanvas(element, {
+          width: element.scrollWidth,
+          height: element.scrollHeight,
+          pixelRatio: 4, // Ultra-high resolution
+          cacheBust: true,
           backgroundColor: '#ffffff',
-          logging: false,
-          imageTimeout: 0,
-          onclone: (clonedDoc) => {
-            // Ensure images are visible and have white background if they are signatures/logos
-            const clonedImages = clonedDoc.getElementsByTagName('img');
-            for (let i = 0; i < clonedImages.length; i++) {
-              clonedImages[i].style.visibility = 'visible';
-              clonedImages[i].style.display = 'block';
-              clonedImages[i].style.opacity = '1';
-            }
-
-            const clonedElement = clonedDoc.getElementById('recap-preview-container');
-            if (clonedElement) {
-              clonedElement.style.width = '297mm';
-              clonedElement.style.height = 'auto';
-              clonedElement.style.minHeight = '210mm';
-              clonedElement.style.transform = 'none';
-              clonedElement.style.margin = '0';
-              clonedElement.style.boxShadow = 'none';
-              clonedElement.style.backgroundColor = '#ffffff';
-              clonedElement.style.color = '#000000';
-              clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
-            }
-
-            // Workaround for oklab/oklch colors and table rendering issues
-            const allElements = clonedDoc.getElementsByTagName('*');
-            for (let i = 0; i < allElements.length; i++) {
-              const el = allElements[i] as HTMLElement;
-              if (el.style) {
-                const computed = window.getComputedStyle(el);
-                
-                // Catch-all for any oklch/oklab colors
-                if (computed.color.includes('okl')) el.style.color = '#000000';
-                if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-                if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-
-                if (el.tagName === 'TH' || el.tagName === 'TD') {
-                  el.style.borderColor = '#000000';
-                  el.style.color = '#000000';
-                  el.style.opacity = '1';
-                  el.style.visibility = 'visible';
-                  el.style.verticalAlign = 'middle';
-                  el.style.lineHeight = '1.2';
-                  el.style.boxSizing = 'border-box';
-                  el.style.overflow = 'visible';
-                  el.style.wordBreak = 'break-word';
-                  el.style.position = 'relative';
-                  el.style.zIndex = '1';
-                }
-
-                if (el.tagName === 'TH') {
-                  el.style.fontWeight = 'bold';
-                  el.style.backgroundColor = '#f8fafc';
-                  el.style.zIndex = '10';
-                }
-
-                // Specific overrides for better accuracy
-                if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
-                if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
-                if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
-                if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
-                if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-                if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
-                if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
-                if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
-                if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
-                if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
-                if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
-              }
-            }
+          style: {
+            transform: 'none',
+            margin: '0',
+            padding: '0'
           }
         });
         
@@ -338,75 +275,17 @@ export default function MonthlyRecap() {
         });
       }));
 
-      const canvas = await html2canvas(element, {
-        scale: 4, // Ultra-high resolution
-        useCORS: true,
+      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+      const canvas = await htmlToImage.toCanvas(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        pixelRatio: 4, // Ultra-high resolution
+        cacheBust: true,
         backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 0,
-        onclone: (clonedDoc) => {
-          // Ensure images are visible and have white background if they are signatures/logos
-          const clonedImages = clonedDoc.getElementsByTagName('img');
-          for (let i = 0; i < clonedImages.length; i++) {
-            clonedImages[i].style.visibility = 'visible';
-            clonedImages[i].style.display = 'block';
-            clonedImages[i].style.opacity = '1';
-          }
-
-          const clonedElement = clonedDoc.getElementById('recap-preview-container');
-          if (clonedElement) {
-            clonedElement.style.width = '297mm';
-            clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = '210mm';
-            clonedElement.style.transform = 'none';
-            clonedElement.style.margin = '0';
-            clonedElement.style.boxShadow = 'none';
-            clonedElement.style.backgroundColor = '#ffffff';
-            clonedElement.style.color = '#000000';
-          }
-
-          const allElements = clonedDoc.getElementsByTagName('*');
-          for (let i = 0; i < allElements.length; i++) {
-            const el = allElements[i] as HTMLElement;
-            if (el.style) {
-              const computed = window.getComputedStyle(el);
-              if (computed.color.includes('okl')) el.style.color = '#000000';
-              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-
-              if (el.tagName === 'TH' || el.tagName === 'TD') {
-                el.style.borderColor = '#000000';
-                el.style.color = '#000000';
-                el.style.opacity = '1';
-                el.style.visibility = 'visible';
-                el.style.verticalAlign = 'middle';
-                el.style.lineHeight = '1.2';
-                el.style.boxSizing = 'border-box';
-                el.style.overflow = 'visible';
-                el.style.wordBreak = 'break-word';
-                el.style.position = 'relative';
-                el.style.zIndex = '1';
-              }
-
-              if (el.tagName === 'TH') {
-                el.style.fontWeight = 'bold';
-                el.style.backgroundColor = '#f8fafc';
-                el.style.zIndex = '10';
-              }
-
-              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
-              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
-              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
-              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
-              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
-              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
-              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
-              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
-              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
-              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
-            }
-          }
+        style: {
+          transform: 'none',
+          margin: '0',
+          padding: '0'
         }
       });
 
@@ -495,143 +374,156 @@ export default function MonthlyRecap() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="bg-white p-4 sm:p-8 rounded-3xl border border-stone-200 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-stone-900">Rekapitulasi Bulanan</h2>
-            <p className="text-stone-500 text-sm">Akumulasi otomatis dengan kolom catatan kustom</p>
+    <div className="space-y-10 font-sans">
+      <div className="bg-white p-10 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-display font-black text-stone-950 tracking-tight leading-none">Rekapitulasi Bulanan</h1>
+            <p className="text-stone-500 font-medium">Monitoring progress bulanan dan akumulasi data otomatis.</p>
           </div>
-          <div className="flex flex-wrap gap-2 w-full lg:w-auto">
+          <div className="flex flex-wrap gap-4 w-full lg:w-auto">
             <button 
               onClick={generatePDF}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className={cn(
-                "flex-1 lg:flex-none text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50",
-                theme.bg, "hover:opacity-90", theme.shadow.replace('10', '20')
+                "flex-1 lg:flex-none text-white px-8 py-4 rounded-2xl font-display font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]",
+                theme.bg, theme.shadow
               )}
-              title="Unduh PDF Kualitas Tinggi (HDR)"
             >
-              <Download size={20} />
-              {isGenerating ? '...' : 'PDF HDR'}
+              <Download size={18} />
+              {isGenerating ? 'Wait...' : 'EXPOR PDF'}
             </button>
             <button 
               onClick={() => generateImage('jpg')}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
-              className="flex-1 lg:flex-none bg-amber-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
-              title="Unduh Gambar Kualitas Tinggi (HDR)"
+              className="flex-1 lg:flex-none bg-stone-950 text-white px-8 py-4 rounded-2xl font-display font-black text-xs uppercase tracking-widest hover:bg-stone-800 transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]"
             >
-              <FileText size={20} />
-              {isGenerating ? '...' : 'JPG HDR'}
+              <FileText size={18} />
+              {isGenerating ? 'Wait...' : 'EXPOR JPG'}
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Pilih Halaqoh</label>
-            <select 
-              className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2", theme.ring)}
-              value={selectedHalaqoh}
-              onChange={(e) => setSelectedHalaqoh(e.target.value)}
-            >
-              <option value="">-- Pilih Halaqoh --</option>
-              {halaqohs.map(h => (
-                <option key={h.id} value={h.id}>{h.name}</option>
-              ))}
-            </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="space-y-3">
+            <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Pilih Halaqoh</label>
+            <div className="relative group">
+               <select 
+                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 px-6 focus:outline-none focus:ring-4 transition-all appearance-none font-bold text-stone-900 cursor-pointer", theme.ring)}
+                value={selectedHalaqoh}
+                onChange={(e) => setSelectedHalaqoh(e.target.value)}
+              >
+                <option value="">-- Semua Halaqoh --</option>
+                {halaqohs.map(h => (
+                  <option key={h.id} value={h.id}>{h.name}</option>
+                ))}
+              </select>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-stone-300">
+                <Search size={18} />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Pilih Bulan</label>
-            <input 
-              type="month"
-              className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-3 px-4 focus:outline-none focus:ring-2", theme.ring)}
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-            />
+          <div className="space-y-3">
+            <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Periode Bulan</label>
+            <div className="relative group">
+              <input 
+                type="month"
+                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 px-6 focus:outline-none focus:ring-4 transition-all font-bold text-stone-900", theme.ring)}
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              />
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-stone-300">
+                <Calendar size={18} />
+              </div>
+            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="py-20 text-center text-stone-400">Memuat data...</div>
+          <div className="py-24 text-center">
+            <div className="w-16 h-16 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-6" />
+            <p className="text-stone-400 font-display font-black text-xs uppercase tracking-widest">Sychronizing data...</p>
+          </div>
         ) : recapData.length > 0 ? (
-          <div className="space-y-8">
-            <div className="overflow-x-auto border border-stone-200 rounded-2xl">
+          <div className="space-y-12">
+            <div className="overflow-hidden border border-stone-200/60 rounded-[2rem] shadow-sm">
               <table className="w-full text-[11px] text-left border-collapse">
-                <thead className="bg-stone-50 text-stone-500 font-bold uppercase tracking-wider">
-                  <tr className="border-b border-stone-200">
-                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">No</th>
-                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200">Nama</th>
-                    {hasHafalan && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Hafalan</th>}
-                    {hasTilawah && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Tilawah Al-Qur'an</th>}
-                    {hasUmmi && <th colSpan={3} className="px-4 py-2 border-r border-stone-200 text-center">Ummi</th>}
-                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Hari Aktif</th>
-                    <th rowSpan={2} className="px-4 py-3 border-r border-stone-200 text-center">Total Hafalan</th>
-                    <th rowSpan={2} className="px-4 py-3 text-center">Catatan Bulanan</th>
+                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em]">
+                  <tr className="border-b border-stone-200/60">
+                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">No</th>
+                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60">Nama Siswa</th>
+                    {hasHafalan && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Hafalan Al-Qur'an</th>}
+                    {hasTilawah && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Tilawah Al-Qur'an</th>}
+                    {hasUmmi && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Metode Ummi</th>}
+                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">Aktif</th>
+                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">Total</th>
+                    <th rowSpan={2} className="px-6 py-5 text-center">Catatan Guru</th>
                   </tr>
-                  <tr className="border-b border-stone-200">
+                  <tr className="border-b border-stone-200/60">
                     {hasHafalan && (
                       <>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
                       </>
                     )}
                     {hasTilawah && (
                       <>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
                       </>
                     )}
                     {hasUmmi && (
                       <>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Awl</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Akh</th>
-                        <th className="px-2 py-2 border-r border-stone-200 text-center">Jml</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
                       </>
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100">
+                <tbody className="divide-y divide-stone-100 font-medium text-stone-600">
                   {recapData.map((s, idx) => (
-                    <tr key={s.id} className="hover:bg-stone-50 transition-colors">
-                      <td className="px-4 py-3 border-r border-stone-100 text-center">{idx + 1}</td>
-                      <td className="px-4 py-3 border-r border-stone-100 font-bold text-stone-800">{s.name}</td>
+                    <tr key={s.id} className="hover:bg-stone-50/50 transition-colors">
+                      <td className="px-6 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black">{idx + 1}</td>
+                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900">{s.name}</td>
                       {hasHafalan && (
                         <>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.awl}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.hafalan.akh}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.hafalan.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.hafalan.jml}</td>
                         </>
                       )}
                       {hasTilawah && (
                         <>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.awl}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.tilawah.akh}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.tilawah.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.tilawah.jml}</td>
                         </>
                       )}
                       {hasUmmi && (
                         <>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.awl}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center">{s.ummi.akh}</td>
-                          <td className="px-2 py-3 border-r border-stone-100 text-center font-bold">{s.ummi.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.ummi.jml}</td>
                         </>
                       )}
-                      <td className={cn("px-4 py-3 border-r border-stone-100 text-center font-bold", theme.text)}>{activeDaysCount}</td>
-                      <td className="px-4 py-3 border-r border-stone-100">
+                      <td className={cn("px-6 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
+                      <td className="px-6 py-4 border-r border-stone-100/60 min-w-[140px]">
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
+                          placeholder="Nilai..."
+                          className="w-full bg-stone-50 border border-stone-200/60 rounded-xl px-4 py-2.5 text-[10px] focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold"
                           value={recapSettings[s.id]?.total_hafalan || ''}
                           onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
                         />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4 min-w-[200px]">
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200 rounded px-2 py-1 text-[10px]"
+                          placeholder="Tambahkan catatan..."
+                          className="w-full bg-stone-50 border border-stone-200/60 rounded-xl px-4 py-2.5 text-[10px] focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={recapSettings[s.id]?.notes || ''}
                           onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
                         />
@@ -643,71 +535,75 @@ export default function MonthlyRecap() {
             </div>
 
             {/* Preview for Export */}
-            <div className="mt-12 border-t pt-12">
-              <h3 className="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6 text-center">Pratinjau Hasil Ekspor</h3>
+            <div className="mt-20 space-y-10">
+              <div className="flex items-center gap-6 justify-center">
+                 <div className="h-px bg-stone-200 flex-1" />
+                 <h3 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.4em]">EXPORT PREVIEW</h3>
+                 <div className="h-px bg-stone-200 flex-1" />
+              </div>
               
               {/* Signature Size Controls (Outside Capture Area) */}
-              <div className="max-w-[297mm] mx-auto mb-6 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center gap-8">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-emerald-50 rounded-lg">
-                    <Settings size={18} className="text-emerald-600" />
+              <div className="max-w-7xl mx-auto bg-stone-50 p-8 rounded-[2.5rem] border border-stone-200/40 flex flex-col xl:flex-row items-center gap-10">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md">
+                    <Settings size={28} className="text-stone-900" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-stone-900">Pengaturan Ukuran Tanda Tangan</h4>
-                    <p className="text-[10px] text-stone-500">Sesuaikan ukuran gambar ttd sebelum diunduh</p>
+                    <h4 className="text-lg font-display font-black text-stone-950 tracking-tight">Image Tuning</h4>
+                    <p className="text-xs text-stone-500 font-medium">Atur skala tanda tangan sebelum diekspor.</p>
                   </div>
                 </div>
                 
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-                  <div>
-                    <div className="flex justify-between text-[10px] mb-2">
-                      <span className="text-stone-500 font-medium">Kepala Sekolah</span>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handlePrincipalSigSizeChange(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} className="scale-[-1]" />
-                        </button>
-                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
-                        <button onClick={() => handlePrincipalSigSizeChange(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} />
-                        </button>
-                      </div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[10px] font-display font-black text-stone-400 uppercase tracking-widest">KEPALA SEKOLAH</span>
+                      <span className="font-display font-black text-sm text-stone-900">{principalSigSize}PX</span>
                     </div>
-                    <input 
-                      type="range" 
-                      min="40" 
-                      max="300" 
-                      value={principalSigSize} 
-                      onChange={e => handlePrincipalSigSizeChange(parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                    />
+                    <div className="flex items-center gap-4">
+                       <button onClick={() => handlePrincipalSigSizeChange(Math.max(40, principalSigSize - 10))} className="p-2 bg-white rounded-xl shadow-sm text-stone-400 hover:text-stone-900 active:scale-95 transition-all">
+                          <Search size={14} className="scale-[-1]" />
+                       </button>
+                       <input 
+                        type="range" 
+                        min="40" 
+                        max="300" 
+                        value={principalSigSize} 
+                        onChange={e => handlePrincipalSigSizeChange(parseInt(e.target.value))}
+                        className="flex-1 h-2 bg-white rounded-lg appearance-none cursor-pointer accent-stone-950"
+                      />
+                       <button onClick={() => handlePrincipalSigSizeChange(Math.min(300, principalSigSize + 10))} className="p-2 bg-white rounded-xl shadow-sm text-stone-400 hover:text-stone-900 active:scale-95 transition-all">
+                          <Search size={14} />
+                       </button>
+                    </div>
                   </div>
-                  <div>
-                    <div className="flex justify-between text-[10px] mb-2">
-                      <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleCoordinatorSigSizeChange(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} className="scale-[-1]" />
-                        </button>
-                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
-                        <button onClick={() => handleCoordinatorSigSizeChange(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} />
-                        </button>
-                      </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[10px] font-display font-black text-stone-400 uppercase tracking-widest">KOORDINATOR TAHFIDZ</span>
+                      <span className="font-display font-black text-sm text-stone-900">{coordinatorSigSize}PX</span>
                     </div>
-                    <input 
-                      type="range" 
-                      min="40" 
-                      max="300" 
-                      value={coordinatorSigSize} 
-                      onChange={e => handleCoordinatorSigSizeChange(parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                    />
+                    <div className="flex items-center gap-4">
+                       <button onClick={() => handleCoordinatorSigSizeChange(Math.max(40, coordinatorSigSize - 10))} className="p-2 bg-white rounded-xl shadow-sm text-stone-400 hover:text-stone-900 active:scale-95 transition-all">
+                          <Search size={14} className="scale-[-1]" />
+                       </button>
+                       <input 
+                        type="range" 
+                        min="40" 
+                        max="300" 
+                        value={coordinatorSigSize} 
+                        onChange={e => handleCoordinatorSigSizeChange(parseInt(e.target.value))}
+                        className="flex-1 h-2 bg-white rounded-lg appearance-none cursor-pointer accent-stone-950"
+                      />
+                       <button onClick={() => handleCoordinatorSigSizeChange(Math.min(300, coordinatorSigSize + 10))} className="p-2 bg-white rounded-xl shadow-sm text-stone-400 hover:text-stone-900 active:scale-95 transition-all">
+                          <Search size={14} />
+                       </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="overflow-x-auto p-4 bg-stone-100 rounded-3xl shadow-inner">
-                <div id="recap-preview-container" className="bg-white shadow-2xl mx-auto p-[15mm] relative overflow-hidden" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Times New Roman', Times, serif", color: '#1c1917', backgroundColor: '#ffffff' }}>
+              <div className="overflow-x-auto p-12 bg-white rounded-[3.5rem] shadow-2xl border border-stone-200/40">
+                <div id="recap-preview-container" className="mx-auto p-[20mm] relative bg-white" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#1c1917' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>

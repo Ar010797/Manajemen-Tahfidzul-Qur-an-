@@ -707,6 +707,356 @@ export const DAILY_ADVICE: DailyAdvice[] = [
     explanation: "Mintalah kepada Allah agar diwafatkan dalam keadaan husnul khatimah. Teruslah berbuat baik sampai nafas terakhir, karena amalan itu dinilai dari penutupnya (akhir hidupnya).",
     hadithSource: "HR. Bukhari",
     arabic: "إِنَّمَا الأَعْمَالُ بِالْخَوَاتِيمِ"
+  },
+  {
+    id: 101,
+    title: "Indahnya Husnudzan",
+    explanation: "Berbaik sangkalah kepada Allah dalam setiap takdir-Nya, dan berbaik sangkalah kepada sesama manusia. Hati yang penuh husnudzan akan selalu tenang dan terjaga dari penyakit su'udzan yang merusak.",
+    hadithSource: "HR. Muslim",
+    arabic: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي"
+  },
+  {
+    id: 102,
+    title: "Menahan Nafsu",
+    explanation: "Musuh terbesarmu bukan orang lain, tapi hawa nafsumu sendiri. Siapa yang mampu menaklukkan keinginannya yang buruk, ia telah memenangkan pertempuran yang paling agung menuju Ridha Allah.",
+    quranSource: "QS. An-Nazi'at: 40-41",
+    arabic: "وَأَمَّا مَنْ خَافَ مَقَامَ رَبِّهِ وَنَهَى النَّفْسَ عَنِ الْهَوَىٰ"
+  },
+  {
+    id: 103,
+    title: "Kekuatan Shadaqah",
+    explanation: "Sedekah tidak akan mengurangi hartamu, justru ia menjadi pembersih dan penambah keberkahan. Sedekah juga memadamkan kemurkaan Allah dan menghapus dosa-dosa kecilmu.",
+    hadithSource: "HR. Muslim",
+    arabic: "مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ"
+  },
+  {
+    id: 104,
+    title: "Menjaga Shalat Berjamaah",
+    explanation: "Ada kekuatan dan pahala berlipat dalam kebersamaan di masjid. Shalat berjamaah 27 kali lebih utama daripada shalat sendirian. Jangan biarkan langkah kakimu malas menuju rumah-Nya.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "صَلاةُ الْجَمَاعَةِ تَفْضُلُ صَلاةَ الْفَذِّ بِسَبْعٍ وَعِشْرِينَ دَرَجَةً"
+  },
+  {
+    id: 105,
+    title: "Menjaga Tali Persaudaraan",
+    explanation: "Seorang muslim adalah saudara bagi muslim lainnya. Jangan saling membenci, jangan saling menjauhi, dan jangan saling membelakangi. Jadilah hamba-hamba Allah yang bersaudara.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "وَكُونُوا عِبَادَ اللَّهِ إِخْوَانًا"
+  },
+  {
+    id: 106,
+    title: "Ketenangan dengan Al-Qur'an",
+    explanation: "Jadikan Al-Qur'an sebagai penyejuk hatimu dan penghilang kesedihanmu. Membacanya adalah ibadah, mendengarkannya adalah rahmat, dan mengamalkannya adalah jalan menuju keselamatan.",
+    quranSource: "QS. Yunus: 57",
+    arabic: "يَا أَيُّهَا النَّاسُ قَدْ جَاءَتْكُم مَّوْعِظَةٌ مِّن رَّبِّكُمْ وَشِفَاءٌ لِّمَا فِي الصُّدُورِ"
+  },
+  {
+    id: 107,
+    title: "Larangan Berlebih-lebihan",
+    explanation: "Hiduplah dengan penuh keseimbangan. Jangan berlebihan dalam memburu dunia hingga melupakan akhirat, dan jangan pula menyia-nyiakan nikmat Allah yang halal bagimu.",
+    quranSource: "QS. Al-A'raf: 31",
+    arabic: "وكُلُوا وَاشْرَبُوا وَلَا تُسْرِفُوا"
+  },
+  {
+    id: 108,
+    title: "Indahnya Tawadhu",
+    explanation: "Rendah hatilah di hadapan Allah dan sesama manusia. Siapa yang merendahkan hati karena Allah, maka Allah akan meninggikan derajatnya. Kesombongan hanya milik Allah, jangan kau rampas.",
+    hadithSource: "HR. Muslim",
+    arabic: "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلاَّ رَفَعَهُ اللَّهُ"
+  },
+  {
+    id: 109,
+    title: "Menjaga Kehormatan Muslim",
+    explanation: "Mencela seorang muslim adalah kefasikan dan memeranginya adalah kekufuran. Jagalah lidahmu dari menghina sesama, karena kehormatan setiap mukmin dilindungi oleh Allah.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "سِبَابُ الْمُسْلِمِ فُسُوقٌ وَقِتَالُهُ كُفْرٌ"
+  },
+  {
+    id: 110,
+    title: "Persiapan Menuju Akhirat",
+    explanation: "Dunia hanyalah ladang tempat menanam, dan akhirat adalah tempat mengetam (memanen). Pastikan benih yang kau tanam hari ini adalah amal shalih yang akan membahagiakanmu kelak.",
+    quranSource: "QS. Al-Hasyr: 18",
+    arabic: "وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ"
+  },
+  {
+    id: 111,
+    title: "Menjauhi Sifat Kikir",
+    explanation: "Sifat kikir hanya akan menyempitkan dadamu dan menjauhkanmu dari keberkahan. Berbagilah dengan apa yang kau miliki, karena sesungguhnya pemilik sejati harta itu adalah Allah.",
+    quranSource: "QS. Muhammad: 38",
+    arabic: "وَمَن يَبْخَلْ فَإِنَّمَا يَبْخَلُ عَن نَّفْسِهِ"
+  },
+  {
+    id: 112,
+    title: "Keluarga Adalah Amanah",
+    explanation: "Jagalah dirimu dan keluargamu dari api neraka. Didiklah mereka dengan iman dan akhlak. Keluarga yang sakinah adalah surga terkecil yang bisa kau bangun di dunia ini.",
+    quranSource: "QS. At-Tahrim: 6",
+    arabic: "قُوا أَنفُسَكُمْ وَأَهْلِيكُمْ نَارًا"
+  },
+  {
+    id: 113,
+    title: "Membantu yang Lemah",
+    explanation: "Carilah keredaan Allah melalui bantuanmu kepada orang-orang yang lemah di antaramu. Rezeki dan pertolongan Allah seringkali datang melalui doa-doa tulus mereka yang kita bantu.",
+    hadithSource: "HR. Abu Daud & Tirmidzi",
+    arabic: "هَلْ تُنْصَرُونَ وَتُرْزَقُونَ إِلاَّ بِضُعَفَائِكُمْ"
+  },
+  {
+    id: 114,
+    title: "Mencintai Keindahan",
+    explanation: "Allah itu Indah dan menyukai keindahan. Tampillah rapi dan bersih, namun tetap dalam kesederhanaan. Keindahan yang hakiki terpancar dari kebersihan hati dan kejernihan pikiran.",
+    hadithSource: "HR. Muslim",
+    arabic: "إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ"
+  },
+  {
+    id: 115,
+    title: "Menjaga Syukur dalam Nikmat",
+    explanation: "Jangan biarkan nikmat yang melimpah membuatmu sombong dan lalai. Ingatlah bahwa semua itu adalah ujian untuk melihat apakah kau akan bersyukur atau justru menjadi hamba yang kufur.",
+    quranSource: "QS. An-Naml: 40",
+    arabic: "هَٰذَا مِن فَضْلِ رَبِّي لِيَبْلُوَنِي أَأَشْكُرُ أَمْ أَكْفُرُ"
+  },
+  {
+    id: 116,
+    title: "Pahala Bersabar",
+    explanation: "Hanya orang-orang yang bersabarlah yang akan disempurnakan pahalanya tanpa batas. Teruslah bertahan dalam ketaatan dan sabar dalam menjauhi larangan-Nya.",
+    quranSource: "QS. Az-Zumar: 10",
+    arabic: "إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ"
+  },
+  {
+    id: 117,
+    title: "Waspada Pergaulan Buruk",
+    explanation: "Seseorang itu bergantung pada agama teman dekatnya. Pilihlah sahabat yang bisa menarikmu menuju ketaatan, bukan yang justru menjerumuskanmu dalam jurang kelalaian.",
+    hadithSource: "HR. Abu Daud & Tirmidzi",
+    arabic: "الرَّجُلُ عَلَى دِينِ خَلِيلِهِ فَلْيَنْظُرْ أَحَدُكُمْ مَنْ يُخَالِلُ"
+  },
+  {
+    id: 118,
+    title: "Kelezatan Iman",
+    explanation: "Iman akan terasa manis saat Allah dan Rasul-Nya lebih kau cintai dari segalanya. Berusahalah mencapai tingkatan ini, agar setiap ibadahmu tak lagi terasa berat, melainkan penuh nikmat.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "ثَلاثٌ مَنْ كُنَّ فِيهِ وَجَدَ حَلاوَةَ الإِيمَانِ"
+  },
+  {
+    id: 119,
+    title: "Menjauhi Prasangka Buruk",
+    explanation: "Jauhilah kebanyakan dari prasangka, karena sebagian prasangka itu adalah dosa. Jangan biarkan pikiran negatif meracuni hubunganmu dengan sesama saudara muslim.",
+    quranSource: "QS. Al-Hujurat: 12",
+    arabic: "اجْتَنِبُوا كَثِيرًا مِّنَ الظَّنِّ إِنَّ بَعْضَ الظَّنِّ إِثْمٌ"
+  },
+  {
+    id: 120,
+    title: "Kebahagiaan di Jalan Allah",
+    explanation: "Barangsiapa yang beramal shalih baik laki-laki maupun perempuan dalam keadaan beriman, Allah pasti akan berikannya kehidupan yang baik di dunia dan pahala yang besar di akhirat.",
+    quranSource: "QS. An-Nahl: 97",
+    arabic: "فَلَنُحْيِيَنَّهُ حَيَاةً طَيِّبَةً"
+  },
+  {
+    id: 121,
+    title: "Doa Adalah Inti Ibadah",
+    explanation: "Jangan pernah berhenti meminta kepada Allah. Doa adalah jembatan yang menghubungkan hamba dengan Penciptanya. Tak ada yang mampu mengubah takdir kecuali doa yang dipanjatkan dengan tulus.",
+    hadithSource: "HR. Tirmidzi",
+    arabic: "الدُّعَاءُ مُخُّ الْعِبَادَةِ"
+  },
+  {
+    id: 122,
+    title: "Menjaga Nama Baik Islam",
+    explanation: "Akhlakmu adalah 'brosur' terbaik bagi agamamu. Jadilah muslim yang teduh, jujur, dan penuh kasih agar orang lain melihat keindahan Islam terpancar jelas melalui setiap tutur kata dan perilakumu.",
+    hadithSource: "HR. Ahmad",
+    arabic: "إِنَّمَا بُعِثْتُ لأُتَمِّمَ مَكَارِمَ الأَخْلاقِ"
+  },
+  {
+    id: 123,
+    title: "Ridha Atas Takdir",
+    explanation: "Terimalah setiap ketetapan Allah dengan hati lapang. Apa yang melewatkanmu memang takkan pernah mengenaimu, dan apa yang mengenaimu memang takkan pernah melewatkanmu. Ridha adalah kunci ketenangan hati.",
+    hadithSource: "HR. Tirmidzi",
+    arabic: "فَمَنْ رَضِيَ فَلَهُ الرِّضَا"
+  },
+  {
+    id: 124,
+    title: "Larangan Berputus Asa",
+    explanation: "Jangan pernah berputus asa dari rahmat Allah. Sungguh tidak ada yang berputus asa dari rahmat-Nya kecuali kaum yang sesat. Harapan selalu ada selama Allah masih ada di hatimu.",
+    quranSource: "QS. Yusuf: 87",
+    arabic: "وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ"
+  },
+  {
+    id: 125,
+    title: "Menjaga Integritas Diri",
+    explanation: "Katakanlah yang hak meskipun itu pahit. Integritasmu sebagai seorang muslim diuji saat engkau berani membela kebenaran di tengah arus ketidakadilan. Allah akan bersamamu jika kau membela-Nya.",
+    hadithSource: "HR. Ahmad",
+    arabic: "قُلِ الْحَقَّ وَلَوْ كَانَ مُرًّا"
+  },
+  {
+    id: 126,
+    title: "Menjadi Saksi yang Adil",
+    explanation: "Jadilah penegak keadilan karena Allah. Jangan biarkan kebencianmu pada suatu kaum membuatmu tidak berlaku adil. Adil itu lebih dekat kepada nilai-nilai ketakwaan.",
+    quranSource: "QS. Al-Ma'idah: 8",
+    arabic: "اعْدِلُوا هُوَ أَقْرَبُ لِلتَّقْوَىٰ"
+  },
+  {
+    id: 127,
+    title: "Kekuatan Sabar",
+    explanation: "Sabar itu tidak ada batasnya. Sabar adalah saat pertama kali musibah menimpa. Siapa yang membiasakan diri untuk bersabar, niscaya Allah akan menganugerahkan kekuatan sabar kepadanya.",
+    hadithSource: "HR. Bukhari",
+    arabic: "الصَّبْرُ عِنْدَ الصَّدْمَةِ الأُولَى"
+  },
+  {
+    id: 128,
+    title: "Menjaga Keseimbangan Hidup",
+    explanation: "Bekerjalah untuk duniamu seakan-akan kau hidup selamanya, dan beramallah untuk akhiratmu seakan-akan kau mati esok hari. Keseimbangan ini adalah kunci kesuksesan seorang muslim sejati.",
+    hadithSource: "Atsar Sahabat (Ali bin Abi Thalib)",
+    arabic: "اعْمَلْ لِدُنْيَاكَ كَأَنَّكَ تَعِيشُ أَبَدًا وَاعْمَلْ لآخِرَتِكَ كأَنَّكَ تَمُوتُ غَدًا"
+  },
+  {
+    id: 129,
+    title: "Menghormati Sesama Manusia",
+    explanation: "Semua manusia adalah ciptaan Allah yang mulia. Jangan meremehkan siapa pun, karena barangkali ia yang kau remehkan memiliki kedudukan yang jauh lebih mulia di hadapan-Nya daripada dirimu sendiri.",
+    quranSource: "QS. Al-Isra: 70",
+    arabic: "وَلَقَدْ كَرَّمْنَا بَنِي آدَمَ"
+  },
+  {
+    id: 130,
+    title: "Mencintai Keadilan",
+    explanation: "Sesungguhnya Allah menyukai orang-orang yang berlaku adil. Mulailah bersikap adil dari lingkungan terkecilmu, niscaya kedamaian akan melingkupi setiap sisi kehidupanmu.",
+    quranSource: "QS. Al-Hujurat: 9",
+    arabic: "إِنَّ اللَّهَ يُحِبُّ الْمُقْسِطِينَ"
+  },
+  {
+    id: 131,
+    title: "Menjaga Shalat Tengah",
+    explanation: "Peliharalah shalat-shalatmu, terutama shalat wustha (Ashar). Keistiqamahanmu dalam menjaga waktu-waktu shalat adalah bukti keteguhan imanmu di hadapan sang Khalik.",
+    quranSource: "QS. Al-Baqarah: 238",
+    arabic: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ"
+  },
+  {
+    id: 132,
+    title: "Tuntunlah Ilmu ke Surga",
+    explanation: "Barangsiapa menempuh suatu jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga. Ilmu adalah investasi terbaik yang akan menemanimu selamanya.",
+    hadithSource: "HR. Muslim",
+    arabic: "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ"
+  },
+  {
+    id: 133,
+    title: "Menebar Kasih Sayang",
+    explanation: "Orang-orang yang penyayang akan disayangi oleh Tuhan Yang Maha Penyayang. Sayangilah penduduk bumi, niscaya penduduk langit akan menyayangimu.",
+    hadithSource: "HR. Abu Daud & Tirmidzi",
+    arabic: "ارْحَمُوا مَنْ فِي الأَرْضِ يَرْحَمْكُمْ مَنْ فِي السَّمَاءِ"
+  },
+  {
+    id: 134,
+    title: "Sederhana dalam Beribadah",
+    explanation: "Agama ini mudah, janganlah kau persulit dirimu sendiri. Ambillah amalan yang mampu kau lakukan secara rutin, karena Allah lebih menyukai amalan kecil yang dilakukan terus menerus.",
+    hadithSource: "HR. Bukhari",
+    arabic: "إِنَّ الدِّينَ يُسْرٌ"
+  },
+  {
+    id: 135,
+    title: "Keutamaan Zikir",
+    explanation: "Perumpamaan orang yang berzikir kepada Tuhannya dengan orang yang tidak berzikir adalah seperti orang yang hidup dengan orang yang mati. Hidupkan hatimu dengan senantiasa mengingat-Nya.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "مَثَلُ الَّذِي يَذْكُرُ رَبَّهُ وَالَّذِي لاَ يَذْكُرُ رَبَّهُ مَثَلُ الْحَيِّ وَالْمَيِّتِ"
+  },
+  {
+    id: 136,
+    title: "Menjaga Ketakwaan",
+    explanation: "Bekal terbaik dalam setiap perjalanan, terutama perjalanan menuju akhirat, adalah takwa. Lakukanlah perintah-Nya dan jauhilah larangan-Nya di mana pun engkau berada.",
+    quranSource: "QS. Al-Baqarah: 197",
+    arabic: "وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَىٰ"
+  },
+  {
+    id: 137,
+    title: "Menjauhi Hutang Ribawi",
+    explanation: "Hutang adalah beban di malam hari dan kehinaan di siang hari. Apalagi hutang yang mengandung riba. Jauhilah sebisa mungkin agar hidupmu berkah dan terbebas dari jeratan dunia yang menyesakkan.",
+    quranSource: "QS. Al-Baqarah: 275",
+    arabic: "وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا"
+  },
+  {
+    id: 138,
+    title: "Bersyukur atas Kesehatan",
+    explanation: "Kesehatan adalah mahkota di atas kepala orang yang sehat yang hanya bisa dilihat oleh orang yang sakit. Syukurilah nikmat sehatmu dengan menggunakannya untuk hal-hal yang bermanfaat.",
+    hadithSource: "HR. Bukhari",
+    arabic: "نِعْمَتَانِ مَغْبُونٌ فِيهِمَا كَثِيرٌ مِنَ النَّاسِ الصِّحَّةُ وَالْفَرَاغُ"
+  },
+  {
+    id: 139,
+    title: "Menjaga Kerahasiaan",
+    explanation: "Mintalah bantuan untuk mensukseskan rencana-rencanamu dengan cara merahasiakannya. Tidak setiap orang yang mendengar rencanamu akan ikut merasa senang; beberapa orang mungkin justru merasa iri.",
+    hadithSource: "HR. Ath-Thabrani",
+    arabic: "اسْتَعِينُوا عَلَى إِنْجَاحِ الْحَوَائِجِ بِالْكِتْمَانِ"
+  },
+  {
+    id: 140,
+    title: "Takut Hanya kepada Allah",
+    explanation: "Janganlah kau takut kepada manusia jika engkau berada di jalan yang benar. Cukuplah Allah sebagai pelindung dan penolongmu. Rasa takut kepada Allah akan membebaskanmu dari rasa takut kepada selain-Nya.",
+    quranSource: "QS. Ali Imran: 173",
+    arabic: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ"
+  },
+  {
+    id: 141,
+    title: "Menghormati yang Lebih Tua",
+    explanation: "Bukan termasuk golongan kami orang tidak menghormati yang lebih tua dan tidak menyayangi yang lebih muda. Jalinlah harmoni antar generasi dengan rasa hormat dan kasih sayang.",
+    hadithSource: "HR. Abu Daud & Tirmidzi",
+    arabic: "لَيْسَ مِنَّا مَنْ لَمْ يَرْحَمْ صَغِيرَنَا وَيَعْرِفْ شَرَفَ كَبِيرِنَا"
+  },
+  {
+    id: 142,
+    title: "Kebaikan di Balik Kesukaran",
+    explanation: "Boleh jadi kamu membenci sesuatu, padahal ia amat baik bagimu. Dan boleh jadi kamu menyukai sesuatu, padahal ia amat buruk bagimu. Allah mengetahui, sedang kamu tidak mengetahui.",
+    quranSource: "QS. Al-Baqarah: 216",
+    arabic: "وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ"
+  },
+  {
+    id: 143,
+    title: "Larangan Mengadu Domba",
+    explanation: "Tidak akan masuk surga orang yang suka mengadu domba (Namimah). Jagalah persatuan umat dengan tidak menyebarkan berita yang bisa memicu perpecahan dan permusuhan.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "لاَ يَدْخُلُ الْجَنَّةَ نَمَّامٌ"
+  },
+  {
+    id: 144,
+    title: "Menanamkan Sifat Malu",
+    explanation: "Jika engkau tidak lagi memiliki rasa malu, maka berbuatlah sesukamu. Sifat malu adalah kontrol internal yang menjaga kita agar tetap berada dalam koridor kemuliaan dan keridhaan-Nya.",
+    hadithSource: "HR. Bukhari",
+    arabic: "إِذَا لَمْ تَسْتَحِ فَاصْنَعْ مَا شِئْتَ"
+  },
+  {
+    id: 145,
+    title: "Mencintai Masjid",
+    explanation: "Hati yang terpaut dengan masjid akan mendapatkan naungan Allah di hari kiamat. Jadikan masjid sebagai rumah keduamu, tempat kau mencari ketenangan dan mendekatkan diri kepada-Nya.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "وَرَجُلٌ قَلْبُهُ مُعَلَّقٌ فِي الْمَسَاجِدِ"
+  },
+  {
+    id: 146,
+    title: "Rezeki yang Berkah",
+    explanation: "Rezeki yang berkah bukan dilihat dari jumlahnya, tapi dari ketenangan yang ia bawa dan kemudahan untuk menggunakannya dalam ketaatan. Carilah rezeki yang halal lagi baik (Thayyib).",
+    quranSource: "QS. Al-Baqarah: 172",
+    arabic: "كُلُوا مِن طَيِّبَاتِ مَا رَزَقْنَاكُمْ"
+  },
+  {
+    id: 147,
+    title: "Larangan Berlebihan Bicara",
+    explanation: "Banyak bicara seringkali membawa pada banyak kesalahan. Siapa yang banyak salahnya, akan banyak pula dosanya. Berbicaralah seperlunya dan pastikan setiap kata bernilai pahala.",
+    hadithSource: "HR. Ibnu Hibban",
+    arabic: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ"
+  },
+  {
+    id: 148,
+    title: "Sikap Terhadap Musibah",
+    explanation: "Ujian hidup adalah cara Allah menggugurkan dosa-dosamu. Bersabarlah, karena setiap keletihan, rasa sakit, dan kesedihan yang kau alami akan menjadi penghapus kesalahanmu di masa lalu.",
+    hadithSource: "HR. Bukhari & Muslim",
+    arabic: "مَا يُصِيبُ الْمُسْلِمَ مِنْ نَصَبٍ وَلاَ وَصَبٍ"
+  },
+  {
+    id: 149,
+    title: "Doa Orang Tua",
+    explanation: "Tiga doa yang tidak tertolak: doa orang tua kepada anaknya, doa orang yang sedang berpuasa, dan doa orang yang sedang dalam perjalanan (musafir). Mintalah doa restu dari orang tuamu.",
+    hadithSource: "HR. Al-Baihaqi",
+    arabic: "ثَلاثُ دَعَوَاتٍ مُسْتَجَابَاتٌ"
+  },
+  {
+    id: 150,
+    title: "Istiqamah",
+    explanation: "Katakanlah: 'Aku beriman kepada Allah', kemudian beristiqamahlah. Konsistensi dalam iman dan amal shalih adalah prestasi terbesar seorang hamba sepanjang hayatnya.",
+    hadithSource: "HR. Muslim",
+    arabic: "قُلْ آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ"
   }
 ];
 

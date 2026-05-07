@@ -155,16 +155,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-stone-900 tracking-tight">Selamat Datang, Guru</h1>
-          <p className="text-stone-500 mt-1">Pantau perkembangan tahfidz siswa Anda hari ini.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-4xl md:text-5xl font-display font-black text-stone-950 tracking-tight leading-none">Dashboard</h1>
+          <p className="text-stone-500 font-medium tracking-tight">Selamat Datang kembali di Pusat Kendali Tahfidz.</p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2 bg-white border border-stone-200 rounded-2xl shadow-sm">
-          <Calendar className={cn("w-5 h-5", theme.text)} />
-          <span className="font-semibold text-stone-700">
-            {format(currentDate, 'EEEE, dd MMMM yyyy', { locale: id })}
-          </span>
+        <div className="flex items-center gap-4 p-1.5 bg-white border border-stone-200/60 rounded-[1.5rem] shadow-sm">
+           <div className={cn("px-4 py-2.5 rounded-[1.25rem] border border-stone-100 shadow-sm flex items-center gap-3", theme.lightBg)}>
+             <Calendar className={cn("w-4 h-4", theme.text)} />
+             <span className={cn("font-display font-black text-xs uppercase tracking-wider", theme.text)}>
+              {format(currentDate, 'dd MMMM yyyy', { locale: id })}
+            </span>
+           </div>
         </div>
       </div>
 
@@ -176,52 +178,55 @@ export default function Dashboard() {
         {cards.map((card, idx) => (
           <motion.div
             key={card.label}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ 
-              duration: 0.5, 
+              duration: 0.6, 
               delay: idx * 0.1,
               ease: [0.16, 1, 0.3, 1]
             }}
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative"
+            className="group relative bg-white p-8 rounded-[2.5rem] border border-stone-200/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgb(0,0,0,0.06)] transition-all duration-500 overflow-hidden"
           >
             <div className={cn(
-              "absolute top-0 right-0 w-24 h-24 bg-gradient-to-br opacity-[0.03] rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500",
+              "absolute -right-4 -top-4 w-32 h-32 bg-gradient-to-br opacity-[0.03] rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700",
               card.gradient
             )} />
             
-            <div className={cn(
-              "w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-lg shadow-transparent group-hover:shadow-current/10",
-              card.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-              card.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-              card.color === 'amber' ? 'bg-amber-50 text-amber-600' :
-              'bg-purple-50 text-purple-600'
-            )}>
-              <card.icon size={24} />
+            <div className="space-y-6 relative z-10">
+              <div className={cn(
+                "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
+                card.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+                card.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                card.color === 'amber' ? 'bg-amber-50 text-amber-600' :
+                'bg-purple-50 text-purple-600'
+              )}>
+                <card.icon size={28} />
+              </div>
+              <div className="space-y-1">
+                <p className="text-stone-400 text-xs font-display font-black uppercase tracking-[0.2em]">{card.label}</p>
+                <p className="text-4xl font-display font-black text-stone-950 tracking-tighter tabular-nums">{card.value}</p>
+              </div>
             </div>
-            <p className="text-stone-400 text-sm font-medium">{card.label}</p>
-            <p className="text-3xl font-bold text-stone-900 mt-1">{card.value}</p>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-xl", theme.lightBg)}>
-                <Calendar className={cn("w-5 h-5", theme.text)} />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-12 bg-white p-10 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8 mb-12">
+            <div className="flex items-center gap-6">
+              <div className={cn("w-16 h-16 rounded-3xl flex items-center justify-center shadow-xl", theme.bg, theme.mainShadow)}>
+                <Calendar className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-stone-900">Hari Aktif Belajar</h3>
-                <p className="text-stone-500 text-xs">Tahun Ajaran {academicYear}</p>
+                <h3 className="text-2xl font-display font-black text-stone-950 tracking-tight leading-tight">Timeline Akademik</h3>
+                <p className="text-stone-500 font-medium">Monitoring kehadiran dan hari aktif pengajian.</p>
               </div>
             </div>
             
-            <div className="w-full sm:w-48">
+            <div className="flex items-center gap-4 bg-stone-50 p-2 rounded-3xl border border-stone-200/40">
               <select 
-                className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2", theme.ring)}
+                className={cn("bg-transparent appearance-none font-display font-black text-xs uppercase tracking-wider py-3 px-8 focus:outline-none cursor-pointer", theme.text)}
                 value={selectedHalaqoh}
                 onChange={(e) => setSelectedHalaqoh(e.target.value)}
               >
@@ -233,89 +238,100 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {/* Semester 1 */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-2">
-                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Semester 1 (Ganjil)</h4>
-                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                  Total: {calculateTotal(semester1)} Hari
-                </span>
-              </div>
-              <div className="space-y-2">
-                {semester1.map(m => (
-                  <div key={m.value} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100 group">
-                    <span className="text-sm font-medium text-stone-700">{m.name}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-stone-900">{activeDays[m.value] || 0} Hari</span>
-                    </div>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative space-y-6">
+                <div className="flex items-center justify-between px-2">
+                  <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.3em]">Semester 1 (Ganjil)</h4>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="text-xs font-display font-black text-emerald-900 uppercase">
+                      {calculateTotal(semester1)} HARI
+                    </span>
                   </div>
-                ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {semester1.map(m => (
+                    <div key={m.value} className="flex flex-col justify-between p-5 bg-stone-50/50 hover:bg-white transition-all duration-300 rounded-3xl border border-stone-100 hover:shadow-xl hover:border-emerald-100 group/item">
+                      <span className="text-xs font-display font-black text-stone-400 uppercase tracking-widest mb-4">{m.name}</span>
+                      <span className="text-2xl font-display font-black text-stone-950 group-hover/item:text-emerald-600 transition-colors">{activeDays[m.value] || 0}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Semester 2 */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-2">
-                <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Semester 2 (Genap)</h4>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                  Total: {calculateTotal(semester2)} Hari
-                </span>
-              </div>
-              <div className="space-y-2">
-                {semester2.map(m => (
-                  <div key={m.value} className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100 group">
-                    <span className="text-sm font-medium text-stone-700">{m.name}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-stone-900">{activeDays[m.value] || 0} Hari</span>
-                    </div>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative space-y-6">
+                <div className="flex items-center justify-between px-2">
+                  <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.3em]">Semester 2 (Genap)</h4>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full border border-blue-100">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    <span className="text-xs font-display font-black text-blue-900 uppercase">
+                      {calculateTotal(semester2)} HARI
+                    </span>
                   </div>
-                ))}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {semester2.map(m => (
+                    <div key={m.value} className="flex flex-col justify-between p-5 bg-stone-50/50 hover:bg-white transition-all duration-300 rounded-3xl border border-stone-100 hover:shadow-xl hover:border-blue-100 group/item">
+                      <span className="text-xs font-display font-black text-stone-400 uppercase tracking-widest mb-4">{m.name}</span>
+                      <span className="text-2xl font-display font-black text-stone-950 group-hover/item:text-blue-600 transition-colors">{activeDays[m.value] || 0}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-      {/* Support & Maintenance info */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center text-white", theme.bg)}>
-                <Users size={24} />
-             </div>
-             <div>
-                <h3 className="font-bold text-stone-900">Bantuan Teknis</h3>
-                <p className="text-stone-500 text-sm">Hubungi admin untuk kendala sistem.</p>
-             </div>
+        <div className="bg-white p-10 rounded-[3rem] border border-stone-200/50 shadow-xl group hover:shadow-2xl transition-all duration-500 hover:translate-y-[-4px]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+               <div className={cn("w-20 h-20 rounded-[2rem] flex items-center justify-center text-white shadow-2xl transition-transform group-hover:rotate-12", theme.bg)}>
+                  <Users size={32} />
+               </div>
+               <div className="space-y-1">
+                  <h3 className="text-2xl font-display font-black text-stone-950 tracking-tight">Pusat Bantuan</h3>
+                  <p className="text-stone-500 font-medium">Alami kendala? Kami siap membantu Anda.</p>
+               </div>
+            </div>
+            <a 
+              href="https://wa.me/6285869372879" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={cn("px-10 py-5 bg-stone-900 text-white font-display font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl")}
+            >
+              CHAT ADMIN
+            </a>
           </div>
-          <a 
-            href="https://wa.me/6285869372879" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={cn("px-6 py-2 bg-stone-100 font-bold rounded-xl text-sm hover:bg-stone-200 transition-all", theme.text)}
-          >
-            Chat WA
-          </a>
         </div>
         
-        <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-500 text-white">
-                <X size={24} />
-             </div>
-             <div>
-                <h3 className="font-bold text-red-900">Reset Sistem</h3>
-                <p className="text-red-800/60 text-sm">Hapus semua data secara permanen.</p>
-             </div>
+        <div className="bg-rose-50 p-10 rounded-[3rem] border border-rose-100/50 shadow-xl group hover:shadow-rose-100/50 transition-all duration-500 hover:translate-y-[-4px]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+               <div className="w-20 h-20 rounded-[2rem] flex items-center justify-center bg-rose-600 text-white shadow-2xl transition-transform group-hover:scale-90 group-hover:rotate-[-8deg]">
+                  <X size={32} />
+               </div>
+               <div className="space-y-1">
+                  <h3 className="text-2xl font-display font-black text-rose-950 tracking-tight">Factory Reset</h3>
+                  <p className="text-rose-900/60 font-medium">Muat ulang seluruh ekosistem data.</p>
+               </div>
+            </div>
+            <button 
+              onClick={() => setIsResetModalOpen(true)}
+              className="px-10 py-5 bg-rose-600 text-white font-display font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-xl"
+            >
+              RESET SISTEM
+            </button>
           </div>
-          <button 
-            onClick={() => setIsResetModalOpen(true)}
-            className="px-6 py-2 bg-red-500 text-white font-bold rounded-xl text-sm hover:bg-red-600 transition-all"
-          >
-            Reset
-          </button>
         </div>
-      </div>
       </div>
 
       <ConfirmModal

@@ -39,6 +39,13 @@ export default function SettingsHub() {
              themeColor === 'purple' ? 'bg-purple-50' :
              themeColor === 'rose' ? 'bg-rose-50' :
              'bg-slate-50',
+    shadow: themeColor === 'emerald' ? 'shadow-emerald-500/20' :
+            themeColor === 'blue' ? 'shadow-blue-500/20' :
+            themeColor === 'amber' ? 'shadow-amber-500/20' :
+            themeColor === 'indigo' ? 'shadow-indigo-500/20' :
+            themeColor === 'purple' ? 'shadow-purple-500/20' :
+            themeColor === 'rose' ? 'shadow-rose-500/20' :
+            'shadow-slate-500/20',
   };
 
   const settingsOptions = [
@@ -109,64 +116,68 @@ export default function SettingsHub() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
-            <LayoutGrid size={20} />
+    <div className="max-w-6xl mx-auto font-sans space-y-12">
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-stone-950 rounded-2xl flex items-center justify-center text-white shadow-2xl">
+            <LayoutGrid size={24} />
           </div>
-          <h1 className="text-3xl font-bold text-stone-900">Pengaturan Sistem</h1>
+          <h1 className="text-4xl font-display font-black text-stone-950 tracking-tight leading-none uppercase">Pengaturan Sistem</h1>
         </div>
-        <p className="text-stone-500 ml-11">Kelola infrastruktur data dan profil lembaga Anda di sini.</p>
+        <p className="text-stone-500 font-medium ml-16">Konfigurasi infrastruktur data dan identitas lembaga Anda.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-0">
         {settingsOptions.map((option) => (
           <motion.button
             key={option.id}
-            whileHover={{ y: -4, scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setActiveSubTab(option.id)}
-            className="flex items-start gap-6 p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 hover:border-emerald-200 transition-all text-left group relative overflow-hidden"
+            className="flex flex-col md:flex-row items-center md:items-start gap-8 p-10 bg-white rounded-[3rem] border border-stone-200/60 shadow-lg shadow-stone-900/5 hover:shadow-2xl hover:shadow-stone-900/10 hover:border-stone-300 transition-all text-center md:text-left group relative overflow-hidden"
           >
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${option.color} group-hover:scale-110 duration-300`}>
-              <option.icon size={32} />
+            <div className={`w-20 h-20 shrink-0 rounded-3xl flex items-center justify-center transition-all duration-500 shadow-inner ${option.color} group-hover:scale-110 group-hover:rotate-6`}>
+              <option.icon size={36} />
             </div>
-            <div className="flex-1 pr-8">
-              <h3 className="text-xl font-bold text-stone-900 group-hover:text-emerald-700 transition-colors mb-1">{option.label}</h3>
-              <p className="text-stone-500 text-sm leading-relaxed">{option.description}</p>
+            <div className="flex-1 space-y-2">
+              <h3 className="text-2xl font-display font-black text-stone-950 tracking-tight transition-colors group-hover:text-stone-900 uppercase">{option.label}</h3>
+              <p className="text-stone-500 font-medium leading-relaxed max-w-sm mx-auto md:mx-0">{option.description}</p>
             </div>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
-              <ChevronRight className="text-emerald-500" size={24} />
+            <div className="md:absolute right-8 top-1/2 md:-translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
+               <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg", theme.bg)}>
+                <ChevronRight size={20} />
+               </div>
             </div>
             
             {/* Subtle background decoration */}
-            <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full opacity-[0.03] group-hover:opacity-[0.08] transition-opacity ${option.color.split(' ')[0]}`} />
+            <div className={cn("absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-[0.03] group-hover:opacity-[0.1] transition-opacity", theme.bg)} />
           </motion.button>
         ))}
       </div>
 
-      <div className="mt-12 p-8 bg-stone-900 rounded-[2.5rem] text-white relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="max-w-md">
-            <h2 className="text-2xl font-bold mb-2">Butuh Bantuan?</h2>
-            <p className="text-stone-400 text-sm leading-relaxed">
-              Jika Anda mengalami kesulitan dalam mengelola data atau memerlukan fitur tambahan, silakan hubungi tim pengembang sistem.
+      <div className="p-12 bg-stone-950 rounded-[4rem] text-white relative overflow-hidden shadow-2xl shadow-stone-950/20">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="max-w-xl text-center lg:text-left space-y-4">
+            <h2 className="text-3xl font-display font-black tracking-tight uppercase leading-none">Butuh Bantuan?</h2>
+            <p className="text-stone-400 font-medium leading-relaxed">
+              Jika Anda memerlukan bantuan teknis, penyesuaian fitur, atau konsultasi sistem, tim pengembang kami siap membantu Anda meningkatkan efisiensi operasional lembaga.
             </p>
           </div>
           <a 
             href="https://wa.me/6285869372879" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap flex items-center gap-2"
+            className={cn("px-10 py-5 text-white font-display font-black text-xs uppercase tracking-widest rounded-[1.5rem] transition-all shadow-2xl hover:scale-105 active:scale-95 whitespace-nowrap flex items-center gap-3", theme.bg, theme.shadow)}
           >
-            <span>Hubungi Support</span>
+            <span>Hubungi Expert Support</span>
+            <ChevronRight size={16} />
           </a>
         </div>
         
-        {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 blur-[60px] rounded-full translate-y-1/2 -translate-x-1/2" />
+        {/* Premium background effects */}
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-stone-100/5 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
     </div>
   );

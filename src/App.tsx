@@ -188,35 +188,35 @@ export default function App() {
                 x: isSidebarOpen ? 0 : (window.innerWidth < 1024 ? -280 : 0)
               }}
               className={cn(
-                "bg-white border-r border-stone-200 flex flex-col z-30 shadow-xl lg:shadow-none h-full fixed lg:relative transition-all duration-300",
-                !isSidebarOpen && "lg:w-20"
+                "bg-white/80 backdrop-blur-xl border-r border-stone-200/50 flex flex-col z-30 shadow-2xl lg:shadow-[20px_0_40px_rgba(0,0,0,0.02)] h-full fixed lg:relative transition-all duration-500",
+                !isSidebarOpen && "lg:w-24"
               )}
             >
-              <div className="p-6 flex items-center justify-between border-b border-stone-100 bg-white sticky top-0 z-10">
+              <div className="p-8 flex items-center justify-between border-b border-stone-100/50 bg-white/40 sticky top-0 z-10 backdrop-blur-md">
                 {(isSidebarOpen || window.innerWidth >= 1024) && (
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isSidebarOpen ? 1 : 0 }}
                     className={cn("flex items-center gap-3", !isSidebarOpen && "hidden")}
                   >
-                    <div className={cn("w-10 h-10 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg", theme.from, theme.to, theme.shadow)}>
+                    <div className={cn("w-12 h-12 bg-gradient-to-tr rounded-2xl flex items-center justify-center shadow-2xl transition-transform duration-500 hover:rotate-6", theme.from, theme.to, theme.shadow)}>
                       <BookOpen className="text-white w-6 h-6" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-extrabold text-stone-900 leading-tight tracking-tight">Manager</span>
-                      <span className={cn("text-[10px] uppercase tracking-[0.2em] font-black", theme.text)}>Tahfidz 2026</span>
+                      <span className="font-display font-black text-stone-900 leading-none tracking-tight text-lg">Miftahussalam</span>
+                      <span className={cn("text-[10px] uppercase tracking-[0.25em] font-black mt-1", theme.text)}>Tahfidz App</span>
                     </div>
                   </motion.div>
                 )}
                 <button 
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className="p-2 hover:bg-stone-50 rounded-lg transition-colors text-stone-500"
+                  className="p-3 hover:bg-stone-50 rounded-2xl transition-all duration-300 text-stone-400 hover:text-stone-900 active:scale-90"
                 >
                   {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
               </div>
 
-              <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+              <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
                 {menuItems.map((item) => (
                   <button
                     key={item.id}
@@ -225,31 +225,32 @@ export default function App() {
                       if (window.innerWidth < 1024) setIsSidebarOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-200 group relative",
-                      getColorClasses(item.color, activeTab === item.id)
+                      "w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group relative overflow-hidden",
+                      activeTab === item.id 
+                        ? "bg-stone-900 text-white shadow-[0_10px_20px_rgba(0,0,0,0.1)] translate-x-1" 
+                        : "text-stone-500 hover:bg-stone-50 hover:text-stone-900"
                     )}
                   >
                     <div className={cn(
-                      "p-2 rounded-lg transition-all duration-300",
-                      activeTab === item.id ? "bg-white shadow-sm" : "bg-transparent"
+                      "p-2.5 rounded-xl transition-all duration-500 group-hover:scale-110",
+                      activeTab === item.id ? "bg-white/10" : "bg-stone-100 text-stone-400 group-hover:text-stone-900"
                     )}>
                       <item.icon size={20} className={cn(
-                        "transition-transform group-hover:scale-110",
-                        getIconColor(item.color, activeTab === item.id)
+                        activeTab === item.id ? "text-white" : ""
                       )} />
                     </div>
                     {isSidebarOpen && (
                       <span className={cn(
-                        "font-bold text-sm whitespace-nowrap tracking-tight transition-colors",
-                        activeTab === item.id ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                        "font-display font-bold text-sm whitespace-nowrap tracking-tight transition-all",
+                        activeTab === item.id ? "translate-x-1" : "opacity-80"
                       )}>
                         {item.label}
                       </span>
                     )}
                     {activeTab === item.id && (
                       <motion.div 
-                        layoutId="active-pill"
-                        className={cn("absolute left-0 w-1.5 h-8 rounded-r-full", getPillColor(item.color))}
+                        layoutId="active-indicator"
+                        className={cn("absolute right-0 w-1 h-8 rounded-l-full bg-white/20")}
                       />
                     )}
                   </button>

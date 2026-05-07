@@ -184,7 +184,7 @@ export default function SplashScreen() {
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl font-black text-stone-900 tracking-tighter flex items-center gap-2"
+              className="text-4xl font-display font-black text-stone-950 tracking-tighter flex items-center gap-2 uppercase"
             >
               Manager <span className={theme.text}>Tahfidz</span>
             </motion.h1>

@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 import ConfirmModal from './ConfirmModal';
@@ -157,96 +157,17 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const canvas = await html2canvas(element, {
-        scale: 4, // Ultra-high resolution (HDR-like quality)
-        useCORS: true,
+      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+      const canvas = await htmlToImage.toCanvas(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        pixelRatio: 4, // Ultra-high resolution (HDR-like quality)
+        cacheBust: true,
         backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 0,
-        onclone: (clonedDoc) => {
-          // Ensure images are visible in clone
-          const clonedImages = clonedDoc.getElementsByTagName('img');
-          for (let i = 0; i < clonedImages.length; i++) {
-            clonedImages[i].style.visibility = 'visible';
-            clonedImages[i].style.display = 'block';
-            clonedImages[i].style.opacity = '1';
-          }
-
-          const clonedElement = clonedDoc.getElementById('report-card-preview');
-          if (clonedElement) {
-            clonedElement.style.width = '210mm';
-            clonedElement.style.height = 'auto'; // Allow full height capture
-            clonedElement.style.minHeight = '297mm';
-            clonedElement.style.transform = 'none';
-            clonedElement.style.margin = '0';
-            clonedElement.style.boxShadow = 'none';
-            clonedElement.style.backgroundColor = '#ffffff';
-            clonedElement.style.background = '#ffffff';
-            clonedElement.style.color = '#000000';
-            clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
-          }
-          
-          // Inject global font styles to the clone
-          const style = clonedDoc.createElement('style');
-          style.innerHTML = `
-            @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-            #report-card-preview, #report-card-preview * { 
-              font-family: 'Times New Roman', Times, serif !important; 
-            }
-            #report-card-preview [style*="Amiri"], 
-            #report-card-preview [style*="Amiri"] * { 
-              font-family: 'Amiri', serif !important; 
-            }
-            /* Ensure borders are black and visible */
-            #report-card-preview table, 
-            #report-card-preview th, 
-            #report-card-preview td { 
-              border-color: #000000 !important; 
-              color: #000000 !important;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
-          
-          // Force semester text in clone to match current state to avoid any sync issues
-          const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
-          if (semesterDisplay) {
-            semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
-          }
-          const semesterInfo = clonedDoc.querySelector('.semester-info-text');
-          if (semesterInfo) {
-            semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
-          }
-          
-          // Workaround for oklab/oklch colors that html2canvas doesn't support
-          const allElements = clonedDoc.getElementsByTagName('*');
-          for (let i = 0; i < allElements.length; i++) {
-            const el = allElements[i] as HTMLElement;
-            if (el.style) {
-              const computed = window.getComputedStyle(el);
-              
-              // Catch-all for any oklch/oklab colors
-              if (computed.color.includes('okl')) el.style.color = '#000000';
-              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-
-              if (el.tagName === 'TH' || el.tagName === 'TD') {
-                el.style.borderColor = '#000000';
-                el.style.color = '#000000';
-              }
-
-              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
-              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
-              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
-              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
-              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
-              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
-              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
-              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
-              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
-              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
-            }
-          }
+        style: {
+          transform: 'none',
+          margin: '0',
+          padding: '0'
         }
       });
       
@@ -312,96 +233,17 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const canvas = await html2canvas(element, {
-        scale: 4, // Ultra-high resolution
-        useCORS: true,
-        logging: false,
-        imageTimeout: 0,
+      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
+      const canvas = await htmlToImage.toCanvas(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        pixelRatio: 4, // Ultra-high resolution
+        cacheBust: true,
         backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-          // Ensure images are visible in clone
-          const clonedImages = clonedDoc.getElementsByTagName('img');
-          for (let i = 0; i < clonedImages.length; i++) {
-            clonedImages[i].style.visibility = 'visible';
-            clonedImages[i].style.display = 'block';
-            clonedImages[i].style.opacity = '1';
-          }
-
-          const clonedElement = clonedDoc.getElementById('report-card-preview');
-          if (clonedElement) {
-            clonedElement.style.width = '210mm';
-            clonedElement.style.height = 'auto'; // Allow height to be dynamic for capture
-            clonedElement.style.minHeight = '297mm';
-            clonedElement.style.transform = 'none';
-            clonedElement.style.margin = '0';
-            clonedElement.style.boxShadow = 'none';
-            clonedElement.style.backgroundColor = '#ffffff';
-            clonedElement.style.background = '#ffffff';
-            clonedElement.style.color = '#000000';
-            clonedElement.style.fontFamily = "'Times New Roman', Times, serif";
-          }
-
-          // Inject global font styles to the clone
-          const style = clonedDoc.createElement('style');
-          style.innerHTML = `
-            @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
-            #report-card-preview, #report-card-preview * { 
-              font-family: 'Times New Roman', Times, serif !important; 
-            }
-            #report-card-preview [style*="Amiri"], 
-            #report-card-preview [style*="Amiri"] * { 
-              font-family: 'Amiri', serif !important; 
-            }
-            /* Ensure borders are black and visible */
-            #report-card-preview table, 
-            #report-card-preview th, 
-            #report-card-preview td { 
-              border-color: #000000 !important; 
-              color: #000000 !important;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
-
-          // Force semester text in clone to match current state to avoid any sync issues
-          const semesterDisplay = clonedDoc.querySelector('.semester-display-text');
-          if (semesterDisplay) {
-            semesterDisplay.textContent = `UJIAN TAHFIDZUL QUR'AN SEMESTER ${semester.toUpperCase()}`;
-          }
-          const semesterInfo = clonedDoc.querySelector('.semester-info-text');
-          if (semesterInfo) {
-            semesterInfo.textContent = `SEMESTER: ${semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}`;
-          }
-
-          // Workaround for oklab/oklch colors that html2canvas doesn't support
-          const allElements = clonedDoc.getElementsByTagName('*');
-          for (let i = 0; i < allElements.length; i++) {
-            const el = allElements[i] as HTMLElement;
-            if (el.style) {
-              const computed = window.getComputedStyle(el);
-              
-              // Catch-all for any oklch/oklab colors
-              if (computed.color.includes('okl')) el.style.color = '#000000';
-              if (computed.backgroundColor.includes('okl')) el.style.backgroundColor = '#ffffff';
-              if (computed.borderColor.includes('okl')) el.style.borderColor = '#000000';
-
-              if (el.tagName === 'TH' || el.tagName === 'TD') {
-                el.style.borderColor = '#000000';
-                el.style.color = '#000000';
-              }
-
-              if (el.classList.contains('text-emerald-600')) el.style.color = '#059669';
-              if (el.classList.contains('bg-emerald-50')) el.style.backgroundColor = '#ecfdf5';
-              if (el.classList.contains('border-emerald-200')) el.style.borderColor = '#a7f3d0';
-              if (el.classList.contains('bg-stone-50')) el.style.backgroundColor = '#fafaf9';
-              if (el.classList.contains('bg-stone-100')) el.style.backgroundColor = '#f5f5f4';
-              if (el.classList.contains('text-stone-900')) el.style.color = '#000000';
-              if (el.classList.contains('text-stone-500')) el.style.color = '#78716c';
-              if (el.classList.contains('text-stone-400')) el.style.color = '#a8a29e';
-              if (el.classList.contains('border-stone-200')) el.style.borderColor = '#e7e5e4';
-              if (el.classList.contains('border-stone-100')) el.style.borderColor = '#f5f5f4';
-              if (el.classList.contains('border-black')) el.style.borderColor = '#000000';
-            }
-          }
+        style: {
+          transform: 'none',
+          margin: '0',
+          padding: '0'
         }
       });
       
@@ -604,194 +446,227 @@ export default function ReportCard() {
   };
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
+    <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 font-sans">
       <div className={cn(
-        "lg:col-span-1 bg-white p-6 rounded-3xl border border-stone-200 shadow-sm h-fit lg:sticky lg:top-8 z-10",
+        "lg:col-span-4 bg-white p-8 rounded-[2.5rem] border border-stone-200/60 shadow-2xl shadow-stone-900/5 h-fit lg:sticky lg:top-8 z-10",
         !showListOnMobile && "hidden lg:block"
       )}>
-        <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
-          <Search size={18} className={theme.text} />
-          Cari Siswa
-        </h3>
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
-          <input 
-            type="text"
-            placeholder="Nama siswa..."
-            className={cn("w-full bg-stone-50 border border-stone-200 rounded-xl py-2 pl-10 pr-4 focus:outline-none focus:ring-2", theme.ring)}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-display font-black text-stone-950 tracking-tight mb-2 flex items-center gap-2">
+              Daftar Siswa
+            </h3>
+            <p className="text-xs text-stone-500 font-medium tracking-wide">Pilih siswa untuk melihat pratinjau rapor.</p>
+          </div>
 
-        <div className="space-y-6 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
-          {Object.entries(groupedStudents).map(([halaqohName, halaqohStudents]: [string, any[]]) => (
-            <div key={halaqohName} className="space-y-3">
-              <div className="flex items-center justify-between px-2">
-                <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-                  {halaqohName}
-                </h4>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full">
-                    {halaqohStudents.length} Siswa
-                  </span>
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-stone-900 transition-colors" size={18} />
+            <input 
+              type="text"
+              placeholder="Cari nama siswa..."
+              className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 pl-12 pr-6 focus:outline-none focus:ring-4 transition-all font-bold text-stone-900", theme.ring)}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-8 max-h-[calc(100vh-400px)] overflow-y-auto custom-scrollbar pr-2 pt-2">
+            {Object.entries(groupedStudents).map(([halaqohName, halaqohStudents]: [string, any[]]) => (
+              <div key={halaqohName} className="space-y-4">
+                <div className="flex items-center gap-4 px-2">
+                  <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.3em]">
+                    {halaqohName}
+                  </h4>
+                  <div className="h-px bg-stone-100 flex-1" />
+                </div>
+                
+                <div className="grid grid-cols-1 gap-2">
+                  {halaqohStudents.map((s: any) => (
+                    <button
+                      key={s.id}
+                      onClick={() => fetchExamData(s)}
+                      className={cn(
+                        "w-full text-left p-4 rounded-2xl transition-all border group relative overflow-hidden",
+                        selectedStudent?.id === s.id 
+                          ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm` 
+                          : "bg-white border-stone-100 hover:border-stone-300 hover:bg-stone-50 text-stone-600"
+                      )}
+                    >
+                      <div className="flex items-center justify-between relative z-10">
+                        <p className="text-sm tracking-tight truncate group-hover:translate-x-1 transition-transform font-bold uppercase">{s.name}</p>
+                        <ChevronLeft size={16} className={cn("rotate-180 opacity-0 group-hover:opacity-100 transition-all", theme.text)} />
+                      </div>
+                      {selectedStudent?.id === s.id && (
+                        <motion.div 
+                          layoutId="active-student-bg"
+                          className={cn("absolute inset-0 opacity-10", theme.bg)}
+                        />
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                {halaqohStudents.map((s: any) => (
-                  <button
-                    key={s.id}
-                    onClick={() => fetchExamData(s)}
-                    className={cn(
-                      "w-full text-left p-3 rounded-xl transition-all border group",
-                      selectedStudent?.id === s.id 
-                        ? `${theme.lightBg} ${theme.border} ${theme.lightText} font-bold shadow-sm ${theme.pillShadow}` 
-                        : `bg-white border-stone-100 ${theme.hoverBorder} hover:bg-stone-50 text-stone-600`
-                    )}
-                  >
-                    <p className="text-sm group-hover:translate-x-1 transition-transform">{s.name}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
 
-          {Object.keys(groupedStudents).length === 0 && (
-            <div className="text-center py-8 text-stone-400">
-              <p className="text-sm italic">Siswa tidak ditemukan</p>
-            </div>
-          )}
+            {Object.keys(groupedStudents).length === 0 && (
+              <div className="text-center py-12">
+                <X size={32} className="mx-auto text-stone-200 mb-4" />
+                <p className="text-sm font-display font-black text-stone-400 uppercase tracking-widest">Siswa tidak ditemukan</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       <div className={cn(
-        "lg:col-span-2",
+        "lg:col-span-8 space-y-8",
         showListOnMobile && "hidden lg:block"
       )}>
         {selectedStudent && examData ? (
-          <div className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
-              <div className="flex items-center gap-3">
+          <div className="bg-white p-10 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-12">
+              <div className="flex items-center gap-6">
                 <button 
                   onClick={() => setShowListOnMobile(true)}
-                  className="lg:hidden flex items-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-colors text-xs font-bold"
+                  className="lg:hidden flex items-center justify-center w-12 h-12 bg-stone-100 hover:bg-stone-200 rounded-2xl text-stone-600 transition-colors"
                 >
-                  <ChevronLeft size={16} />
-                  Daftar
+                  <ChevronLeft size={20} />
                 </button>
-                <div>
-                  <h2 className="text-xl lg:text-2xl font-bold text-stone-900 leading-tight">{selectedStudent.name}</h2>
-                  <p className="text-stone-500 text-sm">Pratinjau Rapor Hasil Ujian</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                     <span className={cn("text-[10px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-md shadow-sm", theme.bg, "text-white")}>REPORT CARD</span>
+                  </div>
+                  <h2 className="text-4xl font-display font-black text-stone-950 tracking-tight leading-none uppercase">{selectedStudent.name}</h2>
+                  <p className="text-stone-500 font-medium">Laporan Pencapaian Tahfidz & Akademik</p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 bg-stone-100 p-1.5 rounded-xl">
-                <button
-                  onClick={() => setSemester('Ganjil')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Ganjil' ? `bg-white ${theme.text} shadow-sm` : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Ganjil
-                </button>
-                <button
-                  onClick={() => setSemester('Genap')}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-xs font-bold transition-all",
-                    semester === 'Genap' ? `bg-white ${theme.text} shadow-sm` : "text-stone-500 hover:text-stone-700"
-                  )}
-                >
-                  Genap
-                </button>
-              </div>
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex items-center bg-stone-100 p-1.5 rounded-[1.25rem] shadow-inner">
+                  <button
+                    onClick={() => setSemester('Ganjil')}
+                    className={cn(
+                      "px-6 py-2.5 rounded-xl text-xs font-display font-black uppercase tracking-widest transition-all",
+                      semester === 'Ganjil' ? "bg-white text-stone-950 shadow-md scale-105" : "text-stone-400 hover:text-stone-600"
+                    )}
+                  >
+                    GANJIL
+                  </button>
+                  <button
+                    onClick={() => setSemester('Genap')}
+                    className={cn(
+                      "px-6 py-2.5 rounded-xl text-xs font-display font-black uppercase tracking-widest transition-all",
+                      semester === 'Genap' ? "bg-white text-stone-950 shadow-md scale-105" : "text-stone-400 hover:text-stone-600"
+                    )}
+                  >
+                    GENAP
+                  </button>
+                </div>
 
-              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                <button 
-                  onClick={generatePDF}
-                  disabled={isGenerating}
-                  className={cn(
-                    "flex-1 sm:flex-none text-white px-4 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50",
-                    theme.bg, "hover:opacity-90", theme.shadow.replace('10', '20')
-                  )}
-                  title="Unduh PDF Kualitas Tinggi (HDR)"
-                >
-                  <Download size={18} />
-                  {isGenerating ? '...' : 'PDF HDR'}
-                </button>
-                <button 
-                  onClick={() => generateImage('jpg')}
-                  disabled={isGenerating}
-                  className="flex-1 sm:flex-none bg-amber-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50"
-                  title="Unduh Gambar Kualitas Tinggi (HDR)"
-                >
-                  <FileText size={18} />
-                  {isGenerating ? '...' : 'JPG HDR'}
-                </button>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={generatePDF}
+                    disabled={isGenerating}
+                    className={cn(
+                      "text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50",
+                      theme.bg, theme.shadow
+                    )}
+                  >
+                    <Download size={16} />
+                    {isGenerating ? 'Wait...' : 'EXPOR PDF'}
+                  </button>
+                  <button 
+                    onClick={() => generateImage('jpg')}
+                    disabled={isGenerating}
+                    className="bg-stone-950 text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] hover:bg-stone-800 transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50"
+                  >
+                    <FileText size={16} />
+                    {isGenerating ? 'Wait...' : 'EXPOR JPG'}
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-8">
-              {/* Reset Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200">
-                  <h4 className="text-xs font-bold text-stone-500 uppercase mb-3">Reset Data Ujian Ummi</h4>
-                  <div className="space-y-2">
+            <div className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-stone-50/50 p-8 rounded-[2rem] border border-stone-200/60 shadow-sm space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white rounded-xl shadow-sm">
+                       <FileText size={16} className="text-stone-900" />
+                    </div>
+                    <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em]">METODE UMMI</h4>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
                     {examData.ummi.filter((e: any) => e.semester === semester).map((e: any) => (
-                      <div key={e.id} className="flex items-center justify-between bg-white p-2 rounded-lg border border-stone-100 text-xs">
-                        <span>Jilid {e.level} ({e.date})</span>
-                        <div className="flex gap-2">
-                          <button onClick={() => setEditingExam({ type: 'ummi', data: { ...e } })} className="text-emerald-600 hover:text-emerald-700 font-bold">Edit</button>
-                          <button onClick={() => resetExam('ummi', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                      <div key={e.id} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
+                        <div className="flex items-center gap-3">
+                           <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">{e.level}</span>
+                           <span className="text-xs font-bold text-stone-600">{e.date}</span>
+                        </div>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                          <button onClick={() => setEditingExam({ type: 'ummi', data: { ...e } })} className="p-2 hover:bg-stone-50 rounded-lg text-emerald-600 transition-colors">
+                            <Edit2 size={14} />
+                          </button>
+                          <button onClick={() => resetExam('ummi', e.id)} className="p-2 hover:bg-stone-50 rounded-lg text-red-500 transition-colors">
+                            <X size={14} />
+                          </button>
                         </div>
                       </div>
                     ))}
-                    {examData.ummi.filter((e: any) => e.semester === semester).length === 0 && <p className="text-xs italic text-stone-400">Tidak ada data</p>}
+                    {examData.ummi.filter((e: any) => e.semester === semester).length === 0 && (
+                       <p className="text-xs italic text-stone-400 text-center py-4 bg-white/50 rounded-2xl border border-dashed border-stone-200">Tidak ada data ujian</p>
+                    )}
                   </div>
                 </div>
-                <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200">
-                  <h4 className="text-xs font-bold text-stone-500 uppercase mb-3">Reset Data Ujian Hafalan</h4>
-                  <div className="space-y-2">
+
+                <div className="bg-stone-50/50 p-8 rounded-[2rem] border border-stone-200/60 shadow-sm space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white rounded-xl shadow-sm">
+                       <GraduationCap size={16} className="text-stone-900" />
+                    </div>
+                    <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em]">HAFALAN AL-QUR'AN</h4>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
                     {examData.hafalan.filter((e: any) => e.semester === semester).map((e: any) => (
-                      <div key={e.id} className="flex items-center justify-between bg-white p-2 rounded-lg border border-stone-100 text-xs">
-                        <span>Hafalan ({e.date})</span>
-                        <div className="flex gap-2">
-                          <button onClick={() => setEditingExam({ type: 'hafalan', data: { ...e } })} className="text-emerald-600 hover:text-emerald-700 font-bold">Edit</button>
-                          <button onClick={() => resetExam('hafalan', e.id)} className="text-red-500 hover:text-red-700 font-bold">Hapus</button>
+                      <div key={e.id} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
+                        <div className="flex items-center gap-3">
+                           <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">H</span>
+                           <span className="text-xs font-bold text-stone-600">{e.date}</span>
+                        </div>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                          <button onClick={() => setEditingExam({ type: 'hafalan', data: { ...e } })} className="p-2 hover:bg-stone-50 rounded-lg text-emerald-600 transition-colors">
+                            <Edit2 size={14} />
+                          </button>
+                          <button onClick={() => resetExam('hafalan', e.id)} className="p-2 hover:bg-stone-50 rounded-lg text-red-500 transition-colors">
+                            <X size={14} />
+                          </button>
                         </div>
                       </div>
                     ))}
-                    {examData.hafalan.filter((e: any) => e.semester === semester).length === 0 && <p className="text-xs italic text-stone-400">Tidak ada data</p>}
+                    {examData.hafalan.filter((e: any) => e.semester === semester).length === 0 && (
+                       <p className="text-xs italic text-stone-400 text-center py-4 bg-white/50 rounded-2xl border border-dashed border-stone-200">Tidak ada data ujian</p>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Signature Size Controls (Toolbar - Outside Capture Area) */}
-            <div className="mb-8 p-6 bg-stone-50 rounded-3xl border border-stone-100 flex flex-col sm:flex-row items-center gap-8 no-print print:hidden">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-50 rounded-lg">
-                  <Settings size={18} className="text-emerald-600" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-stone-900">Ukuran Tanda Tangan</h4>
-                  <p className="text-[10px] text-stone-500">Sesuaikan ukuran gambar ttd</p>
-                </div>
-              </div>
-              
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {/* Tweak controls */}
+              <div className="bg-stone-950 p-8 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-8 no-print print:hidden">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white">
+                    <Settings size={24} />
+                  </div>
                   <div>
-                    <div className="flex justify-between text-[10px] mb-2">
-                      <span className="text-stone-500 font-medium">Kepala Sekolah</span>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handlePrincipalSigSizeChange(Math.max(40, principalSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} className="scale-[-1]" />
-                        </button>
-                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{principalSigSize}px</span>
-                        <button onClick={() => handlePrincipalSigSizeChange(Math.min(300, principalSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} />
-                        </button>
-                      </div>
+                    <h4 className="text-sm font-display font-black text-white tracking-tight">Render Tuning</h4>
+                    <p className="text-[10px] text-white/50 font-medium tracking-wide">Adjust signature scale for preview.</p>
+                  </div>
+                </div>
+                
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-[10px] font-display font-black text-white/40 tracking-widest uppercase">
+                      <span>KEPALA SEKOLAH</span>
+                      <span className="text-white font-bold">{principalSigSize}PX</span>
                     </div>
                     <input 
                       type="range" 
@@ -799,21 +674,13 @@ export default function ReportCard() {
                       max="300" 
                       value={principalSigSize} 
                       onChange={e => handlePrincipalSigSizeChange(parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
                     />
                   </div>
-                  <div>
-                    <div className="flex justify-between text-[10px] mb-2">
-                      <span className="text-stone-500 font-medium">Koordinator Tahfidz</span>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleCoordinatorSigSizeChange(Math.max(40, coordinatorSigSize - 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} className="scale-[-1]" />
-                        </button>
-                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded min-w-[40px] text-center">{coordinatorSigSize}px</span>
-                        <button onClick={() => handleCoordinatorSigSizeChange(Math.min(300, coordinatorSigSize + 10))} className="p-1 hover:bg-stone-100 rounded text-stone-400 hover:text-emerald-600 transition-colors">
-                          <Search size={12} />
-                        </button>
-                      </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-[10px] font-display font-black text-white/40 tracking-widest uppercase">
+                      <span>KOORDINATOR</span>
+                      <span className="text-white font-bold">{coordinatorSigSize}PX</span>
                     </div>
                     <input 
                       type="range" 
@@ -821,15 +688,22 @@ export default function ReportCard() {
                       max="300" 
                       value={coordinatorSigSize} 
                       onChange={e => handleCoordinatorSigSizeChange(parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white"
                     />
                   </div>
                 </div>
-            </div>
+              </div>
 
-            {/* Report Card Preview (HTML) */}
-              <div className="border border-stone-200 rounded-2xl overflow-x-auto shadow-inner bg-stone-100 p-4 lg:p-12">
-                <div id="report-card-preview" className="bg-white shadow-2xl mx-auto p-[10mm] sm:p-[15mm] relative" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Times New Roman', Times, serif", color: '#000000', backgroundColor: '#ffffff' }}>
+              {/* Report Card Preview (HTML) */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-6 justify-center">
+                   <div className="h-px bg-stone-200 flex-1" />
+                   <h3 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.4em]">EXPORT PREVIEW</h3>
+                   <div className="h-px bg-stone-200 flex-1" />
+                </div>
+                
+                <div className="border border-stone-200/40 rounded-[3.5rem] overflow-x-auto shadow-2xl bg-white p-6 lg:p-16">
+                  <div id="report-card-preview" className="mx-auto p-[15mm] relative bg-white" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04, backgroundColor: 'transparent' }}>
@@ -952,7 +826,8 @@ export default function ReportCard() {
               </div>
             </div>
           </div>
-        ) : (
+        </div>
+      ) : (
           <div className="h-full flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-stone-200 border-dashed text-stone-400">
             <GraduationCap size={48} className="mb-4 opacity-20" />
             <p className="font-medium">Pilih siswa untuk melihat pratinjau rapor.</p>

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Download, Copy, Check, Quote, Camera, Sparkles } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 import { getAdviceForDay, getDayOfYear, DailyAdvice } from '../constants/dailyAdvice';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
@@ -40,23 +40,41 @@ export default function DailyAdviceCard() {
     
     setIsCapturing(true);
     try {
-      // Small delay to ensure state updates reach the DOM
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Small delay to ensure state updates reach the DOM and fonts are ready
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      const canvas = await html2canvas(captureRef.current, {
-        scale: 3, // High quality
-        backgroundColor: null,
-        useCORS: true,
-        logging: false,
+      const element = captureRef.current;
+      // Get the actual height with scroll to ensure nothing is cut off
+      const width = 1080;
+      const height = Math.max(1920, element.scrollHeight);
+
+      // Use html-to-image to generate a high-quality image
+      const dataUrl = await htmlToImage.toPng(element, {
+        width,
+        height,
+        pixelRatio: 2.5, // Even higher quality for clear text
+        cacheBust: true,
+        style: {
+          transform: 'none',
+          margin: '0',
+          padding: '0',
+          visibility: 'visible',
+          display: 'flex',
+          left: '0',
+          top: '0',
+          height: `${height}px`, // Force height in style too
+        }
       });
       
-      const image = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
-      link.href = image;
-      link.download = `Nasihat_Hari_${dayNumber}.png`;
+      link.href = dataUrl;
+      link.setAttribute('download', `Nasihat_Hari_${dayNumber}.png`);
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Capture failed:', err);
+      alert('Gagal menyimpan gambar. Silakan coba lagi atau gunakan fitur bagikan.');
     } finally {
       setIsCapturing(false);
     }
@@ -65,15 +83,14 @@ export default function DailyAdviceCard() {
   const handleShare = async () => {
     if (!advice) return;
     
-    const shareData = {
-      title: `Nasihat Harian - Hari ke-${dayNumber}`,
-      text: `✨ ${advice.title}\n\n${advice.explanation}\n\nSumber: ${advice.quranSource || advice.hadithSource}`,
-      url: window.location.href
-    };
+    const text = `📌 *Nasihat Harian - Hari ke-${dayNumber}*\n✨ *${advice.title.toUpperCase()}*\n\n"${advice.explanation}"\n\n📖 *Sumber:*\n${advice.quranSource ? `• Al-Qur'an: ${advice.quranSource}` : ''}${advice.hadithSource ? `• Hadits: ${advice.hadithSource}` : ''}\n\n_Semoga bermanfaat._`;
 
     try {
       if (navigator.share) {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: `Nasihat Harian - Hari ke-${dayNumber}`,
+          text: text,
+        });
       } else {
         handleCopy();
       }
@@ -86,236 +103,291 @@ export default function DailyAdviceCard() {
 
   const themes = {
     emerald: {
-      from: 'from-emerald-500',
-      to: 'to-teal-600',
-      bg: 'bg-emerald-50',
-      text: 'text-emerald-900',
-      accent: 'bg-emerald-600',
-      light: 'text-emerald-600'
+      from: 'from-emerald-950',
+      to: 'to-emerald-900',
+      fromHex: '#064e3b',
+      toHex: '#065f46',
+      pattern: '#10b981',
+      bg: 'bg-emerald-500/10',
+      text: 'text-emerald-50',
+      accent: 'bg-emerald-500',
+      light: 'text-emerald-400',
+      glow: 'shadow-emerald-500/20'
     },
     blue: {
-      from: 'from-blue-500',
-      to: 'to-indigo-600',
-      bg: 'bg-blue-50',
-      text: 'text-blue-900',
+      from: 'from-slate-950',
+      to: 'to-blue-900',
+      fromHex: '#020617',
+      toHex: '#1e3a8a',
+      pattern: '#3b82f6',
+      bg: 'bg-blue-500/10',
+      text: 'text-blue-50',
       accent: 'bg-blue-600',
-      light: 'text-blue-600'
+      light: 'text-blue-400',
+      glow: 'shadow-blue-500/20'
     },
     amber: {
-      from: 'from-amber-500',
-      to: 'to-orange-600',
-      bg: 'bg-amber-50',
-      text: 'text-amber-900',
+      from: 'from-stone-950',
+      to: 'to-amber-900',
+      fromHex: '#1c1917',
+      toHex: '#78350f',
+      pattern: '#f59e0b',
+      bg: 'bg-amber-500/10',
+      text: 'text-amber-50',
       accent: 'bg-amber-600',
-      light: 'text-amber-600'
+      light: 'text-amber-400',
+      glow: 'shadow-amber-500/20'
     },
     purple: {
-      from: 'from-purple-500',
-      to: 'to-pink-600',
-      bg: 'bg-purple-50',
-      text: 'text-purple-900',
+      from: 'from-zinc-950',
+      to: 'to-purple-900',
+      fromHex: '#09090b',
+      toHex: '#581c87',
+      pattern: '#a855f7',
+      bg: 'bg-purple-500/10',
+      text: 'text-purple-50',
       accent: 'bg-purple-600',
-      light: 'text-purple-600'
+      light: 'text-purple-400',
+      glow: 'shadow-purple-500/20'
     }
   };
 
   const currentTheme = themes[themeColor as keyof typeof themes] || themes.emerald;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* Visual Preview Container */}
-      <div className="relative group">
-        {/* Hidden Story Format for Capture */}
-        <div className="fixed -left-[2000px] top-0 pointer-events-none">
-          <div 
-            ref={captureRef}
-            className={cn(
-              "w-[1080px] h-[1920px] flex flex-col items-center justify-center p-20 text-white relative bg-gradient-to-br",
-              currentTheme.from,
-              currentTheme.to
-            )}
-          >
-            {/* Background Ornaments */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/10 blur-[150px] rounded-full -mr-40 -mt-40" />
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-black/10 blur-[120px] rounded-full -ml-30 -mb-30" />
-            
-            {/* Poster Content */}
-            <div className="relative z-10 w-full flex flex-col items-center text-center space-y-12">
+    <div className="w-full max-w-5xl mx-auto space-y-8 font-sans">
+      {/* Capture Element (Hidden) */}
+      <div className="fixed -left-[5000px] top-0 pointer-events-none">
+        <div 
+          ref={captureRef}
+          className="w-[1080px] min-h-[1920px] h-fit flex flex-col p-20 text-white relative overflow-visible font-sans"
+          style={{ 
+            background: `radial-gradient(circle at 0% 0%, ${currentTheme.fromHex} 0%, ${currentTheme.toHex} 100%)`,
+            backgroundColor: currentTheme.fromHex 
+          }}
+        >
+          {/* Professional Background Motifs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/5 blur-[120px] rounded-full -mr-40 -mt-40" />
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-black/20 blur-[100px] rounded-full -ml-30 -mb-30" />
+            <svg width="100%" height="100%" className="absolute inset-0 opacity-[0.03]">
+              <pattern id="gridCapture" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="1" />
+              </pattern>
+              <rect width="100%" height="100%" fill="url(#gridCapture)" />
+            </svg>
+          </div>
+
+          <div className="relative z-10 flex flex-col h-full gap-16">
+            {/* Header Area */}
+            <div className="flex justify-between items-start">
               <div className="space-y-4">
-                <div className="flex items-center justify-center gap-4">
-                  <div className="h-px w-20 bg-white/40" />
-                  <span className="px-8 py-3 bg-white/20 backdrop-blur-md rounded-full text-3xl font-bold tracking-[0.2em] uppercase">
-                    Daily Nasiha
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-display font-black tracking-widest uppercase">Miftahussalam</h2>
+                    <p className="text-xl font-medium text-white/60 tracking-[0.2em] uppercase">Daily Nasihah</p>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-9xl font-display font-black opacity-10 leading-none tabular-nums">
+                  {String(dayNumber).padStart(2, '0')}
+                </div>
+                <p className="text-2xl font-bold tracking-widest uppercase text-white/40 mt-2">HARI KE-{dayNumber}</p>
+              </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col justify-center items-center py-10">
+              <div className="w-full text-center space-y-16">
+                <div className="space-y-4">
+                  <span className="inline-block px-8 py-3 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 text-2xl font-black uppercase tracking-[0.3em]">
+                    Focus of the Day
                   </span>
-                  <div className="h-px w-20 bg-white/40" />
-                </div>
-                <p className="text-5xl font-medium opacity-90 tracking-tight">Hari ke-{dayNumber}</p>
-              </div>
-
-              <div className="flex flex-col items-center gap-8">
-                 <h1 className="text-[120px] font-black tracking-tighter leading-[0.9] uppercase drop-shadow-2xl">
+                  <h1 className="text-[140px] font-display font-black leading-[0.9] tracking-tighter uppercase drop-shadow-2xl">
                     {advice.title}
-                 </h1>
-                 <div className="h-2 w-48 bg-white/60 rounded-full" />
-              </div>
+                  </h1>
+                </div>
 
-              {advice.arabic && (
-                <div className="py-10">
-                  <p className="text-8xl font-serif leading-[1.6] px-10 drop-shadow-lg text-white" dir="rtl">
-                    {advice.arabic}
+                {advice.arabic && (
+                  <div className="relative w-full py-16 px-12 bg-white/5 backdrop-blur-md rounded-[80px] border border-white/10 shadow-2xl">
+                    <p className="text-[110px] font-serif leading-[1.8] text-center drop-shadow-xl ArabicFont" dir="rtl">
+                      {advice.arabic}
+                    </p>
+                  </div>
+                )}
+
+                <div className="relative max-w-[900px] mx-auto">
+                  <Quote className="absolute -top-12 -left-12 w-32 h-32 text-white/10 -rotate-12" />
+                  <p className="text-7xl font-display font-bold leading-[1.3] text-white tracking-tight italic">
+                    "{advice.explanation}"
                   </p>
-                </div>
-              )}
-
-              <div className="relative py-16 px-16 bg-white/10 backdrop-blur-xl rounded-[80px] border border-white/20 shadow-2xl">
-                <Quote className="absolute -top-12 -left-6 w-32 h-32 text-white/10 rotate-12" />
-                <p className="text-6xl font-semibold leading-[1.5] text-white tracking-wide max-w-[900px]">
-                  "{advice.explanation}"
-                </p>
-              </div>
-
-              <div className="pt-16 flex flex-col items-center gap-10">
-                <div className="flex flex-col items-center gap-6">
-                  {advice.quranSource && (
-                    <div className="flex items-center gap-4 text-4xl font-bold bg-white/20 px-10 py-5 rounded-[40px] border border-white/10">
-                      <span>📖</span>
-                      <span className="opacity-60 text-2xl uppercase tracking-widest mr-2">Al-Qur'an</span>
-                      <span>{advice.quranSource}</span>
-                    </div>
-                  )}
-                  {advice.hadithSource && (
-                    <div className="flex items-center gap-4 text-4xl font-bold bg-white/20 px-10 py-5 rounded-[40px] border border-white/10">
-                      <span>📚</span>
-                      <span className="opacity-60 text-2xl uppercase tracking-widest mr-2">Hadits</span>
-                      <span>{advice.hadithSource}</span>
-                    </div>
-                  )}
+                  <Quote className="absolute -bottom-12 -right-12 w-32 h-32 text-white/10 rotate-[168deg]" />
                 </div>
               </div>
-              
-              <div className="mt-32 w-full pt-12 border-t border-white/10 flex flex-col items-center gap-4">
-                <p className="text-3xl font-black tracking-[0.4em] uppercase text-white/40">
-                  Miftahussalam Tahfidz
-                </p>
-                <div className="flex items-center gap-2 text-white/30 text-xl font-bold italic">
-                  <Sparkles size={24} />
-                  Amalkan & Sebarkan Kebaikan
+            </div>
+
+            {/* Source & Footer */}
+            <div className="space-y-12">
+              <div className="flex justify-center gap-8">
+                {advice.quranSource && (
+                  <div className="px-10 py-5 bg-white text-black rounded-3xl flex items-center gap-4 shadow-2xl">
+                    <span className="text-3xl">📖</span>
+                    <span className="text-3xl font-display font-black uppercase tracking-wider">QS. {advice.quranSource}</span>
+                  </div>
+                )}
+                {advice.hadithSource && (
+                  <div className="px-10 py-5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl flex items-center gap-4">
+                    <span className="text-3xl">📚</span>
+                    <span className="text-3xl font-display font-black uppercase tracking-wider">HR. {advice.hadithSource}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-12 border-t border-white/10 flex justify-between items-end">
+                <div className="space-y-2">
+                  <p className="text-2xl font-display font-black tracking-[0.4em] uppercase text-white/50">Nasihah Al-Yaum</p>
+                  <p className="text-xl font-medium text-white/30">Membangun Karakter Melalui Wahyu</p>
+                </div>
+                <div className="text-right">
+                   <p className="text-xl font-bold tracking-widest text-white/40 uppercase">Aplikasi Tahfidz Digital</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Live UI Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={cn(
-            "rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl bg-gradient-to-br",
-            currentTheme.from,
-            currentTheme.to
-          )}
-        >
-          {/* Background Effects */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 blur-2xl rounded-full -ml-24 -mb-24" />
-          
-          <div className="relative z-10 flex flex-col md:flex-row gap-12">
-            {/* Left side: Content */}
-            <div className="flex-1 space-y-8">
-              <div className="flex items-center gap-4">
-                <div className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold tracking-widest uppercase">
-                  📌 Hari ke-{dayNumber}
-                </div>
-                <div className="flex items-center gap-2 text-white/60">
-                  <Sparkles size={14} className="animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Nasihat Harian</span>
-                </div>
-              </div>
+      {/* Main UI Card */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn(
+          "relative overflow-hidden rounded-[3rem] p-8 md:p-14 text-white shadow-2xl transition-all duration-500",
+          "bg-gradient-to-br",
+          currentTheme.from,
+          currentTheme.to,
+          currentTheme.glow
+        )}
+      >
+        {/* Artistic Overlays */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full -ml-24 -mb-24" />
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        </div>
 
-              <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-none uppercase">
-                  {advice.title}
-                </h2>
-                {advice.arabic && (
-                  <p className="text-2xl md:text-3xl font-serif text-white/90 leading-loose" dir="rtl">
-                    {advice.arabic}
-                  </p>
-                )}
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left Content Area */}
+          <div className="lg:col-span-7 space-y-10">
+            <div className="flex items-center gap-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-xl border border-white/20 shadow-inner">
+                <Sparkles size={20} className="text-white animate-pulse" />
               </div>
-
-              <div className="relative pl-6 border-l-4 border-white/30">
-                <p className="text-lg md:text-xl font-medium leading-relaxed italic text-white/95">
-                  "{advice.explanation}"
-                </p>
+              <div className="space-y-0.5">
+                <p className="text-[10px] font-display font-black tracking-[.3em] uppercase text-white/60">Insight Harian</p>
+                <p className="text-sm font-bold tracking-tight">HARI KE-{dayNumber}</p>
               </div>
-
-              <div className="pt-6 space-y-3">
-                <p className="text-xs font-bold tracking-widest uppercase text-white/60">Sumber Belajar:</p>
-                <div className="flex flex-wrap gap-3">
-                  {advice.quranSource && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/10">
-                      <span className="text-sm font-bold">📖 {advice.quranSource}</span>
-                    </div>
-                  )}
-                  {advice.hadithSource && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/10">
-                      <span className="text-sm font-bold">📚 {advice.hadithSource}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent ml-4" />
             </div>
 
-            {/* Right side: Actions */}
-            <div className="md:w-64 flex flex-col gap-4">
-              <div className="p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 space-y-6">
-                <p className="text-sm font-bold text-center text-white/80">Bagikan Kebaikan</p>
-                
-                <div className="grid grid-cols-1 gap-3">
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-7xl font-display font-black leading-[0.95] tracking-tighter uppercase transition-all">
+                {advice.title}
+              </h1>
+              
+              {advice.arabic && (
+                <div className="group relative">
+                  <div className="absolute -inset-2 bg-white/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <p className="relative text-3xl md:text-5xl font-serif leading-[1.8] text-white/90 drop-shadow-sm transition-all" dir="rtl">
+                    {advice.arabic}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <Quote className="absolute -left-4 -top-4 w-10 h-10 text-white/10 -rotate-12" />
+              <p className="relative text-xl md:text-2xl font-medium leading-relaxed italic text-white/95 pl-8">
+                "{advice.explanation}"
+              </p>
+            </div>
+
+            <div className="pt-4 flex flex-wrap gap-4">
+              {advice.quranSource && (
+                <div className="group flex items-center gap-3 px-6 py-3 bg-white text-black rounded-2xl font-display font-black text-xs uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95 cursor-default">
+                  <span className="text-lg">📖</span>
+                  QS. {advice.quranSource}
+                </div>
+              )}
+              {advice.hadithSource && (
+                <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl font-display font-black text-xs uppercase tracking-widest transition-all hover:bg-white/20 cursor-default">
+                  <span className="text-lg">📚</span>
+                  HR. {advice.hadithSource}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Action Area */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-8">
+            <div className="rounded-[2rem] bg-white/10 backdrop-blur-2xl border border-white/20 p-8 shadow-2xl relative group overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <div className="relative space-y-8">
+                <div className="text-center space-y-1">
+                  <h3 className="text-lg font-display font-black tracking-tight">KONTROL PANEL</h3>
+                  <p className="text-[10px] uppercase tracking-widest font-bold text-white/40">Bagikan Kebaikan Hari Ini</p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
                   <button 
                     onClick={handleShare}
-                    className="flex items-center justify-center gap-3 w-full py-4 bg-white text-emerald-900 rounded-2xl font-bold text-sm shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+                    className="group relative flex items-center justify-center gap-4 w-full py-5 bg-white text-black rounded-[1.25rem] font-display font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:translate-y-[-2px] active:translate-y-[1px]"
                   >
-                    <Share2 size={18} />
-                    Share ke Media
+                    <Share2 size={18} className="transition-transform group-hover:rotate-12" />
+                    Share Sekarang
                   </button>
                   
                   <button 
                     onClick={handleDownloadImage}
                     disabled={isCapturing}
-                    className="flex items-center justify-center gap-3 w-full py-4 bg-white/20 border border-white/30 text-white rounded-2xl font-bold text-sm backdrop-blur-md hover:bg-white/30 transition-all disabled:opacity-50"
+                    className="flex items-center justify-center gap-4 w-full py-5 bg-white/10 border border-white/20 hover:bg-white/20 active:bg-white/5 rounded-[1.25rem] font-display font-black text-xs uppercase tracking-[0.2em] backdrop-blur-sm transition-all disabled:opacity-50"
                   >
                     {isCapturing ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <Camera size={18} />
                     )}
-                    Simpan Gambar {isCapturing ? '...' : ''}
+                    Unduh HD Poster {isCapturing ? '...' : ''}
                   </button>
 
                   <button 
                     onClick={handleCopy}
                     className={cn(
-                      "flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-bold text-sm transition-all",
-                      isCopied ? "bg-green-500 text-white" : "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                      "flex items-center justify-center gap-4 w-full py-5 rounded-[1.25rem] font-display font-black text-xs uppercase tracking-[0.2em] transition-all",
+                      isCopied ? "bg-green-500 text-white" : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
                     )}
                   >
                     {isCopied ? <Check size={18} /> : <Copy size={18} />}
-                    {isCopied ? 'Tersalin!' : 'Salin Teks'}
+                    {isCopied ? 'Tersalin !' : 'Copy Quotes'}
                   </button>
                 </div>
               </div>
+            </div>
 
-              <div className="p-4 bg-black/10 rounded-2xl">
-                <p className="text-[10px] text-white/50 text-center leading-relaxed">
-                  "Barangsiapa yang menunjukkan kepada kebaikan, maka ia akan mendapatkan pahala seperti orang yang melakukannya." (HR. Muslim)
-                </p>
-              </div>
+            <div className="px-6 py-4 flex items-center justify-center gap-4">
+              <div className="h-px bg-white/10 flex-1" />
+              <p className="text-[11px] font-bold text-white/30 text-center uppercase tracking-widest whitespace-nowrap">
+                Amalan & Syiar Digital
+              </p>
+              <div className="h-px bg-white/10 flex-1" />
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </div>
   );
 }
