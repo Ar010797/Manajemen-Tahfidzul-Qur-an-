@@ -5,8 +5,8 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, parse
 import { id } from 'date-fns/locale';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
+import DailyAdviceCard from './DailyAdviceCard';
 import ConfirmModal from './ConfirmModal';
-import { HADITHS } from '../constants/hadiths';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -68,11 +68,6 @@ export default function Dashboard() {
     { label: 'Setoran Hari Ini', value: stats.deposits, icon: TrendingUp, color: 'amber', gradient: 'from-amber-500 to-orange-600' },
     { label: 'Total Ujian', value: stats.exams, icon: GraduationCap, color: 'purple', gradient: 'from-purple-500 to-pink-600' },
   ];
-
-  // Stable daily index based on date string
-  const dateStr = format(currentDate, 'yyyyMMdd');
-  const hash = dateStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const currentHadith = HADITHS[hash % HADITHS.length];
 
   const academicYear = storage.getInstitution().academic_year || '2025/2026';
   const [yearStart, yearEnd] = academicYear.split('/').map(y => parseInt(y));
@@ -174,61 +169,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
-        <div className={cn("rounded-3xl p-8 text-white relative overflow-hidden shadow-xl", theme.mainBg, theme.mainShadow)}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 blur-2xl rounded-full -ml-24 -mb-24" />
-          
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <BookOpen size={18} className="text-white" />
-              </div>
-              <h2 className="text-xl font-bold">
-                {currentHadith.type === 'ayah' ? 'Ayat Hari Ini' : 
-                 currentHadith.type === 'hadith' ? 'Hadits Hari Ini' : 
-                 'Nasihat Hari Ini'}
-              </h2>
-            </div>
-
-            <div className="space-y-6">
-              {currentHadith.arabic && (
-                <p 
-                  className="text-2xl md:text-3xl font-serif text-right leading-loose tracking-wide" 
-                  style={{ direction: 'rtl' }}
-                >
-                  {currentHadith.arabic}
-                </p>
-              )}
-              
-              <div className="space-y-2">
-                <p className={cn("text-lg md:text-xl font-medium leading-relaxed italic", theme.mainLightText)}>
-                  "{currentHadith.content}"
-                </p>
-                <p className="text-sm font-bold opacity-80 flex items-center gap-2">
-                  <span className="w-4 h-px bg-white/40" />
-                  {currentHadith.source}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a 
-                href="https://wa.me/6285869372879" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className={cn("px-6 py-3 bg-white font-bold rounded-xl text-sm hover:opacity-90 transition-all hover:scale-105 active:scale-95", theme.mainBtn)}
-              >
-                Hubungi Bantuan
-              </a>
-              <button 
-                onClick={() => setIsResetModalOpen(true)}
-                className="px-6 py-3 bg-red-500/20 text-white border border-red-500/30 font-bold rounded-xl text-sm hover:bg-red-500/40 transition-all hover:scale-105 active:scale-95"
-              >
-                Reset Total
-              </button>
-            </div>
-          </div>
-        </div>
+        <DailyAdviceCard />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -335,17 +276,46 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4 h-fit">
-          <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shrink-0">
-            <Calendar size={24} />
+      {/* Support & Maintenance info */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-4">
+             <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center text-white", theme.bg)}>
+                <Users size={24} />
+             </div>
+             <div>
+                <h3 className="font-bold text-stone-900">Bantuan Teknis</h3>
+                <p className="text-stone-500 text-sm">Hubungi admin untuk kendala sistem.</p>
+             </div>
           </div>
-          <div>
-            <h3 className="text-amber-900 font-bold">Penyimpanan Lokal Aktif</h3>
-            <p className="text-amber-800/70 text-sm mt-1">
-              Data Anda saat ini disimpan di browser ini. Untuk menghindari kehilangan data, pastikan Anda melakukan backup secara berkala melalui menu <strong>Pengaturan &gt; Pemeliharaan</strong>.
-            </p>
-          </div>
+          <a 
+            href="https://wa.me/6285869372879" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={cn("px-6 py-2 bg-stone-100 font-bold rounded-xl text-sm hover:bg-stone-200 transition-all", theme.text)}
+          >
+            Chat WA
+          </a>
         </div>
+        
+        <div className="bg-red-50 p-6 rounded-3xl border border-red-100 shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-500 text-white">
+                <X size={24} />
+             </div>
+             <div>
+                <h3 className="font-bold text-red-900">Reset Sistem</h3>
+                <p className="text-red-800/60 text-sm">Hapus semua data secara permanen.</p>
+             </div>
+          </div>
+          <button 
+            onClick={() => setIsResetModalOpen(true)}
+            className="px-6 py-2 bg-red-500 text-white font-bold rounded-xl text-sm hover:bg-red-600 transition-all"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
       </div>
 
       <ConfirmModal
