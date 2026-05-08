@@ -232,7 +232,8 @@ export default function MonthlyRecap() {
             transform: 'none',
             margin: '0',
             padding: '15mm',
-            borderRadius: '0'
+            borderRadius: '0',
+            width: '1122.52px'
           }
         });
         
@@ -282,9 +283,10 @@ export default function MonthlyRecap() {
         style: {
           transform: 'none',
           margin: '0',
-          padding: '15mm',
+          padding: '0',
           borderRadius: '0',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          width: '1122.52px'
         }
       });
 
@@ -296,9 +298,9 @@ export default function MonthlyRecap() {
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      // Direct fit for A4 Landscape
+      // Direct fit based on aspect ratio
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       const fileName = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.pdf`;
       pdf.save(fileName);

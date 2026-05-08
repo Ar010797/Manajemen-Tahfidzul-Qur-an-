@@ -167,7 +167,8 @@ export default function ReportCard() {
           margin: '0',
           padding: '10mm',
           borderRadius: '0',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          width: '793.7px'
         }
       });
       
@@ -241,9 +242,11 @@ export default function ReportCard() {
         style: {
           transform: 'none',
           margin: '0',
-          padding: '10mm',
+          padding: '0',
           borderRadius: '0',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          width: '793.7px',
+          height: 'auto'
         }
       });
       
@@ -255,9 +258,10 @@ export default function ReportCard() {
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      // Add image to PDF - force fit to page
+      // If content is longer than A4, add pages or scale?
+      // For now, let's just make sure it doesn't stretch weirdly by calculating the height based on aspect ratio
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
       
