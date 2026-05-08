@@ -265,43 +265,71 @@ export default function MonthlyRecap() {
     setIsGenerating(true);
     
     try {
-      // Ensure images are loaded
+      // Ensure images and fonts are loaded
       const images = element.getElementsByTagName('img');
-      await Promise.all(Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      }));
+      const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
+      
+      await Promise.all([
+        fontPromise,
+        ...Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        })
+      ]);
 
-      // High-end capture for PDF
-      const canvas = await htmlToImage.toCanvas(element, {
-        width: 1122.52, // Fixed A4 width
-        pixelRatio: 4, 
+      // Optimized for high fidelity and perfect alignment (matches Image export quality)
+      const pixelRatio = 3; 
+      const dataUrl = await htmlToImage.toPng(element, {
+        pixelRatio: pixelRatio,
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           margin: '0',
           padding: '0',
           borderRadius: '0',
-          boxShadow: 'none',
-          width: '1122.52px'
+          boxShadow: 'none'
         }
       });
 
-      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Direct fit based on aspect ratio
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      // Calculate scaling to perfectly fit one page with professional padding
+      const margin = 10; 
+      const printableWidth = pdfWidth - (margin * 2);
+      const printableHeight = pdfHeight - (margin * 2);
+
+      // Create a temporary image to get precise dimensions for scale calculation
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve) => { img.onload = resolve; });
+
+      let finalWidth = printableWidth;
+      let finalHeight = (img.height * finalWidth) / img.width;
+      
+      // If height exceeds printable height, scale down further to fit single page
+      if (finalHeight > printableHeight) {
+        const ratio = printableHeight / finalHeight;
+        finalWidth = finalWidth * ratio;
+        finalHeight = printableHeight;
+      }
+
+      // Mathematical centering for perfect visual balance
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+
+      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
+
       const fileName = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.pdf`;
       pdf.save(fileName);
     } catch (error) {
@@ -635,7 +663,7 @@ export default function MonthlyRecap() {
                     </div>
                   </div>
 
-                  <table className="w-full border-collapse border border-black text-[9px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
+                  <table className="w-full border-collapse border border-black text-[9.5px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
                     <colgroup>
                       <col style={{ width: '30px' }} />
                       <col style={{ width: '120px' }} />

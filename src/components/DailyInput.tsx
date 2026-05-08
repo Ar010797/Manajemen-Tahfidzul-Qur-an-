@@ -16,30 +16,33 @@ function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: 
       dragListener={false}
       dragControls={controls}
       className={cn(
-        "w-full text-left p-4 rounded-2xl transition-all duration-300 border flex items-center gap-4 cursor-pointer group mb-1",
+        "w-full text-left p-3.5 rounded-xl transition-all duration-300 border flex items-center gap-3 cursor-pointer group mb-1.5",
         selectedStudent?.id === s.id 
-          ? `bg-stone-900 border-stone-800 text-white shadow-xl translate-x-1` 
+          ? `bg-stone-900 border-stone-800 text-white shadow-lg` 
           : `bg-white border-stone-100 hover:bg-stone-50 text-stone-600 hover:border-stone-200`
       )}
       onClick={() => handleSelectStudent(s)}
     >
       <div 
         className={cn(
-          "transition-colors cursor-grab active:cursor-grabbing p-1.5 rounded-lg",
+          "transition-colors cursor-grab active:cursor-grabbing p-1 rounded-lg",
           selectedStudent?.id === s.id ? "text-white/20 hover:text-white/40" : "text-stone-300 hover:bg-stone-100"
         )}
         onPointerDown={(e) => controls.start(e)}
         style={{ touchAction: 'none' }}
       >
-        <GripVertical size={16} />
+        <GripVertical size={14} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-display font-bold truncate tracking-tight">{s.name}</p>
+        <p className="text-sm font-display font-bold truncate tracking-tight text-stone-900">{s.name}</p>
         {s.halaqoh_name && (
-          <p className={cn(
-            "text-[10px] font-black uppercase tracking-widest mt-0.5",
-            selectedStudent?.id === s.id ? "text-white/40" : "text-stone-400"
-          )}>{s.halaqoh_name}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <div className={cn("w-1 h-1 rounded-full", selectedStudent?.id === s.id ? "bg-white/40" : "bg-indigo-400")} />
+            <p className={cn(
+              "text-[9px] font-bold uppercase tracking-[0.2em]",
+              selectedStudent?.id === s.id ? "text-white/60" : "text-stone-400"
+            )}>{s.halaqoh_name}</p>
+          </div>
         )}
       </div>
     </Reorder.Item>
@@ -408,37 +411,40 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 font-sans">
       <div className={cn(
-        "lg:col-span-4 bg-white p-8 rounded-[2.5rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5 h-[calc(100vh-12rem)] flex flex-col lg:sticky lg:top-8 z-10 overflow-hidden",
+        "lg:col-span-4 bg-white p-6 rounded-[2rem] border border-stone-200/60 shadow-xl shadow-stone-900/5 h-[calc(100vh-12rem)] flex flex-col lg:sticky lg:top-8 z-10",
         !showListOnMobile && "hidden lg:flex"
       )}>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-display font-black text-stone-950 flex items-center gap-3">
-              <Search size={22} className={theme.text} />
-              Cari Siswa
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-base font-display font-black text-stone-950 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className={cn("w-1.5 h-4 rounded-full bg-gradient-to-b", theme.from, theme.to)} />
+              Daftar Siswa
             </h3>
+            <div className="px-2.5 py-1 bg-stone-100 rounded-lg text-[9px] font-black text-stone-500 uppercase tracking-widest">
+              {students.length} Siswa
+            </div>
           </div>
           <div className="relative group">
             <input 
               type="text"
-              placeholder="Ketik nama siswa..."
-              className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 px-6 focus:outline-none focus:ring-4 transition-all pr-12 font-medium", theme.ring)}
+              placeholder="Cari nama siswa..."
+              className={cn("w-full bg-stone-50/50 border border-stone-200/60 rounded-xl py-3 px-10 focus:outline-none focus:ring-4 transition-all text-xs font-semibold tracking-tight", theme.ring)}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
-            <Search className="absolute right-6 top-1/2 -translate-y-1/2 text-stone-300 group-focus-within:text-stone-950 transition-colors" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 group-focus-within:text-stone-950 transition-colors" size={14} />
           </div>
         </div>
         
-        <div className="flex-1 mt-8 overflow-y-auto custom-scrollbar pr-2 space-y-8">
+        <div className="flex-1 mt-6 overflow-y-auto custom-scrollbar pr-1 space-y-6">
           {Object.entries(groupedStudents).map(([halaqohName, halaqohStudents]) => (
-            <div key={halaqohName} className="space-y-4">
-              <div className="flex items-center justify-between px-2">
-                <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em]">
+            <div key={halaqohName} className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <h4 className="text-[10px] font-display font-bold text-stone-400 uppercase tracking-widest">
                   {halaqohName}
                 </h4>
-                <span className="text-[10px] font-display font-black bg-stone-100 text-stone-500 px-3 py-1 rounded-full border border-stone-200/50 uppercase">
-                  {(halaqohStudents as any[]).length} SISWA
+                <span className="text-[9px] font-bold bg-stone-50 text-stone-400 px-2.5 py-0.5 rounded-lg border border-stone-100">
+                  {(halaqohStudents as any[]).length}
                 </span>
               </div>
               
@@ -471,58 +477,61 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
       </div>
 
       <div className={cn(
-        "lg:col-span-8 space-y-8",
-        showListOnMobile && "hidden lg:block"
+        "lg:col-span-8 space-y-6",
+        showListOnMobile && "hidden lg:block transition-all"
       )}>
         {selectedStudent ? (
-          <div className="bg-white p-8 lg:p-12 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5 transition-all">
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-12">
-              <div className="flex items-center gap-6">
+          <div className="bg-white p-8 lg:p-10 rounded-[2.5rem] border border-stone-200/60 shadow-xl shadow-stone-900/5">
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 mb-10">
+              <div className="flex items-center gap-5">
                 <button 
                   onClick={() => setShowListOnMobile(true)}
-                  className="lg:hidden p-3 bg-stone-100 hover:bg-stone-200 rounded-2xl text-stone-600 transition-all active:scale-90"
+                  className="lg:hidden p-3 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-all active:scale-95"
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
                   <button 
                     onClick={handlePrevStudent}
-                    className="p-3 hover:bg-stone-50 rounded-2xl text-stone-300 hover:text-stone-950 transition-all border border-transparent hover:border-stone-100 active:scale-90"
+                    className="p-2.5 bg-stone-50 hover:bg-stone-100 rounded-xl text-stone-400 hover:text-stone-950 transition-all active:scale-95"
                   >
-                    <ChevronLeft size={28} />
+                    <ChevronLeft size={20} />
                   </button>
-                  <div className="space-y-1">
-                    <h2 className="text-3xl md:text-4xl font-display font-black text-stone-950 leading-none tracking-tight">
-                      {selectedStudent.name}
-                    </h2>
-                    <p className="text-stone-400 font-medium tracking-tight">Updating daily progress...</p>
-                  </div>
+                  <div className="space-y-1.5 text-center sm:text-left px-2">
+                      <p className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-500/80 leading-none mb-1">Update Progress</p>
+                      <h2 className="text-4xl font-display font-black text-stone-950 leading-tight tracking-tighter">
+                        {selectedStudent.name}
+                      </h2>
+                      <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                        <div className="flex -space-x-1">
+                          {[1,2,3].map(i => <div key={i} className="w-4 h-4 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-[6px] font-bold text-indigo-400">#</div>)}
+                        </div>
+                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{selectedStudent.halaqoh_name || 'Personal'}</p>
+                      </div>
+                    </div>
                   <button 
                     onClick={handleNextStudent}
-                    className="p-3 hover:bg-stone-50 rounded-2xl text-stone-300 hover:text-stone-950 transition-all border border-transparent hover:border-stone-100 active:scale-90"
+                    className="p-2.5 bg-stone-50 hover:bg-stone-100 rounded-xl text-stone-400 hover:text-stone-950 transition-all active:scale-95"
                   >
-                    <ChevronRight size={28} />
+                    <ChevronRight size={20} />
                   </button>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-stone-200 to-stone-100 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <input 
-                    type="date"
-                    className="relative w-full bg-white border border-stone-200 rounded-2xl px-6 py-4 text-xs font-display font-black uppercase tracking-widest text-stone-600 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                  />
-                </div>
-                <div className="flex bg-stone-100/50 p-2 rounded-[1.5rem] border border-stone-200/40">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input 
+                  type="date"
+                  className="bg-stone-50 border border-stone-200 rounded-xl px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-stone-600 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                  value={date}
+                  onChange={e => setDate(e.target.value)}
+                />
+                <div className="flex bg-stone-100/50 p-1.5 rounded-xl border border-stone-200/30">
                   {(['hafalan', 'ummi', 'tilawah'] as const).map(t => (
                     <button
                       key={t}
                       onClick={() => { setType(t); setDetails({}); }}
                       className={cn(
-                        "px-6 py-3 rounded-2xl text-[10px] font-display font-black uppercase tracking-[0.2em] transition-all",
-                        type === t ? `bg-stone-950 text-white shadow-xl translate-y-[-1px]` : "text-stone-400 hover:text-stone-950"
+                        "px-5 py-2 rounded-lg text-[9px] font-display font-bold uppercase tracking-[0.15em] transition-all",
+                        type === t ? `bg-stone-950 text-white shadow-lg` : "text-stone-500 hover:text-stone-950"
                       )}
                     >
                       {t}
@@ -532,57 +541,57 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-10">
-              <div className="bg-stone-50/50 p-8 lg:p-10 rounded-[2.5rem] border border-stone-200/40">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="bg-stone-50/30 p-6 lg:p-8 rounded-[2rem] border border-stone-200/40">
                   {type === 'hafalan' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Nama Surat</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nama Surat</label>
                       <input 
                         type="text"
-                        className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                         placeholder="Contoh: An-Naba"
                         value={details.surah || ''}
                         onChange={e => setDetails({...details, surah: e.target.value})}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Ayat Awal</label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Ayat Awal</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.verse_start || ''}
                           onChange={e => setDetails({...details, verse_start: e.target.value})}
                         />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Ayat Akhir</label>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Ayat Akhir</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.verse_end || ''}
                           onChange={e => setDetails({...details, verse_end: e.target.value})}
                         />
                       </div>
                     </div>
-                    <div className="space-y-3 md:col-span-2">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Pencapaian Nilai</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-4 md:col-span-2 mt-4">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Pencapaian Nilai</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                          {(['L', 'CL', 'BL'] as const).map(g => (
                            <button
                              type="button"
                              key={g}
                              onClick={() => setDetails({...details, grade: g})}
                              className={cn(
-                               "py-4 rounded-2xl font-display font-black border-2 transition-all group flex flex-col items-center justify-center gap-1",
+                               "py-4 rounded-xl font-display font-bold border-2 transition-all flex flex-col items-center justify-center gap-1",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-2xl scale-[1.02]" 
+                                ? "bg-stone-950 border-stone-950 text-white shadow-lg scale-[1.02]" 
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
-                             <span className="text-2xl">{g}</span>
-                             <span className="text-[8px] uppercase tracking-[0.2em] opacity-60">
+                             <span className="text-xl">{g}</span>
+                             <span className="text-[8px] uppercase tracking-widest opacity-60">
                                {g === 'L' ? 'Lancar' : g === 'CL' ? 'Cukup Lancar' : 'Belum Lancar'}
                              </span>
                            </button>
@@ -593,40 +602,41 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 )}
 
                 {type === 'ummi' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Jilid</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Jilid</label>
                       <select 
-                        className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all appearance-none cursor-pointer"
                         value={details.level || ''}
                         onChange={e => setDetails({...details, level: e.target.value})}
                       >
-                        <option value="">Pilih</option>
+                        <option value="">Pilih Jilid</option>
                         {[1,2,3,4,5,6].map(i => <option key={i} value={i}>Ummi Jilid {i}</option>)}
+                        <option value="Al-Quran">Al-Quran</option>
                       </select>
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Hal Awal</label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Hal Awal</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.page_start || ''}
                           onChange={e => setDetails({...details, page_start: e.target.value})}
                         />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Hal Akhir</label>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Hal Akhir</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.page_end || ''}
                           onChange={e => setDetails({...details, page_end: e.target.value})}
                         />
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Nilai</label>
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nilai</label>
                       <div className="grid grid-cols-3 gap-3">
                         {(['A', 'B', 'C'] as const).map(g => (
                            <button
@@ -634,9 +644,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                              key={g}
                              onClick={() => setDetails({...details, grade: g})}
                              className={cn(
-                               "h-[68px] rounded-2xl font-display font-black border-2 transition-all flex items-center justify-center",
+                               "h-[60px] rounded-xl font-display font-bold border-2 transition-all flex items-center justify-center",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-xl" 
+                                ? "bg-stone-950 border-stone-950 text-white shadow-lg" 
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
@@ -649,11 +659,11 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 )}
 
                 {type === 'tilawah' && (
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                    <div className="md:col-span-4 space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Juz</label>
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
+                    <div className="md:col-span-3 space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Juz</label>
                       <select 
-                        className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all appearance-none cursor-pointer"
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all appearance-none cursor-pointer"
                         value={details.juz || ''}
                         onChange={e => setDetails({...details, juz: e.target.value})}
                       >
@@ -663,37 +673,38 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                         ))}
                       </select>
                     </div>
-                    <div className="md:col-span-8 space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Nama Surat</label>
+                    <div className="md:col-span-9 space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nama Surat</label>
                       <input 
                         type="text"
-                        className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                        placeholder="Contoh: Al-Baqarah"
                         value={details.surah || ''}
                         onChange={e => setDetails({...details, surah: e.target.value})}
                       />
                     </div>
-                    <div className="md:col-span-6 grid grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Ayat Awal</label>
+                    <div className="md:col-span-7 grid grid-cols-2 gap-4">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Ayat Awal</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.verse_start || ''}
                           onChange={e => setDetails({...details, verse_start: e.target.value})}
                         />
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Ayat Akhir</label>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Ayat Akhir</label>
                         <input 
                           type="text"
-                          className="w-full bg-white border border-stone-200/60 rounded-2xl px-6 py-5 text-lg font-bold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold text-center focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                           value={details.verse_end || ''}
                           onChange={e => setDetails({...details, verse_end: e.target.value})}
                         />
                       </div>
                     </div>
-                    <div className="md:col-span-6 space-y-3">
-                      <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Nilai</label>
+                    <div className="md:col-span-5 space-y-2.5">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nilai</label>
                       <div className="grid grid-cols-3 gap-3">
                         {(['A', 'B', 'C'] as const).map(g => (
                            <button
@@ -701,9 +712,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                              key={g}
                              onClick={() => setDetails({...details, grade: g})}
                              className={cn(
-                               "h-[68px] rounded-2xl font-display font-black border-2 transition-all flex items-center justify-center",
+                               "h-[60px] rounded-xl font-display font-bold border-2 transition-all flex items-center justify-center",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-xl" 
+                                ? "bg-stone-950 border-stone-950 text-white shadow-lg" 
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
@@ -716,50 +727,50 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 )}
                 </div>
 
-              <div className="flex flex-col sm:flex-row gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
                 <button 
                   type="submit"
                   disabled={isSaving}
                   className={cn(
-                    "flex-[2] text-white py-6 rounded-[1.5rem] font-display font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px]",
+                    "flex-[2] text-white py-5 rounded-2xl font-display font-bold text-sm uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 shadow-xl hover:translate-y-[-2px] active:translate-y-0",
                     theme.bg, theme.shadow,
                     "disabled:opacity-50"
                   )}
                 >
-                  <Save size={20} />
+                  <Save size={18} />
                   {isSaving ? 'Processing...' : 'Simpan Setoran'}
                 </button>
-                <div className="flex flex-1 gap-4">
+                <div className="flex flex-1 gap-3">
                   <button 
                     type="button"
                     onClick={handleSendMessage}
                     disabled={!selectedStudent || !details.grade}
-                    className="flex-1 bg-white text-emerald-600 border-2 border-emerald-500 py-6 rounded-[1.5rem] font-display font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-emerald-50 transition-all active:scale-95 disabled:opacity-50 shadow-xl"
+                    className="flex-1 bg-white text-emerald-600 border border-stone-200 py-5 rounded-2xl font-display font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-50 hover:border-emerald-200 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
                     title="Kirim laporan ke WhatsApp orang tua"
                   >
-                    <MessageCircle size={18} />
-                    WA Report
+                    <MessageCircle size={16} />
+                    WhatsApp
                   </button>
                   <button 
                     type="button"
                     onClick={() => setIsDeleteModalOpen(true)}
-                    className="aspect-square bg-rose-50 text-rose-600 rounded-[1.5rem] font-bold hover:bg-rose-100 transition-all flex items-center justify-center border border-rose-100"
-                    title="Hapus Setoran"
+                    className="aspect-square bg-stone-100 text-stone-400 rounded-2xl hover:bg-rose-50 hover:text-rose-600 transition-all flex items-center justify-center border border-stone-200/50"
+                    title="Hapus"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
             </form>
           </div>
         ) : (
-          <div className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 bg-white rounded-[3.5rem] border border-stone-200 border-dashed text-stone-400 space-y-6">
-            <div className="w-24 h-24 bg-stone-50 rounded-[2rem] flex items-center justify-center shadow-inner">
-              <ClipboardCheck size={40} className="opacity-20" />
+          <div className="h-full min-h-[500px] flex flex-col items-center justify-center p-12 bg-white rounded-[3rem] border border-stone-100 text-stone-400 space-y-6">
+            <div className="w-20 h-20 bg-stone-50 rounded-2xl flex items-center justify-center shadow-inner">
+              <ClipboardCheck size={32} className="opacity-10" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-display font-black text-stone-950 uppercase tracking-tighter">Ready to start?</h3>
-              <p className="font-medium text-stone-400">Pilih salah satu siswa di panel kiri untuk mulai mencatat progress hari ini.</p>
+              <h3 className="text-xl font-display font-bold text-stone-950 uppercase tracking-tighter">Pilih Siswa</h3>
+              <p className="text-xs font-medium text-stone-400 max-w-[240px] mx-auto leading-relaxed">Ketuk nama siswa di sebelah kiri untuk mulai menginput data setoran hari ini.</p>
             </div>
           </div>
         )}

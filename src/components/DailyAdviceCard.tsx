@@ -237,9 +237,10 @@ export default function DailyAdviceCard() {
                 )}
               </div>
 
-              <div className="pt-12 border-t border-white/20 flex justify-between items-center opacity-50 px-6">
-                <p className="text-2xl font-black uppercase tracking-[0.3em]">Amalan & Syiar Digital</p>
-                <p className="text-2xl font-bold tracking-widest uppercase text-right">Membangun Karakter Melalui Wahyu</p>
+              <div className="pt-12 border-t border-white/20 flex flex-col items-center gap-4 opacity-50 px-6">
+                <p className="text-2xl font-black uppercase tracking-[0.4em]">Amalan & Syiar Digital</p>
+                <div className="h-1 w-20 bg-white/20 rounded-full" />
+                <p className="text-xl font-bold tracking-[0.3em] uppercase">Membangun Karakter Melalui Wahyu</p>
               </div>
             </div>
           </div>

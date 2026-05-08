@@ -234,10 +234,10 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Use html-to-image which handles modern CSS (OKLCH, etc) much better
-      const canvas = await htmlToImage.toCanvas(element, {
-        width: 793.7, // Fixed A4 Portrait Width
-        pixelRatio: 4, 
+      // Optimized for high fidelity and perfect alignment (matches Image export quality)
+      const pixelRatio = 3; 
+      const dataUrl = await htmlToImage.toPng(element, {
+        pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
@@ -245,42 +245,52 @@ export default function ReportCard() {
           padding: '0',
           borderRadius: '0',
           boxShadow: 'none',
-          width: '793.7px',
           height: 'auto'
         }
       });
       
-      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // If content is longer than A4, add pages or scale?
-      // For now, let's just make sure it doesn't stretch weirdly by calculating the height based on aspect ratio
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-      const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
+      // Calculate scaling to perfectly fit one page with professional padding
+      const margin = 10; 
+      const printableWidth = pdfWidth - (margin * 2);
+      const printableHeight = pdfHeight - (margin * 2);
+
+      // Create a temporary image to get precise dimensions for scale calculation
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve) => { img.onload = resolve; });
+
+      let finalWidth = printableWidth;
+      let finalHeight = (img.height * finalWidth) / img.width;
       
-      const pdfBlob = pdf.output('blob');
-      const url = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
+      // If height exceeds printable height, scale down further to fit single page
+      if (finalHeight > printableHeight) {
+        const ratio = printableHeight / finalHeight;
+        finalWidth = finalWidth * ratio;
+        finalHeight = printableHeight;
+      }
+
+      // Mathematical centering for perfect visual balance
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+
+      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
+
+      const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
+      pdf.save(fileName);
       
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        setIsGenerating(false);
-        // Add confirmation
-        alert(`File PDF "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
-      }, 100);
+      setIsGenerating(false);
+      alert(`File PDF "${fileName}" telah berhasil diunduh.`);
 
     } catch (error: any) {
       console.error('PDF Generation Error:', error);
