@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Search, Calendar, FileText, Save, Settings } from 'lucide-react';
+import { Download, Search, Calendar, FileText, Save, Settings, X, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as htmlToImage from 'html-to-image';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 
@@ -188,6 +189,8 @@ export default function MonthlyRecap() {
     window.addEventListener('focus', fetchRecap);
     return () => window.removeEventListener('focus', fetchRecap);
   }, [selectedHalaqoh, selectedMonth]);
+
+  const [editingStudent, setEditingStudent] = useState<any>(null);
 
   const updateSettings = (studentId: string, field: string, value: string) => {
     const current = recapSettings[studentId] || { total_hafalan: '', notes: '' };
@@ -393,6 +396,109 @@ export default function MonthlyRecap() {
 
   return (
     <div className="space-y-6 md:space-y-10 font-sans">
+      <AnimatePresence>
+        {editingStudent && (
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEditingStudent(null)}
+              className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-lg bg-white rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 mb-1">Input Data Rekap</p>
+                    <h3 className="text-2xl font-display font-black text-stone-950">{editingStudent.name}</h3>
+                  </div>
+                  <button 
+                    onClick={() => setEditingStudent(null)}
+                    className="p-3 bg-stone-100 hover:bg-stone-200 rounded-2xl text-stone-400 transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Context Data for Reference - Critical for filling Total Hafalan */}
+                  <div className="grid grid-cols-2 gap-3 mb-2">
+                    <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
+                      <p className="text-[9px] font-black text-indigo-400 uppercase tracking-wider mb-2">Hafalan Terakhir</p>
+                      <p className="text-sm font-bold text-stone-900">{editingStudent.hafalan.akh || '-'}</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-lg border border-indigo-100 font-bold text-indigo-600">Total: {editingStudent.hafalan.jml} Halaman</span>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                      <p className="text-[9px] font-black text-blue-400 uppercase tracking-wider mb-2">Tilawah/Ummi Terakhir</p>
+                      <p className="text-sm font-bold text-stone-900">
+                        {hasTilawah ? editingStudent.tilawah.akh : hasUmmi ? editingStudent.ummi.akh : '-'}
+                      </p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-lg border border-blue-100 font-bold text-blue-600">Aktif: {activeDaysCount} Hari</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="group">
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1 mb-2">Total Hafalan (Akumulasi)</label>
+                      <div className="relative">
+                        <input 
+                          type="text"
+                          autoFocus
+                          className={cn(
+                            "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-base font-bold focus:outline-none focus:ring-4 transition-all placeholder:text-stone-300",
+                            theme.ring
+                          )}
+                          placeholder="Masukkan total hafalan..."
+                          value={recapSettings[editingStudent.id]?.total_hafalan || ''}
+                          onChange={(e) => updateSettings(editingStudent.id, 'total_hafalan', e.target.value)}
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-300">
+                           <Save size={18} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="group">
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1 mb-2">Catatan Perkembangan Guru</label>
+                      <textarea 
+                        className={cn(
+                          "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-4 transition-all min-h-[120px] placeholder:text-stone-300",
+                          theme.ring
+                        )}
+                        placeholder="Tuliskan catatan kemajuan siswa bulan ini..."
+                        value={recapSettings[editingStudent.id]?.notes || ''}
+                        onChange={(e) => updateSettings(editingStudent.id, 'notes', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setEditingStudent(null)}
+                    className={cn(
+                      "w-full py-5 rounded-2xl text-white font-display font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-[0.98] hover:translate-y-[-1px]",
+                      theme.bg, theme.shadow
+                    )}
+                  >
+                    Simpan & Tutup
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="bg-white p-5 sm:p-10 rounded-[2rem] sm:rounded-[3.5rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-2">
@@ -466,15 +572,15 @@ export default function MonthlyRecap() {
           <div className="space-y-12">
             <div className="overflow-x-auto -mx-4 sm:-mx-6 lg:mx-0 border border-stone-200/60 lg:rounded-[2rem] shadow-sm custom-scrollbar relative">
               <table className="w-full min-w-[1000px] text-[11px] text-left border-separate border-spacing-0">
-                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em] sticky top-0 z-10">
+                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em] sticky top-0 z-30">
                   <tr className="border-b border-stone-200/60">
-                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-20 bg-stone-50/50 backdrop-blur-md">No</th>
-                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 sticky left-[45px] z-20 bg-stone-50/50 backdrop-blur-md min-w-[180px]">Nama Siswa</th>
-                    {hasHafalan && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-indigo-50/30 text-indigo-900/40">Hafalan Al-Qur'an</th>}
-                    {hasTilawah && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
-                    {hasUmmi && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
-                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 text-center">Aktif</th>
-                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 text-center">Total</th>
+                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-40 bg-stone-50/80 backdrop-blur-md">No</th>
+                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 sticky left-[44px] z-40 bg-stone-50/80 backdrop-blur-md min-w-[160px] md:min-w-[180px] shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)]">Nama Siswa</th>
+                    {hasHafalan && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-indigo-50/30 text-indigo-900/40">Hafalan Al-Qur'an</th>}
+                    {hasTilawah && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
+                    {hasUmmi && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
+                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center">Aktif</th>
+                    <th rowSpan={2} className="px-5 py-5 border-r border-b border-stone-200/60 text-center">Total</th>
                     <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center">Catatan Guru</th>
                   </tr>
                   <tr className="border-b border-stone-200/60">
@@ -503,48 +609,73 @@ export default function MonthlyRecap() {
                 </thead>
                 <tbody className="divide-y divide-stone-100 font-medium text-stone-600">
                   {recapData.map((s, idx) => (
-                    <tr key={s.id} className="hover:bg-stone-50/5 transition-colors group">
+                    <tr 
+                      key={s.id} 
+                      className="hover:bg-stone-50/5 transition-colors group cursor-pointer"
+                      onClick={() => setEditingStudent(s)}
+                    >
                       <td className="px-4 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black sticky left-0 z-10 bg-white group-hover:bg-stone-50 transition-colors">{idx + 1}</td>
-                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900 sticky left-[45px] z-10 bg-white group-hover:bg-stone-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</td>
+                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900 sticky left-[44px] z-10 bg-white group-hover:bg-stone-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)]">
+                        <div className="flex items-center justify-between gap-4">
+                           <span>{s.name}</span>
+                           <ChevronRight size={14} className="text-stone-300 md:hidden" />
+                        </div>
+                      </td>
                       {hasHafalan && (
                         <>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.awl}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-indigo-600 tabular-nums bg-indigo-50/10">{s.hafalan.jml}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.hafalan.awl}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.hafalan.akh}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-indigo-600 tabular-nums bg-indigo-50/10">{s.hafalan.jml}</td>
                         </>
                       )}
                       {hasTilawah && (
                         <>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.awl}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-blue-600 tabular-nums bg-blue-50/10">{s.tilawah.jml}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.tilawah.awl}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.tilawah.akh}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-blue-600 tabular-nums bg-blue-50/10">{s.tilawah.jml}</td>
                         </>
                       )}
                       {hasUmmi && (
                         <>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.awl}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.ummi.awl}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.ummi.akh}</td>
+                          <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
                         </>
                       )}
-                      <td className={cn("px-6 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
-                      <td className="px-6 py-4 border-r border-stone-100/60 min-w-[160px]">
-                        <input 
-                          type="text"
-                          placeholder="Nilai hf..."
-                          className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
-                          value={recapSettings[s.id]?.total_hafalan || ''}
-                          onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
-                        />
+                      <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
+                      <td className="px-4 py-4 border-r border-stone-100/60 min-w-[140px] sticky right-0 md:relative z-10 md:z-auto bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] md:shadow-none transition-colors group-hover:bg-stone-50">
+                        <div className="hidden md:block">
+                          <input 
+                            type="text"
+                            placeholder="Nilai hf..."
+                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
+                            value={recapSettings[s.id]?.total_hafalan || ''}
+                            onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                        <div className="md:hidden flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 truncate max-w-full">
+                            {recapSettings[s.id]?.total_hafalan || 'Klik isi...'}
+                          </span>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 min-w-[240px]">
-                        <input 
-                          type="text"
-                          placeholder="Input catatan guru..."
-                          className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300"
-                          value={recapSettings[s.id]?.notes || ''}
-                          onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
-                        />
+                      <td className="px-6 py-4 min-w-[240px] group-hover:bg-stone-50">
+                        <div className="hidden md:block">
+                          <input 
+                            type="text"
+                            placeholder="Input catatan guru..."
+                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300"
+                            value={recapSettings[s.id]?.notes || ''}
+                            onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                        <div className="md:hidden">
+                           <p className="text-[10px] text-stone-400 line-clamp-2">
+                             {recapSettings[s.id]?.notes || 'Tambahkan catatan guru...'}
+                           </p>
+                        </div>
                       </td>
                     </tr>
                   ))}
