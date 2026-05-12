@@ -36,10 +36,10 @@ function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-display font-bold truncate tracking-tight text-stone-900">{s.name}</p>
         {s.halaqoh_name && (
-          <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="flex items-center gap-1.5 mt-1">
             <div className={cn("w-1 h-1 rounded-full", selectedStudent?.id === s.id ? "bg-white/40" : "bg-indigo-400")} />
             <p className={cn(
-              "text-[9px] font-bold uppercase tracking-[0.2em]",
+              "text-[10px] font-black uppercase tracking-[0.15em]",
               selectedStudent?.id === s.id ? "text-white/60" : "text-stone-400"
             )}>{s.halaqoh_name}</p>
           </div>
@@ -454,10 +454,10 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
           {Object.entries(groupedStudents).map(([halaqohName, halaqohStudents]) => (
             <div key={halaqohName} className="space-y-3">
               <div className="flex items-center justify-between px-1">
-                <h4 className="text-[10px] font-display font-bold text-stone-400 uppercase tracking-widest">
+                <h4 className="text-[11px] font-display font-black text-stone-400 uppercase tracking-widest">
                   {halaqohName}
                 </h4>
-                <span className="text-[9px] font-bold bg-stone-50 text-stone-400 px-2.5 py-0.5 rounded-lg border border-stone-100">
+                <span className="text-[10px] font-black bg-stone-50 text-stone-400 px-2.5 py-0.5 rounded-lg border border-stone-100">
                   {(halaqohStudents as any[]).length}
                 </span>
               </div>
@@ -512,15 +512,15 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                     <ChevronLeft size={20} />
                   </button>
                   <div className="space-y-1.5 text-center sm:text-left px-2">
-                      <p className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-500/80 leading-none mb-1">Update Progress</p>
-                      <h2 className="text-4xl font-display font-black text-stone-950 leading-tight tracking-tighter">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500/80 leading-none mb-1">Update Progress</p>
+                      <h2 className="text-3xl sm:text-4xl font-display font-black text-stone-950 leading-tight tracking-tighter">
                         {selectedStudent.name}
                       </h2>
                       <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                         <div className="flex -space-x-1">
                           {[1,2,3].map(i => <div key={i} className="w-4 h-4 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-[6px] font-bold text-indigo-400">#</div>)}
                         </div>
-                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{selectedStudent.halaqoh_name || 'Personal'}</p>
+                        <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.15em]">{selectedStudent.halaqoh_name || 'Personal'}</p>
                       </div>
                     </div>
                   <button 

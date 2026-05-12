@@ -392,19 +392,19 @@ export default function MonthlyRecap() {
   };
 
   return (
-    <div className="space-y-10 font-sans">
-      <div className="bg-white p-10 rounded-[3rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+    <div className="space-y-6 md:space-y-10 font-sans">
+      <div className="bg-white p-5 sm:p-10 rounded-[2rem] sm:rounded-[3.5rem] border border-stone-200/50 shadow-2xl shadow-stone-900/5">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-2">
-            <h1 className="text-4xl font-display font-black text-stone-950 tracking-tight leading-none">Rekapitulasi Bulanan</h1>
-            <p className="text-stone-500 font-medium">Monitoring progress bulanan dan akumulasi data otomatis.</p>
+            <h1 className="text-3xl sm:text-4xl font-display font-black text-stone-950 tracking-tight leading-none">Rekapitulasi Bulanan</h1>
+            <p className="text-sm sm:text-base text-stone-500 font-medium">Monitoring progress bulanan dan akumulasi data otomatis.</p>
           </div>
-          <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full lg:w-auto">
             <button 
               onClick={generatePDF}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
               className={cn(
-                "flex-1 lg:flex-none text-white px-8 py-4 rounded-2xl font-display font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]",
+                "w-full sm:w-auto text-white px-8 py-4 rounded-xl sm:rounded-2xl font-display font-black text-[10px] sm:text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]",
                 theme.bg, theme.shadow
               )}
             >
@@ -414,7 +414,7 @@ export default function MonthlyRecap() {
             <button 
               onClick={() => generateImage('jpg')}
               disabled={!selectedHalaqoh || recapData.length === 0 || isGenerating}
-              className="flex-1 lg:flex-none bg-stone-950 text-white px-8 py-4 rounded-2xl font-display font-black text-xs uppercase tracking-widest hover:bg-stone-800 transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]"
+              className="w-full sm:w-auto bg-stone-950 text-white px-8 py-4 rounded-xl sm:rounded-2xl font-display font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-stone-800 transition-all flex items-center justify-center gap-3 shadow-2xl disabled:opacity-50 hover:translate-y-[-2px] active:translate-y-[1px]"
             >
               <FileText size={18} />
               {isGenerating ? 'Wait...' : 'EXPOR JPG'}
@@ -422,12 +422,12 @@ export default function MonthlyRecap() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="space-y-3">
-            <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Pilih Halaqoh</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mb-8 sm:mb-12">
+          <div className="space-y-2 sm:space-y-3">
+            <label className="text-[9px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Pilih Halaqoh</label>
             <div className="relative group">
                <select 
-                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 px-6 focus:outline-none focus:ring-4 transition-all appearance-none font-bold text-stone-900 cursor-pointer", theme.ring)}
+                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-xl sm:rounded-2xl py-3.5 sm:py-4 px-6 focus:outline-none focus:ring-4 transition-all appearance-none font-bold text-stone-900 cursor-pointer text-sm", theme.ring)}
                 value={selectedHalaqoh}
                 onChange={(e) => setSelectedHalaqoh(e.target.value)}
               >
@@ -441,12 +441,12 @@ export default function MonthlyRecap() {
               </div>
             </div>
           </div>
-          <div className="space-y-3">
-            <label className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2">Periode Bulan</label>
+          <div className="space-y-2 sm:space-y-3">
+            <label className="text-[9px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Periode Bulan</label>
             <div className="relative group">
               <input 
                 type="month"
-                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-2xl py-4 px-6 focus:outline-none focus:ring-4 transition-all font-bold text-stone-900", theme.ring)}
+                className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-xl sm:rounded-2xl py-3.5 sm:py-4 px-6 focus:outline-none focus:ring-4 transition-all font-bold text-stone-900 text-sm", theme.ring)}
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
               />
@@ -464,84 +464,84 @@ export default function MonthlyRecap() {
           </div>
         ) : recapData.length > 0 ? (
           <div className="space-y-12">
-            <div className="overflow-x-auto -mx-6 lg:mx-0 border border-stone-200/60 lg:rounded-[2rem] shadow-sm custom-scrollbar">
-              <table className="w-full min-w-[1000px] text-[11px] text-left border-collapse">
-                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em]">
+            <div className="overflow-x-auto -mx-4 sm:-mx-6 lg:mx-0 border border-stone-200/60 lg:rounded-[2rem] shadow-sm custom-scrollbar relative">
+              <table className="w-full min-w-[1000px] text-[11px] text-left border-separate border-spacing-0">
+                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em] sticky top-0 z-10">
                   <tr className="border-b border-stone-200/60">
-                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">No</th>
-                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60">Nama Siswa</th>
-                    {hasHafalan && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Hafalan Al-Qur'an</th>}
-                    {hasTilawah && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Tilawah Al-Qur'an</th>}
-                    {hasUmmi && <th colSpan={3} className="px-6 py-3 border-r border-stone-200/60 text-center bg-stone-100/30">Metode Ummi</th>}
-                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">Aktif</th>
-                    <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">Total</th>
-                    <th rowSpan={2} className="px-6 py-5 text-center">Catatan Guru</th>
+                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-20 bg-stone-50/50 backdrop-blur-md">No</th>
+                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 sticky left-[45px] z-20 bg-stone-50/50 backdrop-blur-md min-w-[180px]">Nama Siswa</th>
+                    {hasHafalan && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-indigo-50/30 text-indigo-900/40">Hafalan Al-Qur'an</th>}
+                    {hasTilawah && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
+                    {hasUmmi && <th colSpan={3} className="px-6 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
+                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 text-center">Aktif</th>
+                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 text-center">Total</th>
+                    <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center">Catatan Guru</th>
                   </tr>
                   <tr className="border-b border-stone-200/60">
                     {hasHafalan && (
                       <>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center text-indigo-600">JML</th>
                       </>
                     )}
                     {hasTilawah && (
                       <>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center text-blue-600">JML</th>
                       </>
                     )}
                     {hasUmmi && (
                       <>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AWL</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center font-normal">AKH</th>
-                        <th className="px-3 py-3 border-r border-stone-200/60 text-center">JML</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AWL</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AKH</th>
+                        <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center text-emerald-600">JML</th>
                       </>
                     )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 font-medium text-stone-600">
                   {recapData.map((s, idx) => (
-                    <tr key={s.id} className="hover:bg-stone-50/50 transition-colors">
-                      <td className="px-6 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black">{idx + 1}</td>
-                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900">{s.name}</td>
+                    <tr key={s.id} className="hover:bg-stone-50/5 transition-colors group">
+                      <td className="px-4 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black sticky left-0 z-10 bg-white group-hover:bg-stone-50 transition-colors">{idx + 1}</td>
+                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900 sticky left-[45px] z-10 bg-white group-hover:bg-stone-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis">{s.name}</td>
                       {hasHafalan && (
                         <>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.awl}</td>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.hafalan.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.hafalan.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-indigo-600 tabular-nums bg-indigo-50/10">{s.hafalan.jml}</td>
                         </>
                       )}
                       {hasTilawah && (
                         <>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.awl}</td>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.tilawah.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.tilawah.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-blue-600 tabular-nums bg-blue-50/10">{s.tilawah.jml}</td>
                         </>
                       )}
                       {hasUmmi && (
                         <>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.awl}</td>
                           <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums">{s.ummi.akh}</td>
-                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-stone-900 tabular-nums">{s.ummi.jml}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
                         </>
                       )}
                       <td className={cn("px-6 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
-                      <td className="px-6 py-4 border-r border-stone-100/60 min-w-[140px]">
+                      <td className="px-6 py-4 border-r border-stone-100/60 min-w-[160px]">
                         <input 
                           type="text"
-                          placeholder="Nilai..."
-                          className="w-full bg-stone-50 border border-stone-200/60 rounded-xl px-4 py-2.5 text-[10px] focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold"
+                          placeholder="Nilai hf..."
+                          className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
                           value={recapSettings[s.id]?.total_hafalan || ''}
                           onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
                         />
                       </td>
-                      <td className="px-6 py-4 min-w-[200px]">
+                      <td className="px-6 py-4 min-w-[240px]">
                         <input 
                           type="text"
-                          placeholder="Tambahkan catatan..."
-                          className="w-full bg-stone-50 border border-stone-200/60 rounded-xl px-4 py-2.5 text-[10px] focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
+                          placeholder="Input catatan guru..."
+                          className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300"
                           value={recapSettings[s.id]?.notes || ''}
                           onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
                         />

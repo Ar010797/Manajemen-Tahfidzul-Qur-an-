@@ -157,8 +157,8 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-4xl md:text-5xl font-display font-black text-stone-950 tracking-tight leading-none">Dashboard</h1>
-          <p className="text-stone-500 font-medium tracking-tight">Selamat Datang kembali di Pusat Kendali Tahfidz.</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-stone-950 tracking-tight leading-none">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-stone-500 font-medium tracking-tight">Selamat Datang kembali di Pusat Kendali Tahfidz.</p>
         </div>
         <div className="flex items-center gap-4 p-1.5 bg-white border border-stone-200/60 rounded-[1.5rem] shadow-sm">
            <div className={cn("px-4 py-2.5 rounded-[1.25rem] border border-stone-100 shadow-sm flex items-center gap-3", theme.lightBg)}>
