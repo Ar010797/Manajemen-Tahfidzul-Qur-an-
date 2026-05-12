@@ -20,6 +20,8 @@ export default function MonthlyRecap() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
+  const [showTilawah, setShowTilawah] = useState(true);
+  const [showUmmi, setShowUmmi] = useState(true);
   const [themeColor, setThemeColor] = useState('emerald');
 
   useEffect(() => {
@@ -82,20 +84,22 @@ export default function MonthlyRecap() {
       // CRITICAL: Exclude BL and C from ALL calculations as requested
       const isExcluded = grade === 'BL' || grade === 'C';
       
-      if (curr.type === 'hafalan') {
+    if (curr.type === 'hafalan') {
         const surah = details.surah || '';
         const startStr = details.verse_start || '';
         const endStr = details.verse_end || '';
-        const label = `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`.trim() || '-';
+        // Ensure the label clearly shows surah and verse range
+        const label = `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`.trim();
+        const displayLabel = label || '-';
         
-        if (target.awl === '-') target.awl = label;
-        target.akh = label;
+        if (target.awl === '-') target.awl = displayLabel;
+        target.akh = displayLabel;
         
         if (!isExcluded) {
           const start = parseInt(startStr);
           const end = parseInt(endStr);
           if (!isNaN(start) && start > 0) {
-            // If end is provided and valid, count the range. Otherwise count as 1 verse.
+            // Precise verse count: (End - Start + 1). If end is missing, count is 1.
             const count = (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
             target.jml += count;
           }
@@ -433,7 +437,7 @@ export default function MonthlyRecap() {
                     <div className="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
                       <div className="flex items-center justify-between mb-4">
                         <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Referensi Hafalan Bulan Ini</p>
-                        <span className="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-indigo-100 font-bold text-indigo-600">Total: {editingStudent.hafalan.jml} Halaman</span>
+                        <span className="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-indigo-100 font-bold text-indigo-600">Total: {editingStudent.hafalan.jml} Ayat</span>
                       </div>
                       
                       <div className="space-y-4">
@@ -442,7 +446,7 @@ export default function MonthlyRecap() {
                             <Calendar size={14} className="text-indigo-600" />
                           </div>
                           <div>
-                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Hafalan Awal</p>
+                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Awal</p>
                             <p className="text-base font-bold text-stone-900 leading-tight">{editingStudent.hafalan.awl || '-'}</p>
                           </div>
                         </div>
@@ -452,7 +456,7 @@ export default function MonthlyRecap() {
                             <FileText size={14} className="text-indigo-600" />
                           </div>
                           <div>
-                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Hafalan Akhir</p>
+                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Akhir</p>
                             <p className="text-base font-bold text-stone-900 leading-tight">{editingStudent.hafalan.akh || '-'}</p>
                           </div>
                         </div>
@@ -540,7 +544,7 @@ export default function MonthlyRecap() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-2 sm:space-y-3">
             <label className="text-[9px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Pilih Halaqoh</label>
             <div className="relative group">
@@ -573,6 +577,26 @@ export default function MonthlyRecap() {
               </div>
             </div>
           </div>
+          <div className="flex items-end gap-3 pb-1 md:col-span-2 lg:col-span-2">
+            <button 
+              onClick={() => setShowTilawah(!showTilawah)}
+              className={cn(
+                "flex-1 py-4 px-4 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all transition-all",
+                showTilawah ? "bg-blue-50 border-blue-200 text-blue-600" : "bg-stone-50 border-stone-200 text-stone-400"
+              )}
+            >
+              {showTilawah ? '✓ Tilawah Aktif' : 'Tilawah Off'}
+            </button>
+            <button 
+              onClick={() => setShowUmmi(!showUmmi)}
+              className={cn(
+                "flex-1 py-4 px-4 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all",
+                showUmmi ? "bg-emerald-50 border-emerald-200 text-emerald-600" : "bg-stone-50 border-stone-200 text-stone-400"
+              )}
+            >
+              {showUmmi ? '✓ Ummi Aktif' : 'Ummi Off'}
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -586,14 +610,14 @@ export default function MonthlyRecap() {
               <table className="w-full min-w-[1000px] text-[11px] text-left border-separate border-spacing-0">
                 <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em] sticky top-0 z-30">
                   <tr className="border-b border-stone-200/60">
-                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-40 bg-stone-50/80 backdrop-blur-md">No</th>
-                    <th rowSpan={2} className="px-6 py-5 border-r border-b border-stone-200/60 sticky left-[44px] z-40 bg-stone-50/80 backdrop-blur-md min-w-[160px] md:min-w-[180px] shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)]">Nama Siswa</th>
+                    <th rowSpan={2} className="px-2 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-40 bg-stone-50/80 backdrop-blur-md w-12 min-w-[48px] max-w-[48px]">No</th>
+                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-12 md:left-12 z-40 bg-stone-50/80 backdrop-blur-md min-w-[140px] md:min-w-[180px] shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] border-l">Nama Siswa</th>
                     {hasHafalan && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-indigo-50/30 text-indigo-900/40">Hafalan Al-Qur'an</th>}
-                    {hasTilawah && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
-                    {hasUmmi && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
+                    {hasTilawah && showTilawah && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
+                    {hasUmmi && showUmmi && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
                     <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center">Aktif</th>
-                    <th rowSpan={2} className="px-5 py-5 border-r border-b border-stone-200/60 text-center">Total</th>
-                    <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center">Catatan Guru</th>
+                    <th rowSpan={2} className="px-5 py-5 border-b border-stone-200/60 text-center md:sticky right-[180px] z-40 bg-stone-50/80 backdrop-blur-md border-l">Total</th>
+                    <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center md:sticky right-0 z-40 bg-stone-50/80 backdrop-blur-md min-w-[180px] border-l">Catatan Guru</th>
                   </tr>
                   <tr className="border-b border-stone-200/60">
                     {hasHafalan && (
@@ -603,14 +627,14 @@ export default function MonthlyRecap() {
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center text-indigo-600">JML</th>
                       </>
                     )}
-                    {hasTilawah && (
+                    {hasTilawah && showTilawah && (
                       <>
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AWL</th>
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AKH</th>
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center text-blue-600">JML</th>
                       </>
                     )}
-                    {hasUmmi && (
+                    {hasUmmi && showUmmi && (
                       <>
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AWL</th>
                         <th className="px-3 py-3 border-r border-b border-stone-200/60 text-center font-normal">AKH</th>
@@ -626,40 +650,40 @@ export default function MonthlyRecap() {
                       className="hover:bg-stone-50/5 transition-colors group cursor-pointer"
                       onClick={() => setEditingStudent(s)}
                     >
-                      <td className="px-4 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black sticky left-0 z-10 bg-white group-hover:bg-stone-50 transition-colors">{idx + 1}</td>
-                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900 sticky left-[44px] z-10 bg-white group-hover:bg-stone-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)]">
-                        <div className="flex items-center justify-between gap-4">
-                           <span>{s.name}</span>
+                      <td className="px-2 py-4 border-r border-stone-100/60 text-center text-stone-400 font-display font-black sticky left-0 z-20 bg-white group-hover:bg-stone-50 transition-colors w-12 min-w-[48px] max-w-[48px]">{idx + 1}</td>
+                      <td className="px-6 py-4 border-r border-stone-100/60 font-bold text-stone-900 sticky left-12 md:left-12 z-20 bg-white group-hover:bg-stone-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] border-l">
+                        <div className="flex items-center justify-between gap-4 max-w-[120px] md:max-w-none">
+                           <span className="truncate">{s.name}</span>
                            <ChevronRight size={14} className="text-stone-300 md:hidden" />
                         </div>
                       </td>
                       {hasHafalan && (
                         <>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.hafalan.awl}</td>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.hafalan.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.hafalan.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.hafalan.akh}</td>
                           <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-indigo-600 tabular-nums bg-indigo-50/10">{s.hafalan.jml}</td>
                         </>
                       )}
-                      {hasTilawah && (
+                      {hasTilawah && showTilawah && (
                         <>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.tilawah.awl}</td>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.tilawah.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.tilawah.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.tilawah.akh}</td>
                           <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-blue-600 tabular-nums bg-blue-50/10">{s.tilawah.jml}</td>
                         </>
                       )}
-                      {hasUmmi && (
+                      {hasUmmi && showUmmi && (
                         <>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.ummi.awl}</td>
-                          <td className="px-2 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap">{s.ummi.akh}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.ummi.awl}</td>
+                          <td className="px-3 py-4 border-r border-stone-100/60 text-center tabular-nums text-[10px] sm:text-[11px] whitespace-nowrap min-w-[80px]">{s.ummi.akh}</td>
                           <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
                         </>
                       )}
                       <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
-                      <td className="px-4 py-4 border-r border-stone-100/60 min-w-[140px] sticky right-0 md:relative z-10 md:z-auto bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] md:shadow-none transition-colors group-hover:bg-stone-50">
+                      <td className="px-4 py-4 border-stone-100/60 min-w-[180px] md:sticky right-[180px] z-20 bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-stone-50 border-x">
                         <div className="hidden md:block">
                           <input 
                             type="text"
-                            placeholder="Nilai hf..."
+                            placeholder="Isi total..."
                             className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
                             value={recapSettings[s.id]?.total_hafalan || ''}
                             onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
@@ -668,15 +692,15 @@ export default function MonthlyRecap() {
                         </div>
                         <div className="md:hidden flex flex-col items-center gap-1">
                           <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 truncate max-w-full">
-                            {recapSettings[s.id]?.total_hafalan || 'Klik isi...'}
+                            {recapSettings[s.id]?.total_hafalan || 'Total...'}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 min-w-[240px] group-hover:bg-stone-50">
-                        <div className="hidden md:block">
+                      <td className="px-6 py-4 min-w-[180px] md:sticky right-0 z-20 bg-white/95 backdrop-blur-sm transition-colors group-hover:bg-stone-50">
+                        <div className="hidden md:block text-right">
                           <input 
                             type="text"
-                            placeholder="Input catatan guru..."
+                            placeholder="Catatan..."
                             className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300"
                             value={recapSettings[s.id]?.notes || ''}
                             onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
@@ -684,8 +708,8 @@ export default function MonthlyRecap() {
                           />
                         </div>
                         <div className="md:hidden">
-                           <p className="text-[10px] text-stone-400 line-clamp-2">
-                             {recapSettings[s.id]?.notes || 'Tambahkan catatan guru...'}
+                           <p className="text-[10px] text-stone-400 line-clamp-1 italic">
+                             {recapSettings[s.id]?.notes || 'Catatan...'}
                            </p>
                         </div>
                       </td>
