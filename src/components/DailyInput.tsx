@@ -406,6 +406,20 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 themeColor === 'purple' ? 'shadow-purple-100' :
                 themeColor === 'rose' ? 'shadow-rose-100' :
                 'shadow-slate-100',
+    from: themeColor === 'emerald' ? 'from-emerald-500' :
+          themeColor === 'blue' ? 'from-blue-500' :
+          themeColor === 'amber' ? 'from-amber-500' :
+          themeColor === 'indigo' ? 'from-indigo-500' :
+          themeColor === 'purple' ? 'from-purple-500' :
+          themeColor === 'rose' ? 'from-rose-500' :
+          'from-slate-500',
+    to: themeColor === 'emerald' ? 'to-emerald-600' :
+        themeColor === 'blue' ? 'to-blue-600' :
+        themeColor === 'amber' ? 'to-amber-600' :
+        themeColor === 'indigo' ? 'to-indigo-600' :
+        themeColor === 'purple' ? 'to-purple-600' :
+        themeColor === 'rose' ? 'to-rose-600' :
+        'to-slate-600',
   };
 
   return (

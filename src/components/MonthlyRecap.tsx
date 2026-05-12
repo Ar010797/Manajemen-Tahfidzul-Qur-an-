@@ -464,8 +464,8 @@ export default function MonthlyRecap() {
           </div>
         ) : recapData.length > 0 ? (
           <div className="space-y-12">
-            <div className="overflow-hidden border border-stone-200/60 rounded-[2rem] shadow-sm">
-              <table className="w-full text-[11px] text-left border-collapse">
+            <div className="overflow-x-auto -mx-6 lg:mx-0 border border-stone-200/60 lg:rounded-[2rem] shadow-sm custom-scrollbar">
+              <table className="w-full min-w-[1000px] text-[11px] text-left border-collapse">
                 <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em]">
                   <tr className="border-b border-stone-200/60">
                     <th rowSpan={2} className="px-6 py-5 border-r border-stone-200/60 text-center">No</th>
