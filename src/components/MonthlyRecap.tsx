@@ -431,19 +431,39 @@ export default function MonthlyRecap() {
                   {/* Context Data for Reference - Critical for filling Total Hafalan */}
                   <div className="grid grid-cols-2 gap-3 mb-2">
                     <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-                      <p className="text-[9px] font-black text-indigo-400 uppercase tracking-wider mb-2">Hafalan Terakhir</p>
-                      <p className="text-sm font-bold text-stone-900">{editingStudent.hafalan.akh || '-'}</p>
+                      <p className="text-[9px] font-black text-indigo-400 uppercase tracking-wider mb-2">Hafalan Qur'an</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="overflow-hidden">
+                          <p className="text-[8px] uppercase font-black text-stone-400 leading-tight">Awal</p>
+                          <p className="text-[11px] font-bold text-stone-900 truncate">{editingStudent.hafalan.awl || '-'}</p>
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-[8px] uppercase font-black text-stone-400 leading-tight">Akhir</p>
+                          <p className="text-[11px] font-bold text-stone-900 truncate">{editingStudent.hafalan.akh || '-'}</p>
+                        </div>
+                      </div>
                       <div className="mt-3 flex items-center gap-2">
-                        <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-lg border border-indigo-100 font-bold text-indigo-600">Total: {editingStudent.hafalan.jml} Halaman</span>
+                        <span className="text-[9px] bg-white/80 px-2 py-0.5 rounded-lg border border-indigo-100 font-bold text-indigo-600">JML: {editingStudent.hafalan.jml} Hlm</span>
                       </div>
                     </div>
                     <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
-                      <p className="text-[9px] font-black text-blue-400 uppercase tracking-wider mb-2">Tilawah/Ummi Terakhir</p>
-                      <p className="text-sm font-bold text-stone-900">
-                        {hasTilawah ? editingStudent.tilawah.akh : hasUmmi ? editingStudent.ummi.akh : '-'}
-                      </p>
+                      <p className="text-[9px] font-black text-blue-400 uppercase tracking-wider mb-2">Progress Lain</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="overflow-hidden">
+                          <p className="text-[8px] uppercase font-black text-stone-400 leading-tight">Awal</p>
+                          <p className="text-[11px] font-bold text-stone-900 truncate">
+                            {hasTilawah ? editingStudent.tilawah.awl : hasUmmi ? editingStudent.ummi.awl : '-'}
+                          </p>
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-[8px] uppercase font-black text-stone-400 leading-tight">Akhir</p>
+                          <p className="text-[11px] font-bold text-stone-900 truncate">
+                            {hasTilawah ? editingStudent.tilawah.akh : hasUmmi ? editingStudent.ummi.akh : '-'}
+                          </p>
+                        </div>
+                      </div>
                       <div className="mt-3 flex items-center gap-2">
-                        <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-lg border border-blue-100 font-bold text-blue-600">Aktif: {activeDaysCount} Hari</span>
+                        <span className="text-[9px] bg-white/80 px-2 py-0.5 rounded-lg border border-blue-100 font-bold text-blue-600">Aktif: {activeDaysCount} Hari</span>
                       </div>
                     </div>
                   </div>
