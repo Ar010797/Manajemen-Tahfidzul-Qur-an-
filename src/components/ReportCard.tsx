@@ -157,10 +157,13 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const pixelRatio = isMobile ? 2 : 3;
+
       // High-end capture for Image
       const canvas = await htmlToImage.toCanvas(element, {
         width: 793.7, // Fixed A4 Portrait Width (approx)
-        pixelRatio: 4, 
+        pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
@@ -172,30 +175,46 @@ export default function ReportCard() {
         }
       });
       
-      canvas.toBlob((blob) => {
+      const type = imgFormat === 'jpg' ? 'image/jpeg' : 'image/png';
+      const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
+      const fileName = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
+
+      canvas.toBlob(async (blob) => {
         if (!blob) {
           alert('Gagal membuat file gambar.');
           setIsGenerating(false);
           return;
         }
+
+        // Median/GoNative bridge support
+        const median = (window as any).median || (window as any).gonative;
+        if (median && median.fileDownload && median.fileDownload.download) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            median.fileDownload.download({
+              url: base64data,
+              filename: fileName
+            });
+          };
+          reader.readAsDataURL(blob);
+        } else {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          
+          setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          }, 100);
+        }
         
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
-        const fileName = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          setIsGenerating(false);
-          // Add confirmation
-          alert(`Gambar "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
-        }, 100);
-      }, imgFormat === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
+        setIsGenerating(false);
+        alert(`Gambar "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
+      }, type, 1.0);
 
     } catch (error: any) {
       console.error('Image Generation Error:', error);
@@ -234,8 +253,9 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Optimized for high fidelity and perfect alignment (matches Image export quality)
-      const pixelRatio = 3; 
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const pixelRatio = isMobile ? 2 : 3; 
+
       const dataUrl = await htmlToImage.toPng(element, {
         pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
@@ -259,12 +279,10 @@ export default function ReportCard() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate scaling to perfectly fit one page with professional padding
       const margin = 10; 
       const printableWidth = pdfWidth - (margin * 2);
       const printableHeight = pdfHeight - (margin * 2);
 
-      // Create a temporary image to get precise dimensions for scale calculation
       const img = new Image();
       img.src = dataUrl;
       await new Promise((resolve) => { img.onload = resolve; });
@@ -272,14 +290,12 @@ export default function ReportCard() {
       let finalWidth = printableWidth;
       let finalHeight = (img.height * finalWidth) / img.width;
       
-      // If height exceeds printable height, scale down further to fit single page
       if (finalHeight > printableHeight) {
         const ratio = printableHeight / finalHeight;
         finalWidth = finalWidth * ratio;
         finalHeight = printableHeight;
       }
 
-      // Mathematical centering for perfect visual balance
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
 
@@ -287,7 +303,18 @@ export default function ReportCard() {
 
       const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
-      pdf.save(fileName);
+      
+      // Median/GoNative bridge support
+      const median = (window as any).median || (window as any).gonative;
+      if (median && median.fileDownload && median.fileDownload.download) {
+        const base64PDF = pdf.output('datauristring');
+        median.fileDownload.download({
+          url: base64PDF,
+          filename: fileName
+        });
+      } else {
+        pdf.save(fileName);
+      }
       
       setIsGenerating(false);
       alert(`File PDF "${fileName}" telah berhasil diunduh.`);

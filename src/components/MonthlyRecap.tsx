@@ -230,10 +230,14 @@ export default function MonthlyRecap() {
           });
         }));
 
+        // Use slightly lower pixelRatio on mobile to avoid memory crashes
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const pixelRatio = isMobile ? 2 : 3;
+
         // Use html-to-image which handles modern CSS (OKLCH, etc) much better
         const canvas = await htmlToImage.toCanvas(element, {
           width: 1122.52,
-          pixelRatio: 4,
+          pixelRatio: pixelRatio,
           backgroundColor: '#ffffff',
           style: {
             transform: 'none',
@@ -244,20 +248,43 @@ export default function MonthlyRecap() {
           }
         });
         
-        const dataUrl = canvas.toDataURL(format === 'jpg' ? 'image/jpeg' : 'image/png', 1.0);
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.${format}`;
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(dataUrl);
-        }, 100);
+        const type = format === 'jpg' ? 'image/jpeg' : 'image/png';
+        const fileName = `Rekap_${selectedMonth}_${(halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh').replace(/[^a-z0-9]/gi, '_')}.${format}`;
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) throw new Error('Blob creation failed');
+
+          // Median/GoNative bridge support
+          const median = (window as any).median || (window as any).gonative;
+          if (median && median.fileDownload && median.fileDownload.download) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = reader.result as string;
+              median.fileDownload.download({
+                url: base64data,
+                filename: fileName
+              });
+            };
+            reader.readAsDataURL(blob);
+          } else {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            }, 100);
+          }
+          
+          setIsGenerating(false);
+        }, type, 1.0);
+
       } catch (error) {
         console.error('Image Generation Error:', error);
         alert('Gagal mengunduh gambar. Silakan coba lagi.');
-      } finally {
         setIsGenerating(false);
       }
     }, 500);
@@ -287,8 +314,9 @@ export default function MonthlyRecap() {
         })
       ]);
 
-      // Optimized for high fidelity and perfect alignment (matches Image export quality)
-      const pixelRatio = 3; 
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const pixelRatio = isMobile ? 2 : 3; 
+
       const dataUrl = await htmlToImage.toPng(element, {
         pixelRatio: pixelRatio,
         backgroundColor: '#ffffff',
@@ -311,12 +339,10 @@ export default function MonthlyRecap() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Calculate scaling to perfectly fit one page with professional padding
       const margin = 10; 
       const printableWidth = pdfWidth - (margin * 2);
       const printableHeight = pdfHeight - (margin * 2);
 
-      // Create a temporary image to get precise dimensions for scale calculation
       const img = new Image();
       img.src = dataUrl;
       await new Promise((resolve) => { img.onload = resolve; });
@@ -324,21 +350,30 @@ export default function MonthlyRecap() {
       let finalWidth = printableWidth;
       let finalHeight = (img.height * finalWidth) / img.width;
       
-      // If height exceeds printable height, scale down further to fit single page
       if (finalHeight > printableHeight) {
         const ratio = printableHeight / finalHeight;
         finalWidth = finalWidth * ratio;
         finalHeight = printableHeight;
       }
 
-      // Mathematical centering for perfect visual balance
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
 
       pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
 
-      const fileName = `Rekap_${selectedMonth}_${halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh'}.pdf`;
-      pdf.save(fileName);
+      const fileName = `Rekap_${selectedMonth}_${(halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh').replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      
+      // Median/GoNative bridge support
+      const median = (window as any).median || (window as any).gonative;
+      if (median && median.fileDownload && median.fileDownload.download) {
+        const base64PDF = pdf.output('datauristring');
+        median.fileDownload.download({
+          url: base64PDF,
+          filename: fileName
+        });
+      } else {
+        pdf.save(fileName);
+      }
     } catch (error) {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh PDF. Silakan coba lagi.');
