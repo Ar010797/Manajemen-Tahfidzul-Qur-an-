@@ -168,7 +168,7 @@ export default function ReportCard() {
         style: {
           transform: 'none',
           margin: '0',
-          padding: '10mm',
+          padding: '0',
           borderRadius: '0',
           boxShadow: 'none',
           width: '793.7px'
@@ -188,17 +188,35 @@ export default function ReportCard() {
 
         // Median/GoNative bridge support
         const median = (window as any).median || (window as any).gonative;
-        if (median && median.fileDownload && median.fileDownload.download) {
+        if (median) {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64data = reader.result as string;
-            median.fileDownload.download({
-              url: base64data,
-              filename: fileName
-            });
+            
+            // Try share.download first as requested by user
+            if (median.share && typeof median.share.download === 'function') {
+              median.share.download({ url: base64data, filename: fileName });
+            } else if (median.download && typeof median.download.downloadFile === 'function') {
+              median.download.downloadFile({ url: base64data, filename: fileName });
+            } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+              median.fileDownload.download({ url: base64data, filename: fileName });
+            } else {
+              // Fallback if Median exists but common download methods don't
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = fileName;
+              document.body.appendChild(link);
+              link.click();
+              setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+              }, 100);
+            }
           };
           reader.readAsDataURL(blob);
         } else {
+          // Standard Browser Download
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -279,40 +297,31 @@ export default function ReportCard() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const margin = 10; 
-      const printableWidth = pdfWidth - (margin * 2);
-      const printableHeight = pdfHeight - (margin * 2);
-
-      const img = new Image();
-      img.src = dataUrl;
-      await new Promise((resolve) => { img.onload = resolve; });
-
-      let finalWidth = printableWidth;
-      let finalHeight = (img.height * finalWidth) / img.width;
-      
-      if (finalHeight > printableHeight) {
-        const ratio = printableHeight / finalHeight;
-        finalWidth = finalWidth * ratio;
-        finalHeight = printableHeight;
-      }
-
-      const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = (pdfHeight - finalHeight) / 2;
-
-      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
+      // Use full page dimensions since element is already A4 size (210x297mm)
+      // This ensures perfect alignment for printing without further adjustment
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
 
       const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
       
       // Median/GoNative bridge support
       const median = (window as any).median || (window as any).gonative;
-      if (median && median.fileDownload && median.fileDownload.download) {
+      if (median) {
         const base64PDF = pdf.output('datauristring');
-        median.fileDownload.download({
-          url: base64PDF,
-          filename: fileName
-        });
+        
+        // Try share.download first as requested by user
+        if (median.share && typeof median.share.download === 'function') {
+          median.share.download({ url: base64PDF, filename: fileName });
+        } else if (median.download && typeof median.download.downloadFile === 'function') {
+          median.download.downloadFile({ url: base64PDF, filename: fileName });
+        } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+          median.fileDownload.download({ url: base64PDF, filename: fileName });
+        } else {
+          // Fallback to standard PDF save if median exists but bridge methods missing
+          pdf.save(fileName);
+        }
       } else {
+        // Standard Browser Download
         pdf.save(fileName);
       }
       
@@ -331,16 +340,16 @@ export default function ReportCard() {
     const targetUmmi = filteredUmmi[0]?.target || `Ummi jilid ${filteredUmmi[0]?.level || '-'}`;
     
     return (
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] font-bold uppercase tracking-wide">TARGET TAJWID: {targetUmmi}</p>
+      <div className="mt-4 w-full">
+        <div className="flex items-center justify-center mb-2">
+          <p className="text-[10px] font-bold uppercase tracking-wide">TARGET TAJWID: {targetUmmi}</p>
         </div>
         <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8fafc' }}>
-              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Jilid</th>
-              <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
-              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Nilai</th>
+              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Jilid</th>
+              <th className="border border-black p-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
+              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
             </tr>
           </thead>
           <tbody>
@@ -348,9 +357,9 @@ export default function ReportCard() {
               const scores = typeof exam.scores === 'string' ? JSON.parse(exam.scores) : exam.scores;
               return Object.entries(scores || {}).filter(([_, v]) => v).map(([k, v], i) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
-                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{k}</td>
-                  <td className="border border-black p-3 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{v as string}</td>
+                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
+                  <td className="border border-black p-2 text-left pl-3 align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{k}</td>
+                  <td className="border border-black p-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{v as string}</td>
                 </tr>
               ));
             }) : (
@@ -368,15 +377,15 @@ export default function ReportCard() {
     
     let counter = 1;
     return (
-      <div className="mt-4">
-        <p className="text-[11px] font-bold mb-2 uppercase tracking-wide">TARGET HAFALAN: {targetHafalan}</p>
+      <div className="mt-4 w-full">
+        <p className="text-[10px] font-bold mb-2 uppercase tracking-wide text-center">TARGET HAFALAN: {targetHafalan}</p>
         <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8fafc' }}>
-              <th className="border border-black p-3 w-10 text-center align-middle" style={{ borderColor: '#000000' }}>No</th>
-              <th className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000' }}>Surat / Ayat</th>
-              <th className="border border-black p-3 w-12 text-center align-middle" style={{ borderColor: '#000000' }}>Nilai</th>
-              <th className="border border-black p-3 w-20 text-center align-middle" style={{ borderColor: '#000000' }}>Predikat</th>
+              <th className="border border-black p-2 w-10 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>No</th>
+              <th className="border border-black p-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Surat / Ayat</th>
+              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
+              <th className="border border-black p-2 w-20 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Predikat</th>
             </tr>
           </thead>
           <tbody>
@@ -384,10 +393,10 @@ export default function ReportCard() {
               const surahs = typeof exam.surahs === 'string' ? JSON.parse(exam.surahs) : exam.surahs;
               return (surahs || []).map((s: any, i: number) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{counter++}</td>
-                  <td className="border border-black p-3 text-center align-middle" dir="auto" style={{ borderColor: '#000000', color: '#000000', fontFamily: "'Amiri', serif", letterSpacing: '0', fontVariantLigatures: 'common-ligatures' }}>{s.name}</td>
-                  <td className="border border-black p-3 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.grade}</td>
-                  <td className="border border-black p-3 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.predicate}</td>
+                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{counter++}</td>
+                  <td className="border border-black p-2 text-left pl-3 align-middle" dir="auto" style={{ borderColor: '#000000', color: '#000000', fontFamily: "'Amiri', serif", letterSpacing: '0', fontVariantLigatures: 'common-ligatures' }}>{s.name}</td>
+                  <td className="border border-black p-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.grade}</td>
+                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.predicate}</td>
                 </tr>
               ));
             }) : (
@@ -730,123 +739,139 @@ export default function ReportCard() {
                 </div>
                 
                 <div className="border border-stone-200/40 rounded-[3.5rem] overflow-x-auto shadow-2xl bg-white p-6 lg:p-16">
-                  <div id="report-card-preview" className="mx-auto p-[15mm] relative bg-white" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000' }}>
+                  <style dangerouslySetInnerHTML={{ __html: `
+                    @media print {
+                      @page { size: A4 portrait; margin: 0; }
+                      body { margin: 0; padding: 0; }
+                      #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; min-height: 297mm !important; }
+                    }
+                  ` }} />
+                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[35mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04, backgroundColor: 'transparent' }}>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
                       <img 
                         src={institution.watermark} 
                         alt="" 
                         crossOrigin="anonymous"
-                        className="w-[140mm] h-[140mm] object-contain" 
+                        className="w-[120mm] h-[120mm] object-contain" 
                         style={{ backgroundColor: 'transparent' }} 
                       />
                     </div>
                   )}
 
                   {/* Header */}
-                  <div className="flex items-center border-b-4 border-black pb-4 mb-6 relative" style={{ borderBottomColor: '#000000' }}>
-                    {institution?.logo && (
-                      <img 
-                        src={institution.logo} 
-                        alt="Logo" 
-                        crossOrigin="anonymous" 
-                        className="absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 object-contain" 
-                        style={{ backgroundColor: '#ffffff' }}
-                      />
-                    )}
-                    <div className="flex-1 text-center px-20 sm:px-24">
-                      <p className="text-3xl mb-2" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
-                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>شهادة حفظ القرآن الكريم</span>
+                  <div className="w-full relative z-10 mb-6">
+                    <div className="w-full relative flex flex-col items-center justify-center pt-2">
+                      {institution?.logo && (
+                        <div className="absolute left-0 top-0">
+                          <img 
+                            src={institution.logo} 
+                            alt="Logo" 
+                            crossOrigin="anonymous" 
+                            className="w-24 h-24 object-contain" 
+                            style={{ backgroundColor: 'transparent' }}
+                          />
+                        </div>
+                      )}
+                      
+                      <p className="text-[28px] mb-1" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
+                        شهادة حفظ القرآن الكريم
                       </p>
-                      <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-tight">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
-                      <p className="text-[10px] sm:text-[11px] leading-tight mt-2 italic">{institution?.address}</p>
-                      <div className="mt-4 text-xs sm:text-sm font-bold border-t border-black pt-2 inline-block px-4">
-                        <p className="semester-display-text">UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
+                      <h1 className="text-2xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                      <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic">{institution?.address}</p>
+                    </div>
+                    
+                    {/* Thick Horizontal Line */}
+                    <div className="w-full h-1 bg-black mt-6 mb-4" style={{ height: '3px' }}></div>
+                    
+                    <div className="w-full text-center">
+                      <div className="text-[11px] sm:text-[13px] font-bold uppercase tracking-[0.1em] space-y-0.5 text-stone-950">
+                        <p>UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
                         <p>TAHUN AJARAN {institution?.academic_year || '2025/2026'}</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Student Info */}
-                  <div className="grid grid-cols-2 text-xs sm:text-sm mb-6 font-medium">
-                    <div className="space-y-2">
+                  <div className="w-full flex justify-between items-start text-[13px] mb-8 font-bold relative z-10">
+                    <div className="space-y-1.5 pt-4">
                       <div className="flex">
-                        <span className="w-24 sm:w-28">Nama Siswa</span>
-                        <span>: <span className="font-bold uppercase student-name-display">{selectedStudent.name}</span></span>
+                        <span className="w-28 text-stone-950">Nama Siswa</span>
+                        <span>: <span className="uppercase">{selectedStudent.name}</span></span>
                       </div>
                       <div className="flex">
-                        <span className="w-24 sm:w-28">Halaqoh / Kelas</span>
-                        <span>: {selectedStudent.halaqoh_name}</span>
+                        <span className="w-28 text-stone-950">Halaqoh / Kelas</span>
+                        <span>: <span>{selectedStudent.halaqoh_name}</span></span>
                       </div>
                       <div className="flex">
-                        <span className="w-24 sm:w-28">Guru Pengampu</span>
-                        <span>: {institution?.halaqoh_teacher_name || '-'}</span>
+                        <span className="w-28 text-stone-950">Guru Pengampu</span>
+                        <span>: <span>{institution?.halaqoh_teacher_name || '-'}</span></span>
                       </div>
                     </div>
-                    <div className="text-right flex flex-col justify-end">
-                      <p className="font-bold text-base sm:text-lg uppercase semester-info-text">SEMESTER: {semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}</p>
+                    <div className="text-right pt-6">
+                      <p className="font-black text-[18px] uppercase tracking-tighter text-stone-950">SEMESTER: {semester === 'Ganjil' ? '1 (GANJIL)' : '2 (GENAP)'}</p>
                     </div>
                   </div>
 
                   {/* Title Box */}
-                  <div className="border-2 border-black py-2 flex items-center justify-center font-bold text-base sm:text-lg mb-6 uppercase tracking-[0.2em]" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
+                  <div className="w-full border-2 border-black py-2.5 flex items-center justify-center font-bold text-base sm:text-lg mb-10 uppercase tracking-[0.25em] relative z-10" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
                     LAPORAN PENCAPAIAN TAHFIDZ
                   </div>
 
                   {/* Tables Container */}
-                  <div className="grid grid-cols-2 gap-8 sm:gap-12 mb-8">
+                  <div className="w-full grid grid-cols-2 gap-8 mb-10 relative z-10">
                     {renderHafalanTable()}
                     {renderUmmiTable()}
                   </div>
 
                   {/* Footer Box - Catatan Guru */}
-                  <div className="border-2 border-black mb-6" style={{ borderColor: '#000000', color: '#000000' }}>
+                  <div className="w-full border-2 border-black mb-12 relative z-10" style={{ borderColor: '#000000', color: '#000000' }}>
                     <div className="border-b-2 border-black px-4 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center" style={{ backgroundColor: '#f8fafc', borderBottomColor: '#000000', color: '#000000' }}>Catatan & Motivasi Guru</div>
-                    <div className="p-3 min-h-[20mm] text-xs sm:text-sm italic leading-relaxed" style={{ color: '#000000' }}>
+                    <div className="p-4 min-h-[30mm] text-[11px] sm:text-xs italic leading-relaxed text-stone-900" style={{ color: '#000000' }}>
                       {teacherNotes || 'Alhamdulillah, terus tingkatkan hafalannya dan jaga murajaahnya. Semoga Allah memberkahi setiap langkahmu dalam menghafal Al-Qur\'an.'}
                     </div>
                   </div>
 
                   {/* Signatures */}
-                  <div className="grid grid-cols-3 text-[10px] sm:text-xs text-center">
-                    <div>
-                      <p className="mb-10 sm:mb-12">Orang Tua/Wali,</p>
-                      <p className="font-bold underline">( .............................. )</p>
+                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10">
+                    <div className="flex flex-col items-center">
+                      <p className="mb-14">Orang Tua/Wali,</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">( .............................. )</p>
                     </div>
-                    <div>
-                      <p className="mb-2">Mengetahui,</p>
-                      <p className="mb-6 sm:mb-8">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
+                    <div className="flex flex-col items-center">
+                      <p className="mb-0.5">Mengetahui,</p>
+                      <p className="mb-6">Kepala Sekolah</p>
+                      <div className="relative flex items-center justify-center h-[90px] w-full mb-2">
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
                             alt="Principal Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block' }} 
+                            style={{ height: `${principalSigSize}px`, width: 'auto' }} 
                           />
                         )}
                       </div>
-                      <p className="font-bold underline">{institution?.principal_name || 'Cikun, S.Pd'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{institution?.principal_name || 'Cikun, S.Pd'}</p>
                     </div>
-                    <div>
-                      <p className="mb-2 text-[9px] sm:text-[11px]">
+                    <div className="flex flex-col items-center">
+                      <p className="mb-0.5 text-[11px]">
                         {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
                       </p>
-                      <p className="mb-6 sm:mb-8">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-16 sm:h-20" style={{ height: '80px' }}>
+                      <p className="mb-6">Koordinator Tahfidz,</p>
+                      <div className="relative flex items-center justify-center h-[90px] w-full mb-2">
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
-                            crossOrigin="anonymous"
+                            crossOrigin="anonymous" 
                             className="object-contain" 
-                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block' }} 
+                            style={{ height: `${coordinatorSigSize}px`, width: 'auto' }} 
                           />
                         )}
                       </div>
-                      <p className="font-bold underline">{institution?.coordinator_name || 'Abdul Rohman'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{institution?.coordinator_name || 'Abdul Rohman'}</p>
                     </div>
                   </div>
                 </div>

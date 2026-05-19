@@ -242,7 +242,7 @@ export default function MonthlyRecap() {
           style: {
             transform: 'none',
             margin: '0',
-            padding: '15mm',
+            padding: '0',
             borderRadius: '0',
             width: '1122.52px'
           }
@@ -256,17 +256,35 @@ export default function MonthlyRecap() {
 
           // Median/GoNative bridge support
           const median = (window as any).median || (window as any).gonative;
-          if (median && median.fileDownload && median.fileDownload.download) {
+          if (median) {
             const reader = new FileReader();
             reader.onloadend = () => {
               const base64data = reader.result as string;
-              median.fileDownload.download({
-                url: base64data,
-                filename: fileName
-              });
+              
+              // Try share.download first as requested by user
+              if (median.share && typeof median.share.download === 'function') {
+                median.share.download({ url: base64data, filename: fileName });
+              } else if (median.download && typeof median.download.downloadFile === 'function') {
+                median.download.downloadFile({ url: base64data, filename: fileName });
+              } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+                median.fileDownload.download({ url: base64data, filename: fileName });
+              } else {
+                // Fallback if Median exists but common download methods don't
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                }, 100);
+              }
             };
             reader.readAsDataURL(blob);
           } else {
+            // Standard Browser Download
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -339,39 +357,30 @@ export default function MonthlyRecap() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const margin = 10; 
-      const printableWidth = pdfWidth - (margin * 2);
-      const printableHeight = pdfHeight - (margin * 2);
-
-      const img = new Image();
-      img.src = dataUrl;
-      await new Promise((resolve) => { img.onload = resolve; });
-
-      let finalWidth = printableWidth;
-      let finalHeight = (img.height * finalWidth) / img.width;
-      
-      if (finalHeight > printableHeight) {
-        const ratio = printableHeight / finalHeight;
-        finalWidth = finalWidth * ratio;
-        finalHeight = printableHeight;
-      }
-
-      const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = (pdfHeight - finalHeight) / 2;
-
-      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
+      // Use full page dimensions since element is already A4 size (297x210mm)
+      // This ensures perfect alignment for printing without further adjustment
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
 
       const fileName = `Rekap_${selectedMonth}_${(halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh').replace(/[^a-z0-9]/gi, '_')}.pdf`;
       
       // Median/GoNative bridge support
       const median = (window as any).median || (window as any).gonative;
-      if (median && median.fileDownload && median.fileDownload.download) {
+      if (median) {
         const base64PDF = pdf.output('datauristring');
-        median.fileDownload.download({
-          url: base64PDF,
-          filename: fileName
-        });
+        
+        // Try share.download first as requested by user
+        if (median.share && typeof median.share.download === 'function') {
+          median.share.download({ url: base64PDF, filename: fileName });
+        } else if (median.download && typeof median.download.downloadFile === 'function') {
+          median.download.downloadFile({ url: base64PDF, filename: fileName });
+        } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+          median.fileDownload.download({ url: base64PDF, filename: fileName });
+        } else {
+          // Fallback to standard PDF save if median exists but bridge methods missing
+          pdf.save(fileName);
+        }
       } else {
+        // Standard Browser Download
         pdf.save(fileName);
       }
     } catch (error) {
@@ -713,7 +722,7 @@ export default function MonthlyRecap() {
                           <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
                         </>
                       )}
-                      <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{activeDaysCount}</td>
+                      <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{s.activeDays.size}</td>
                       <td className="px-4 py-4 border-stone-100/60 min-w-[180px] md:sticky right-[180px] z-20 bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-stone-50 border-x">
                         <div className="hidden md:block">
                           <input 
@@ -823,188 +832,192 @@ export default function MonthlyRecap() {
               </div>
 
               <div className="overflow-x-auto p-12 bg-white rounded-[3.5rem] shadow-2xl border border-stone-200/40">
-                <div id="recap-preview-container" className="mx-auto p-[20mm] relative bg-white" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#1c1917' }}>
-                  {/* Watermark */}
+                <style dangerouslySetInnerHTML={{ __html: `
+                  @media print {
+                    @page { size: A4 landscape; margin: 0; }
+                    body { margin: 0; padding: 0; }
+                    #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 297mm !important; min-height: 210mm !important; }
+                  }
+                ` }} />
+                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                  {/* Watermark Logo */}
                   {institution?.watermark && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, zIndex: 0 }}>
                       <img 
                         src={institution.watermark} 
                         alt="" 
                         crossOrigin="anonymous"
-                        className="w-[120mm] h-[120mm] object-contain" 
+                        className="w-[140mm] h-[140mm] object-contain" 
+                        style={{ backgroundColor: 'transparent' }}
                       />
                     </div>
                   )}
 
-                  {/* Header */}
-                  <div className="flex items-center border-b-2 border-black pb-4 mb-8 relative" style={{ borderBottomColor: '#000000' }}>
-                    {institution?.logo && (
-                      <img 
-                        src={institution.logo} 
-                        alt="Logo" 
-                        crossOrigin="anonymous" 
-                        className="absolute left-0 top-0 w-24 h-24 object-contain" 
-                        style={{ backgroundColor: '#ffffff' }}
-                      />
-                    )}
-                    <div className="flex-1 text-center pl-24">
-                      <h1 className="text-2xl font-bold uppercase tracking-tight">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
-                      <h2 className="text-xl font-bold uppercase mt-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
-                      <p className="text-[11px] leading-tight mt-2 italic">{institution?.address}</p>
+                  {/* Header matches image precisely */}
+                  <div className="w-full relative z-10 mb-8 mt-4">
+                    <div className="flex items-start justify-center relative">
+                      {institution?.logo && (
+                        <div className="absolute left-8 top-0">
+                          <img 
+                            src={institution.logo} 
+                            alt="Logo" 
+                            crossOrigin="anonymous" 
+                            className="w-24 h-24 object-contain" 
+                            style={{ backgroundColor: 'transparent' }}
+                          />
+                        </div>
+                      )}
+                      <div className="text-center pt-2">
+                        <h1 className="text-3xl font-bold uppercase tracking-tight text-stone-950">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
+                        <h2 className="text-2xl font-bold uppercase mt-1 text-stone-900">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
+                      </div>
                     </div>
+                    {/* Thick Horizontal Line */}
+                    <div className="w-full h-1 bg-black mt-6" style={{ height: '3px' }}></div>
                   </div>
 
-                  <div className="grid grid-cols-2 text-sm mb-8 font-medium">
+                  <div className="w-full grid grid-cols-2 text-sm mb-6 font-medium relative z-10 px-8">
                     <div className="space-y-2">
-                      <p><span className="w-24 inline-block">Bulan</span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</p>
-                      <p><span className="w-24 inline-block">Halaqoh</span>: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</p>
+                      <p className="flex"><span className="w-24 inline-block">Bulan</span> <span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</span></p>
+                      <p className="flex"><span className="w-24 inline-block">Halaqoh</span> <span>: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</span></p>
                     </div>
                     <div className="text-right space-y-2">
                       <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
-                      <p>Tahun Ajaran: {institution?.academic_year || '-'}</p>
+                      <p>Tahun Ajaran: {institution?.academic_year || '2025/2026'}</p>
                     </div>
                   </div>
 
-                  <table className="w-full border-collapse border border-black text-[9.5px] leading-normal" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
+                  {/* Table with dynamic columns logic */}
+                  <table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
                     <colgroup>
-                      <col style={{ width: '30px' }} />
-                      <col style={{ width: '120px' }} />
+                      <col style={{ width: '40px' }} />
+                      <col style={{ width: '160px' }} />
                       {hasHafalan && (
                         <>
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '30px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '40px' }} />
                         </>
                       )}
                       {hasTilawah && (
                         <>
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '30px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '40px' }} />
                         </>
                       )}
                       {hasUmmi && (
                         <>
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '60px' }} />
-                          <col style={{ width: '30px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '85px' }} />
+                          <col style={{ width: '40px' }} />
                         </>
                       )}
-                      <col style={{ width: '40px' }} />
-                      <col style={{ width: '60px' }} />
+                      <col style={{ width: '50px' }} />
                       <col style={{ width: '80px' }} />
+                      <col style={{ width: 'auto' }} />
                     </colgroup>
                     <thead>
-                      <tr style={{ backgroundColor: '#f8fafc' }}>
-                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
-                          <div className="flex items-center justify-center min-h-[40px]">NO</div>
-                        </th>
-                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
-                          <div className="flex items-center justify-center min-h-[40px]">NAMA SISWA</div>
-                        </th>
-                        {hasHafalan && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>HAFALAN AL-QUR'AN</th>}
-                        {hasTilawah && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH AL-QUR'AN</th>}
-                        {hasUmmi && <th colSpan={3} className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>TILAWAH UMMI</th>}
-                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
-                          <div className="flex items-center justify-center min-h-[40px]">HARI AKTIF</div>
-                        </th>
-                        <th rowSpan={2} className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
-                          <div className="flex items-center justify-center min-h-[40px]">TOTAL</div>
-                        </th>
-                        <th rowSpan={2} className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>
-                          <div className="flex items-center justify-center min-h-[40px]">CATATAN</div>
-                        </th>
+                      <tr className="bg-white">
+                        <th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NO</th>
+                        <th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NAMA SISWA</th>
+                        {hasHafalan && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>}
+                        {hasTilawah && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>}
+                        {hasUmmi && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>METODE UMMI</th>}
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HARI AKTIF</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TOTAL</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>CATATAN</th>
                       </tr>
-                      <tr style={{ backgroundColor: '#f8fafc' }}>
+                      <tr className="bg-white">
                         {hasHafalan && (
                           <>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>JML</th>
                           </>
                         )}
                         {hasTilawah && (
                           <>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>JML</th>
                           </>
                         )}
                         {hasUmmi && (
                           <>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AWL</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>AKH</th>
-                            <th className="border border-black px-1 py-1 text-center align-middle" style={{ borderColor: '#000000', color: '#000000', fontWeight: 'bold' }}>JML</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AWL</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>AKH</th>
+                            <th className="border border-black px-1 py-1 text-center font-bold" style={{ borderColor: '#000000' }}>JML</th>
                           </>
                         )}
                       </tr>
                     </thead>
                     <tbody>
                       {recapData.map((s, i) => (
-                        <tr key={s.id}>
-                          <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{i + 1}</td>
-                          <td className="border border-black px-2 py-2 text-left align-middle font-bold overflow-hidden" style={{ borderColor: '#000000', color: '#000000', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{s.name}</td>
+                        <tr key={s.id} className="text-stone-900 h-[40px]">
+                          <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{i + 1}</td>
+                          <td className="border border-black p-1 font-bold pl-3 truncate" style={{ borderColor: '#000000' }}>{s.name}</td>
                           {hasHafalan && (
                             <>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.awl}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.akh}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.hafalan.jml}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.hafalan.awl}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.hafalan.akh}</td>
+                              <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.hafalan.jml}</td>
                             </>
                           )}
                           {hasTilawah && (
                             <>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.awl}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.akh}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.tilawah.jml}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.tilawah.awl}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.tilawah.akh}</td>
+                              <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.tilawah.jml}</td>
                             </>
                           )}
                           {hasUmmi && (
                             <>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.awl}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.akh}</td>
-                              <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{s.ummi.jml}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.ummi.awl}</td>
+                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.ummi.akh}</td>
+                              <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.ummi.jml}</td>
                             </>
                           )}
-                          <td className="border border-black px-1 py-2 text-center align-middle font-bold" style={{ borderColor: '#000000', color: '#000000' }}>{activeDaysCount}</td>
-                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
-                          <td className="border border-black px-2 py-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size}</td>
+                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
+                          <td className="border border-black p-1 italic text-[8.5px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
 
-                  <div className="grid grid-cols-2 text-sm text-center mt-6">
-                    <div>
-                      <p>Mengetahui,</p>
-                      <p className="mb-6">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
+                  <div className="w-full grid grid-cols-2 text-sm text-center mt-12 px-20 relative z-10 pb-8">
+                    <div className="flex flex-col items-center">
+                      <p className="mb-0">Mengetahui,</p>
+                      <p className="mb-4">Kepala Sekolah</p>
+                      <div className="relative flex items-center justify-center h-[100px] w-full mb-2">
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
                             alt="Principal Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${principalSigSize}px`, width: 'auto', display: 'block' }} 
+                            style={{ height: `${principalSigSize}px`, width: 'auto' }} 
                           />
                         )}
                       </div>
-                      <p className="font-bold underline">{institution?.principal_name || '( .............................. )'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">{institution?.principal_name || 'Cikun S.Pd'}</p>
                     </div>
-                    <div>
-                      <p className="invisible">.</p>
-                      <p className="mb-6">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-20" style={{ height: '80px' }}>
+                    <div className="flex flex-col items-center">
+                      <p className="invisible mb-0">.</p>
+                      <p className="mb-4">Koordinator Tahfidz,</p>
+                      <div className="relative flex items-center justify-center h-[100px] w-full mb-2">
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
-                            style={{ height: `${coordinatorSigSize}px`, width: 'auto', display: 'block' }} 
+                            style={{ height: `${coordinatorSigSize}px`, width: 'auto' }} 
                           />
                         )}
                       </div>
-                      <p className="font-bold underline">{institution?.coordinator_name || '( .............................. )'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">{institution?.coordinator_name || 'Abdul Rohman'}</p>
                     </div>
                   </div>
                 </div>
