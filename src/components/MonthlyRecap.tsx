@@ -395,6 +395,7 @@ export default function MonthlyRecap() {
   const hasTilawah = recapData.some(s => s.tilawah.awl !== '-' || s.tilawah.akh !== '-' || s.tilawah.jml > 0);
   const hasUmmi = recapData.some(s => s.ummi.awl !== '-' || s.ummi.akh !== '-' || s.ummi.jml > 0);
 
+  const maxActiveDays = recapData.length > 0 ? Math.max(...recapData.map(s => s.activeDays.size)) : 0;
   const activeDaysCount = storage.getActiveDays(selectedMonth, selectedHalaqoh);
 
   const theme = {
@@ -659,7 +660,7 @@ export default function MonthlyRecap() {
                     {hasHafalan && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-indigo-50/30 text-indigo-900/40">Hafalan Al-Qur'an</th>}
                     {hasTilawah && showTilawah && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
                     {hasUmmi && showUmmi && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
-                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center">Aktif</th>
+                    <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center">Aktif Siswa / Bulan</th>
                     <th rowSpan={2} className="px-5 py-5 border-b border-stone-200/60 text-center md:sticky right-[180px] z-40 bg-stone-50/80 backdrop-blur-md border-l">Total</th>
                     <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center md:sticky right-0 z-40 bg-stone-50/80 backdrop-blur-md min-w-[180px] border-l">Catatan Guru</th>
                   </tr>
@@ -722,7 +723,9 @@ export default function MonthlyRecap() {
                           <td className="px-2 py-4 border-r border-stone-100/60 text-center font-black text-emerald-600 tabular-nums bg-emerald-50/10">{s.ummi.jml}</td>
                         </>
                       )}
-                      <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums", theme.text)}>{s.activeDays.size}</td>
+                      <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums whitespace-nowrap", theme.text)}>
+                        {s.activeDays.size} / {maxActiveDays}
+                      </td>
                       <td className="px-4 py-4 border-stone-100/60 min-w-[180px] md:sticky right-[180px] z-20 bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-stone-50 border-x">
                         <div className="hidden md:block">
                           <input 
@@ -880,6 +883,7 @@ export default function MonthlyRecap() {
                     <div className="space-y-2">
                       <p className="flex"><span className="w-24 inline-block">Bulan</span> <span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</span></p>
                       <p className="flex"><span className="w-24 inline-block">Halaqoh</span> <span>: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</span></p>
+                      <p className="flex font-bold"><span className="w-24 inline-block">Aktif Perbulan</span> <span>: {maxActiveDays} Hari</span></p>
                     </div>
                     <div className="text-right space-y-2">
                       <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
@@ -924,7 +928,7 @@ export default function MonthlyRecap() {
                         {hasHafalan && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>}
                         {hasTilawah && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>}
                         {hasUmmi && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>METODE UMMI</th>}
-                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HARI AKTIF</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>
                         <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TOTAL</th>
                         <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>CATATAN</th>
                       </tr>
@@ -978,7 +982,7 @@ export default function MonthlyRecap() {
                               <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.ummi.jml}</td>
                             </>
                           )}
-                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size}</td>
+                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size} / {maxActiveDays}</td>
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
                           <td className="border border-black p-1 italic text-[8.5px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
