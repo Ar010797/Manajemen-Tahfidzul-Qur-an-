@@ -6,6 +6,8 @@ import ConfirmModal from './ConfirmModal';
 import { db } from '../services/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
+import LZString from 'lz-string';
+
 export default function Maintenance() {
   const [pasteText, setPasteText] = useState('');
   const [showPasteArea, setShowPasteArea] = useState(false);
@@ -148,9 +150,12 @@ export default function Maintenance() {
       const username = localStorage.getItem('current_username') || 'guru';
       const myData = storage.exportData();
       
+      const compressedData = LZString.compressToBase64(myData);
+
       await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
         username,
-        data: myData,
+        data: compressedData,
+        isCompressed: true,
         updatedAt: new Date().toISOString()
       });
 

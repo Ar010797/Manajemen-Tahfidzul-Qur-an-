@@ -11,6 +11,9 @@
         "data": {
           "type": "string"
         },
+        "isCompressed": {
+          "type": "boolean"
+        },
         "updatedAt": {
           "type": "string"
         }

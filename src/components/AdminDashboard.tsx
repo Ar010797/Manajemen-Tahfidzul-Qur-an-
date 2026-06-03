@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, RefreshCw, Download, Users, FileText, CheckCircle } from 'lucide-react';
+import { Shield, RefreshCw, Download, Users, FileText, CheckCircle, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import LZString from 'lz-string';
 import { storage } from '../services/storage';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
@@ -19,7 +20,18 @@ export const AdminDashboard: React.FC = () => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.username && data.data) {
-           newData[data.username] = JSON.parse(data.data);
+           try {
+             let rawJsonString = data.data;
+             if (data.isCompressed) {
+               const decompressed = LZString.decompressFromBase64(data.data);
+               if (decompressed) {
+                 rawJsonString = decompressed;
+               }
+             }
+             newData[data.username] = JSON.parse(rawJsonString);
+           } catch (err) {
+             console.error(`Failed to parse data for ${data.username}`, err);
+           }
         }
       });
       
@@ -52,9 +64,12 @@ export const AdminDashboard: React.FC = () => {
       const username = localStorage.getItem('current_username') || 'admin';
       const myData = storage.exportData();
       
+      const compressedData = LZString.compressToBase64(myData);
+
       await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
         username,
-        data: myData,
+        data: compressedData,
+        isCompressed: true,
         updatedAt: new Date().toISOString()
       });
       
@@ -65,6 +80,18 @@ export const AdminDashboard: React.FC = () => {
       console.error(e);
       setSyncStatus('idle');
       alert(`Gagal melakukan sinkronisasi: ${e.message || e.toString()}`);
+    }
+  };
+
+  const handleDeleteGuru = async (guru: string) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus data sinkronisasi guru "${guru}" dari server? Data aslinya di perangkat guru tersebut tidak akan hilang.`)) {
+      try {
+        await deleteDoc(doc(db, 'syncs', guru.replace(/\s+/g, '_').toLowerCase()));
+        fetchGlobalData();
+      } catch (e: any) {
+        console.error('Failed to delete data', e);
+        alert(`Gagal menghapus data: ${e.message || e.toString()}`);
+      }
     }
   };
 
@@ -157,20 +184,28 @@ export const AdminDashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => {
-                      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(d, null, 2));
-                      const a = document.createElement('a');
-                      a.setAttribute("href", dataStr);
-                      a.setAttribute("download", `data_guru_${guru}.json`);
-                      document.body.appendChild(a);
-                      a.click();
-                      a.remove();
-                    }}
-                    className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" /> Backup Spesifik
-                  </button>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <button 
+                      onClick={() => {
+                        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(d, null, 2));
+                        const a = document.createElement('a');
+                        a.setAttribute("href", dataStr);
+                        a.setAttribute("download", `data_guru_${guru}.json`);
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                      }}
+                      className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Download className="w-4 h-4" /> Backup Spesifik
+                    </button>
+                    <button
+                      onClick={() => handleDeleteGuru(guru)}
+                      className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                    >
+                       <Trash2 className="w-4 h-4" /> Hapus
+                    </button>
+                  </div>
                 </div>
               )
             })
