@@ -3,6 +3,8 @@ import { Database, Download, Upload, ClipboardPaste } from 'lucide-react';
 import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
 import ConfirmModal from './ConfirmModal';
+import { db } from '../services/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Maintenance() {
   const [pasteText, setPasteText] = useState('');
@@ -146,9 +148,6 @@ export default function Maintenance() {
       const username = localStorage.getItem('current_username') || 'guru';
       const myData = storage.exportData();
       
-      const { db } = await import('../services/firebase');
-      const { doc, setDoc } = await import('firebase/firestore');
-      
       await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
         username,
         data: myData,
@@ -157,10 +156,10 @@ export default function Maintenance() {
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       setSyncStatus('idle');
-      alert('Gagal melakukan sinkronisasi ke server pusat. Pastikan koneksi internet Anda stabil.');
+      alert(`Gagal melakukan sinkronisasi: ${e.message || e.toString()}`);
     }
   };
 

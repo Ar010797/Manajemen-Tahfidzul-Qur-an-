@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Shield, RefreshCw, Download, Users, FileText, CheckCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { storage } from '../services/storage';
+import { db } from '../services/firebase';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
@@ -11,9 +13,6 @@ export const AdminDashboard: React.FC = () => {
   const fetchGlobalData = async () => {
     setIsLoading(true);
     try {
-      const { db } = await import('../services/firebase');
-      const { collection, getDocs } = await import('firebase/firestore');
-      
       const querySnapshot = await getDocs(collection(db, 'syncs'));
       const newData: Record<string, any> = {};
       
@@ -25,8 +24,9 @@ export const AdminDashboard: React.FC = () => {
       });
       
       setGlobalData(newData);
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to fetch data', e);
+      alert(`Gagal mengambil data dari server: ${e.message || e.toString()}`);
     } finally {
       setIsLoading(false);
     }
@@ -52,9 +52,6 @@ export const AdminDashboard: React.FC = () => {
       const username = localStorage.getItem('current_username') || 'admin';
       const myData = storage.exportData();
       
-      const { db } = await import('../services/firebase');
-      const { doc, setDoc } = await import('firebase/firestore');
-      
       await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
         username,
         data: myData,
@@ -64,9 +61,10 @@ export const AdminDashboard: React.FC = () => {
       setSyncStatus('success');
       fetchGlobalData();
       setTimeout(() => setSyncStatus('idle'), 2000);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       setSyncStatus('idle');
+      alert(`Gagal melakukan sinkronisasi: ${e.message || e.toString()}`);
     }
   };
 
