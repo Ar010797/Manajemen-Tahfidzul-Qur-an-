@@ -230,13 +230,13 @@ export default function MonthlyRecap() {
           });
         }));
 
-        // Use slightly lower pixelRatio on mobile to avoid memory crashes
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const pixelRatio = isMobile ? 2 : 3;
+        // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
+        const pixelRatio = 4;
 
         // Use html-to-image which handles modern CSS (OKLCH, etc) much better
         const canvas = await htmlToImage.toCanvas(element, {
-          width: 1122.52,
+          width: element.scrollWidth,
+          height: element.scrollHeight,
           pixelRatio: pixelRatio,
           backgroundColor: '#ffffff',
           style: {
@@ -244,7 +244,9 @@ export default function MonthlyRecap() {
             margin: '0',
             padding: '0',
             borderRadius: '0',
-            width: '1122.52px'
+            boxShadow: 'none',
+            width: `${element.scrollWidth}px`,
+            height: `${element.scrollHeight}px`
           }
         });
         
@@ -332,10 +334,12 @@ export default function MonthlyRecap() {
         })
       ]);
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const pixelRatio = isMobile ? 2 : 3; 
+      // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
+      const pixelRatio = 4; 
 
       const dataUrl = await htmlToImage.toPng(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
         pixelRatio: pixelRatio,
         backgroundColor: '#ffffff',
         style: {
@@ -343,7 +347,9 @@ export default function MonthlyRecap() {
           margin: '0',
           padding: '0',
           borderRadius: '0',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          width: `${element.scrollWidth}px`,
+          height: `${element.scrollHeight}px`
         }
       });
 
@@ -351,15 +357,35 @@ export default function MonthlyRecap() {
         orientation: 'landscape',
         unit: 'mm',
         format: 'a4',
-        compress: true
+        compress: false // Disable compression to preserve the lossless ultra-high-resolution image perfectly
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
       // Use full page dimensions since element is already A4 size (297x210mm)
-      // This ensures perfect alignment for printing without further adjustment
-      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      // Use 'NONE' compression to keep the high-resolution PNG image perfectly crisp and lossless
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const imgRatio = imgProps.width / imgProps.height;
+      const pdfRatio = pdfWidth / pdfHeight;
+      
+      let finalWidth = pdfWidth;
+      let finalHeight = pdfHeight;
+      
+      if (imgRatio < pdfRatio) {
+        // Image is taller proportionally -> scale to height
+        finalWidth = pdfHeight * imgRatio;
+        finalHeight = pdfHeight;
+      } else {
+        // Image is wider proportionally -> scale to width
+        finalWidth = pdfWidth;
+        finalHeight = pdfWidth / imgRatio;
+      }
+      
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = 0;
+      
+      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
 
       const fileName = `Rekap_${selectedMonth}_${(halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh').replace(/[^a-z0-9]/gi, '_')}.pdf`;
       

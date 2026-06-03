@@ -157,12 +157,13 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const pixelRatio = isMobile ? 2 : 3;
+      // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
+      const pixelRatio = 4;
 
       // High-end capture for Image
       const canvas = await htmlToImage.toCanvas(element, {
-        width: 793.7, // Fixed A4 Portrait Width (approx)
+        width: element.scrollWidth,
+        height: element.scrollHeight,
         pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
@@ -171,7 +172,8 @@ export default function ReportCard() {
           padding: '0',
           borderRadius: '0',
           boxShadow: 'none',
-          width: '793.7px'
+          width: `${element.scrollWidth}px`,
+          height: `${element.scrollHeight}px`
         }
       });
       
@@ -271,10 +273,12 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const pixelRatio = isMobile ? 2 : 3; 
+      // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
+      const pixelRatio = 4; 
 
       const dataUrl = await htmlToImage.toPng(element, {
+        width: element.scrollWidth,
+        height: element.scrollHeight,
         pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
@@ -283,7 +287,8 @@ export default function ReportCard() {
           padding: '0',
           borderRadius: '0',
           boxShadow: 'none',
-          height: 'auto'
+          width: `${element.scrollWidth}px`,
+          height: `${element.scrollHeight}px`
         }
       });
       
@@ -291,15 +296,36 @@ export default function ReportCard() {
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
-        compress: true
+        compress: false // Disable compression to preserve the lossless ultra-high-resolution image perfectly
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
       // Use full page dimensions since element is already A4 size (210x297mm)
-      // This ensures perfect alignment for printing without further adjustment
-      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      // Use 'NONE' compression to keep the high-resolution PNG image perfectly crisp and lossless
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const imgRatio = imgProps.width / imgProps.height;
+      const pdfRatio = pdfWidth / pdfHeight;
+      
+      let finalWidth = pdfWidth;
+      let finalHeight = pdfHeight;
+      
+      if (imgRatio < pdfRatio) {
+        // Image is proportionally taller than A4 page -> scale strictly by height
+        finalWidth = pdfHeight * imgRatio;
+        finalHeight = pdfHeight;
+      } else {
+        // Image is proportionally wider than A4 page -> scale strictly by width
+        finalWidth = pdfWidth;
+        finalHeight = pdfWidth / imgRatio;
+      }
+      
+      // Center image horizontally and align top
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = 0;
+      
+      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
 
       const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
