@@ -11,11 +11,20 @@ export const AdminDashboard: React.FC = () => {
   const fetchGlobalData = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/data/all');
-      const json = await res.json();
-      if (json.success) {
-        setGlobalData(json.data || {});
-      }
+      const { db } = await import('../services/firebase');
+      const { collection, getDocs } = await import('firebase/firestore');
+      
+      const querySnapshot = await getDocs(collection(db, 'syncs'));
+      const newData: Record<string, any> = {};
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.username && data.data) {
+           newData[data.username] = JSON.parse(data.data);
+        }
+      });
+      
+      setGlobalData(newData);
     } catch (e) {
       console.error('Failed to fetch data', e);
     } finally {
@@ -41,12 +50,17 @@ export const AdminDashboard: React.FC = () => {
     setSyncStatus('syncing');
     try {
       const username = localStorage.getItem('current_username') || 'admin';
-      const myData = JSON.parse(storage.exportData());
-      await fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, data: myData })
+      const myData = storage.exportData();
+      
+      const { db } = await import('../services/firebase');
+      const { doc, setDoc } = await import('firebase/firestore');
+      
+      await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
+        username,
+        data: myData,
+        updatedAt: new Date().toISOString()
       });
+      
       setSyncStatus('success');
       fetchGlobalData();
       setTimeout(() => setSyncStatus('idle'), 2000);

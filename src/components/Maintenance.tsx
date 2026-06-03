@@ -144,18 +144,23 @@ export default function Maintenance() {
     setSyncStatus('syncing');
     try {
       const username = localStorage.getItem('current_username') || 'guru';
-      const myData = JSON.parse(storage.exportData());
-      await fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, data: myData })
+      const myData = storage.exportData();
+      
+      const { db } = await import('../services/firebase');
+      const { doc, setDoc } = await import('firebase/firestore');
+      
+      await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
+        username,
+        data: myData,
+        updatedAt: new Date().toISOString()
       });
+
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);
     } catch (e) {
       console.error(e);
       setSyncStatus('idle');
-      alert('Gagal melakukan sinkronisasi ke server pusat.');
+      alert('Gagal melakukan sinkronisasi ke server pusat. Pastikan koneksi internet Anda stabil.');
     }
   };
 

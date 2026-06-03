@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "SyncData": {
+      "title": "Sync Data",
+      "description": "JSON string of the exported local storage from a teacher's device.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["username", "data", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/syncs/{syncId}": {
+      "schema": "SyncData",
+      "description": "Contains synced data from each teacher."
+    }
+  }
+}
