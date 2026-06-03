@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Shield, RefreshCw, Download, Users, FileText, CheckCircle, Trash2, Eye } from 'lucide-react';
 import { motion } from 'motion/react';
 import LZString from 'lz-string';
-import { storage } from '../services/storage';
+import { storage, setCurrentUser } from '../services/storage';
 import { db } from '../services/firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import ConfirmModal from './ConfirmModal';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'idle'|'syncing'|'success'>('idle');
+  const [impersonateTarget, setImpersonateTarget] = useState<string | null>(null);
 
   const fetchGlobalData = async () => {
     setIsLoading(true);
@@ -221,18 +223,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <button
-                      onClick={() => {
-                        if (window.confirm(`Masuk sebagai guru "${guru}" untuk melihat dan mengunduh Rapot & Rekap (PDF/JPG)?`)) {
-                          localStorage.setItem(`tahfidz_data_${guru}`, JSON.stringify(d));
-                          localStorage.setItem('current_username', guru);
-                          localStorage.setItem('user', JSON.stringify({
-                            id: 'admin_impersonate',
-                            username: guru,
-                            role: 'guru'
-                          }));
-                          window.location.reload();
-                        }
-                      }}
+                      onClick={() => setImpersonateTarget(guru)}
                       className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2"
                       title="Buka akun ini untuk download Rapot / Rekap dalam PDF atau JPG"
                     >
@@ -266,6 +257,33 @@ export const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!impersonateTarget}
+        onClose={() => setImpersonateTarget(null)}
+        onConfirm={() => {
+          if (impersonateTarget) {
+            const guru = impersonateTarget;
+            const d = globalData[guru];
+            if (d) {
+              setCurrentUser(guru);
+              storage.importData(JSON.stringify(d));
+              localStorage.setItem('user', JSON.stringify({
+                id: 'admin_impersonate',
+                username: guru,
+                role: 'guru'
+              }));
+              window.location.reload();
+            }
+          }
+        }}
+        title="Buka Data Guru"
+        message={`Masuk sebagai guru "${impersonateTarget}" untuk melihat dan mengunduh Rapot & Rekap (PDF/JPG)? Pastikan sebelum pindah, data admin sudah sinkron ke server.`}
+        confirmText="Buka"
+        cancelText="Batal"
+        themeColor="indigo"
+        variant="info"
+      />
     </div>
   );
 };

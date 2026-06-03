@@ -182,58 +182,65 @@ export default function ReportCard() {
       const fileName = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
 
       canvas.toBlob(async (blob) => {
-        if (!blob) {
-          alert('Gagal membuat file gambar.');
-          setIsGenerating(false);
-          return;
-        }
+        try {
+          if (!blob) throw new Error('Blob creation failed');
 
-        // Median/GoNative bridge support
-        const median = (window as any).median || (window as any).gonative;
-        if (median) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
+          // Median/GoNative bridge support
+          const median = (window as any).median || (window as any).gonative;
+          if (median) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              try {
+                const base64data = reader.result as string;
+                // Try share.download first as requested by user
+                if (median.share && typeof median.share.download === 'function') {
+                  median.share.download({ url: base64data, filename: fileName });
+                } else if (median.download && typeof median.download.downloadFile === 'function') {
+                  median.download.downloadFile({ url: base64data, filename: fileName });
+                } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+                  median.fileDownload.download({ url: base64data, filename: fileName });
+                } else {
+                  // Fallback if Median exists but common download methods don't
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = fileName;
+                  document.body.appendChild(link);
+                  link.click();
+                  setTimeout(() => {
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  }, 100);
+                }
+              } finally {
+                setIsGenerating(false);
+              }
+            };
+            reader.onerror = () => {
+              alert('Gagal membaca blob gambar.');
+              setIsGenerating(false);
+            };
+            reader.readAsDataURL(blob);
+          } else {
+            // Standard Browser Download
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            }, 100);
             
-            // Try share.download first as requested by user
-            if (median.share && typeof median.share.download === 'function') {
-              median.share.download({ url: base64data, filename: fileName });
-            } else if (median.download && typeof median.download.downloadFile === 'function') {
-              median.download.downloadFile({ url: base64data, filename: fileName });
-            } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
-              median.fileDownload.download({ url: base64data, filename: fileName });
-            } else {
-              // Fallback if Median exists but common download methods don't
-              const url = window.URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = fileName;
-              document.body.appendChild(link);
-              link.click();
-              setTimeout(() => {
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-              }, 100);
-            }
-          };
-          reader.readAsDataURL(blob);
-        } else {
-          // Standard Browser Download
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = fileName;
-          document.body.appendChild(link);
-          link.click();
-          
-          setTimeout(() => {
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-          }, 100);
+            setIsGenerating(false);
+          }
+        } catch (e: any) {
+          console.error(e);
+          alert('Gagal memproses gambar: ' + e.message);
+          setIsGenerating(false);
         }
-        
-        setIsGenerating(false);
-        alert(`Gambar "${fileName}" telah berhasil diunduh ke perangkat Anda.`);
       }, type, 1.0);
 
     } catch (error: any) {
@@ -352,8 +359,6 @@ export default function ReportCard() {
       }
       
       setIsGenerating(false);
-      alert(`File PDF "${fileName}" telah berhasil diunduh.`);
-
     } catch (error: any) {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh rapor: ' + (error.message || 'Terjadi kesalahan teknis'));
