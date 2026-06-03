@@ -4,7 +4,7 @@ import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
 import ConfirmModal from './ConfirmModal';
 import { db } from '../services/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDocs, collection, deleteDoc } from 'firebase/firestore';
 
 import LZString from 'lz-string';
 
@@ -151,11 +151,31 @@ export default function Maintenance() {
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
-      const CHUNK_SIZE = 800000;
+      const CHUNK_SIZE = 200000;
       const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
       const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      // Save metadata document
+      // Clean up existing chunks first
+      try {
+        const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+        const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+        await Promise.all(deletePromises);
+      } catch (ex) {
+        console.error('Failed to cleanup old chunks', ex);
+      }
+
+      // Save chunk documents FIRST to ensure data integrity
+      const chunkPromises = [];
+      for (let i = 0; i < numChunks; i++) {
+        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+        chunkPromises.push(setDoc(chunkDoc, {
+          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+          chunkIndex: i
+        }));
+      }
+      await Promise.all(chunkPromises);
+
+      // Save metadata document AFTER chunks are successfully uploaded
       await setDoc(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
@@ -163,15 +183,6 @@ export default function Maintenance() {
         numChunks,
         updatedAt: new Date().toISOString()
       });
-
-      // Save chunk documents
-      for (let i = 0; i < numChunks; i++) {
-        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-        await setDoc(chunkDoc, {
-          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
-          chunkIndex: i
-        });
-      }
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);

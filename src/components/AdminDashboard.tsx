@@ -9,6 +9,7 @@ import ConfirmModal from './ConfirmModal';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
+  const [docIds, setDocIds] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'idle'|'syncing'|'success'>('idle');
   const [impersonateTarget, setImpersonateTarget] = useState<string | null>(null);
@@ -18,6 +19,7 @@ export const AdminDashboard: React.FC = () => {
     try {
       const querySnapshot = await getDocs(collection(db, 'syncs'));
       const newData: Record<string, any> = {};
+      const newDocIds: Record<string, string> = {};
       
       for (const document of querySnapshot.docs) {
         const data = document.data();
@@ -27,7 +29,13 @@ export const AdminDashboard: React.FC = () => {
              
              if (data.isChunked) {
                const chunksSnapshot = await getDocs(collection(db, `syncs/${document.id}/chunks`));
-               const chunksData = chunksSnapshot.docs.map(c => c.data());
+               let chunksData = chunksSnapshot.docs.map(c => c.data());
+               if (data.numChunks) {
+                 chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
+                 if (chunksData.length !== data.numChunks) {
+                    throw new Error(`Incomplete chunks for ${data.username}. Expected ${data.numChunks}, got ${chunksData.length}.`);
+                 }
+               }
                chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
                rawJsonString = chunksData.map(c => c.chunkData).join('');
              }
@@ -40,6 +48,7 @@ export const AdminDashboard: React.FC = () => {
              }
              if (rawJsonString) {
                newData[data.username] = JSON.parse(rawJsonString);
+               newDocIds[data.username] = document.id;
              }
            } catch (err) {
              console.error(`Failed to parse data for ${data.username}`, err);
@@ -48,6 +57,7 @@ export const AdminDashboard: React.FC = () => {
       }
       
       setGlobalData(newData);
+      setDocIds(newDocIds);
     } catch (e: any) {
       console.error('Failed to fetch data', e);
       alert(`Gagal mengambil data dari server: ${e.message || e.toString()}`);
@@ -77,11 +87,31 @@ export const AdminDashboard: React.FC = () => {
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
-      const CHUNK_SIZE = 800000;
+      const CHUNK_SIZE = 200000;
       const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
       const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      // Save metadata document
+      // Clean up existing chunks first
+      try {
+        const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+        const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+        await Promise.all(deletePromises);
+      } catch (ex) {
+        console.error('Failed to cleanup old chunks', ex);
+      }
+
+      // Save chunk documents FIRST to ensure data integrity
+      const chunkPromises = [];
+      for (let i = 0; i < numChunks; i++) {
+        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+        chunkPromises.push(setDoc(chunkDoc, {
+          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+          chunkIndex: i
+        }));
+      }
+      await Promise.all(chunkPromises);
+
+      // Save metadata document AFTER
       await setDoc(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
@@ -90,15 +120,6 @@ export const AdminDashboard: React.FC = () => {
         updatedAt: new Date().toISOString()
       });
 
-      // Save chunk documents
-      for (let i = 0; i < numChunks; i++) {
-        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-        await setDoc(chunkDoc, {
-          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
-          chunkIndex: i
-        });
-      }
-      
       setSyncStatus('success');
       fetchGlobalData();
       setTimeout(() => setSyncStatus('idle'), 2000);
@@ -112,18 +133,17 @@ export const AdminDashboard: React.FC = () => {
   const handleDeleteGuru = async (guru: string) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus data sinkronisasi guru "${guru}" dari server? Data aslinya di perangkat guru tersebut tidak akan hilang.`)) {
       try {
-        const usernameId = guru.replace(/\s+/g, '_').toLowerCase();
-        await deleteDoc(doc(db, 'syncs', usernameId));
+        const usernameId = docIds[guru] || guru.replace(/\s+/g, '_').toLowerCase();
         
         try {
            const chunksSnapshot = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
-           for (const c of chunksSnapshot.docs) {
-             await deleteDoc(c.ref);
-           }
+           const deletePromises = chunksSnapshot.docs.map(c => deleteDoc(c.ref));
+           await Promise.all(deletePromises);
         } catch(ex) {
            console.error('Failed to cleanup chunks', ex);
         }
-        
+
+        await deleteDoc(doc(db, 'syncs', usernameId));
         fetchGlobalData();
       } catch (e: any) {
         console.error('Failed to delete data', e);
@@ -267,13 +287,17 @@ export const AdminDashboard: React.FC = () => {
             const d = globalData[guru];
             if (d) {
               setCurrentUser(guru);
-              storage.importData(JSON.stringify(d));
-              localStorage.setItem('user', JSON.stringify({
-                id: 'admin_impersonate',
-                username: guru,
-                role: 'guru'
-              }));
-              window.location.reload();
+              const success = storage.importData(JSON.stringify(d));
+              if (success) {
+                localStorage.setItem('user', JSON.stringify({
+                  id: 'admin_impersonate',
+                  username: guru,
+                  role: 'guru'
+                }));
+                window.location.reload();
+              } else {
+                alert(`Gagal memuat data saat melakukan impersonate guru "${guru}". Storage error atau kuota penuh.`);
+              }
             }
           }
         }}
