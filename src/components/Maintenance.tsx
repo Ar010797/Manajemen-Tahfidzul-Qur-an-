@@ -13,6 +13,8 @@ export default function Maintenance() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importContent, setImportContent] = useState<string | null>(null);
 
+  const [syncStatus, setSyncStatus] = useState<'idle'|'syncing'|'success'>('idle');
+
   useEffect(() => {
     const inst = storage.getInstitution();
     setThemeColor(inst.theme_color || 'emerald');
@@ -136,6 +138,25 @@ export default function Maintenance() {
     storage.factoryReset();
     alert('Sistem berhasil direset total.');
     window.location.href = '/';
+  };
+
+  const handleSyncMyData = async () => {
+    setSyncStatus('syncing');
+    try {
+      const username = localStorage.getItem('current_username') || 'guru';
+      const myData = JSON.parse(storage.exportData());
+      await fetch('/api/data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, data: myData })
+      });
+      setSyncStatus('success');
+      setTimeout(() => setSyncStatus('idle'), 3000);
+    } catch (e) {
+      console.error(e);
+      setSyncStatus('idle');
+      alert('Gagal melakukan sinkronisasi ke server pusat.');
+    }
   };
 
   return (
@@ -275,6 +296,22 @@ export default function Maintenance() {
               Reset Total
             </button>
           </div>
+        </div>
+
+        <div className="mt-12 p-8 bg-indigo-50 rounded-3xl border border-indigo-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h3 className="text-lg font-bold text-indigo-900 mb-1">Kirim Data ke Admin (Cloud Sync)</h3>
+            <p className="text-indigo-700/80 text-sm">
+              Gunakan fitur ini secara berkala agar Admin dapat melihat rekap dan mendownload setoran hafalan siswa Anda dari server.
+            </p>
+          </div>
+          <button 
+            onClick={handleSyncMyData}
+            disabled={syncStatus === 'syncing'}
+            className="whitespace-nowrap px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+          >
+            {syncStatus === 'syncing' ? 'Menyinkronkan...' : syncStatus === 'success' ? 'Terkirim ✓' : 'Kirim ke Server'}
+          </button>
         </div>
 
         <div className="mt-12 p-6 bg-amber-50 rounded-2xl border border-amber-100">

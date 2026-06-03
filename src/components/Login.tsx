@@ -6,6 +6,7 @@ import { cn } from '../lib/utils';
 
 export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('guru');
   const [themeColor, setThemeColor] = useState('emerald');
 
@@ -69,6 +70,11 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) return;
+
+    if (role === 'admin' && password !== 'Bismillah') {
+      alert('Password Admin salah!');
+      return;
+    }
 
     const user = { 
       id: Date.now().toString(), 
@@ -183,6 +189,20 @@ export default function Login({ onLogin }: { onLogin: (user: any) => void }) {
               </div>
             </div>
           </div>
+
+          {role === 'admin' && (
+            <div className="space-y-3">
+              <label className="text-[10px] font-display font-black text-stone-500 uppercase tracking-[0.3em] ml-2">Password Admin</label>
+              <input 
+                type="password"
+                required
+                className={cn("w-full bg-white/5 border border-white/10 rounded-[1.75rem] py-6 px-8 text-white placeholder:text-stone-700 focus:outline-none focus:ring-4 focus:bg-white/10 transition-all text-xl font-bold tracking-tight", theme.ring)}
+                placeholder="Masukkan Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </div>
+          )}
 
           <motion.button 
             whileHover={{ scale: 1.02, y: -4 }}

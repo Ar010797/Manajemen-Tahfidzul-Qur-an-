@@ -48,8 +48,23 @@ async function startServer() {
     const { username } = req.body;
     res.json({ 
       token: 'local-token', 
-      user: { id: Date.now().toString(), username, role: 'guru' } 
+      user: { id: Date.now().toString(), username, role: username.toLowerCase() === 'admin' ? 'admin' : 'guru' } 
     });
+  });
+
+  // Global Memory Store for prototype syncing
+  const globalStore: Record<string, any> = {};
+
+  app.post("/api/data/sync", (req, res) => {
+    const { username, data } = req.body;
+    if (username) {
+      globalStore[username] = data;
+    }
+    res.json({ success: true, message: "Data tersinkronisasi ke server." });
+  });
+
+  app.get("/api/data/all", (req, res) => {
+    res.json({ success: true, data: globalStore });
   });
 
   // Google OAuth Routes
@@ -131,16 +146,16 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
-    
-    httpServer.listen(3000, "0.0.0.0", () => {
-      console.log("Server running on http://0.0.0.0:3000");
-    });
   } else {
-    app.use(express.static(path.join(__dirname, "dist")));
+    app.use(express.static(path.join(process.cwd(), "dist")));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "dist", "index.html"));
+      res.sendFile(path.join(process.cwd(), "dist", "index.html"));
     });
   }
+
+  httpServer.listen(3000, "0.0.0.0", () => {
+    console.log("Server running on http://0.0.0.0:3000");
+  });
 
   return app;
 }

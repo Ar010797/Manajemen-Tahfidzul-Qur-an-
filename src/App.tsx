@@ -29,6 +29,8 @@ import SettingsHub from './components/SettingsHub';
 import SplashScreen from './components/SplashScreen';
 import NotificationSystem from './components/NotificationSystem';
 
+import { AdminDashboard } from './components/AdminDashboard';
+
 export default function App() {
   const [user, setUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -81,7 +83,7 @@ export default function App() {
     setActiveTab('dashboard');
   };
 
-  const menuItems = [
+  const baseMenuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: 'indigo' },
     { id: 'daily', label: 'Setoran Harian', icon: ClipboardCheck, color: 'emerald' },
     { id: 'exam-ummi', label: 'Ujian Ummi', icon: BookOpen, color: 'amber' },
@@ -90,6 +92,10 @@ export default function App() {
     { id: 'report', label: 'Rapor Siswa', icon: Printer, color: 'rose' },
     { id: 'settings', label: 'Pengaturan', icon: Settings, color: 'slate' },
   ];
+
+  const menuItems = user?.role === 'admin' 
+    ? [...baseMenuItems, { id: 'admin', label: 'Panel Admin', icon: ShieldCheck, color: 'indigo' }]
+    : baseMenuItems;
 
   const getColorClasses = (color: string, isActive: boolean) => {
     if (!isActive) return "text-stone-500 hover:bg-stone-50 hover:text-stone-900";
@@ -326,6 +332,7 @@ export default function App() {
                     {activeTab === 'recap' && <MonthlyRecap />}
                     {activeTab === 'report' && <ReportCard />}
                     {activeTab === 'settings' && <SettingsHub />}
+                    {activeTab === 'admin' && <AdminDashboard />}
                   </motion.div>
                 </AnimatePresence>
               </div>

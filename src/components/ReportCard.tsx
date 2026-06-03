@@ -860,7 +860,7 @@ export default function ReportCard() {
                   </div>
 
                   {/* Signatures */}
-                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10">
+                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-12 relative z-10">
                     <div className="flex flex-col items-center">
                       <p className="mb-14">Orang Tua/Wali,</p>
                       <p className="font-bold underline decoration-1 underline-offset-4">( .............................. )</p>
