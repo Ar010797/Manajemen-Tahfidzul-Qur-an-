@@ -151,13 +151,27 @@ export default function Maintenance() {
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
+      const CHUNK_SIZE = 800000;
+      const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+      const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
+      // Save metadata document
+      await setDoc(doc(db, 'syncs', usernameId), {
         username,
-        data: compressedData,
         isCompressed: true,
+        isChunked: true,
+        numChunks,
         updatedAt: new Date().toISOString()
       });
+
+      // Save chunk documents
+      for (let i = 0; i < numChunks; i++) {
+        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+        await setDoc(chunkDoc, {
+          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+          chunkIndex: i
+        });
+      }
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);

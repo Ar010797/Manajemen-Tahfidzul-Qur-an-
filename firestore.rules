@@ -9,6 +9,10 @@ service cloud.firestore {
       // The app uses a custom (non-firebase) username-based login. 
       // For functionality required immediately, we allow open access.
       allow read, write: if true;
+      
+      match /chunks/{chunkId} {
+        allow read, write: if true;
+      }
     }
   }
 }

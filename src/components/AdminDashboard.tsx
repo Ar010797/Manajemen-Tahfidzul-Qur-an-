@@ -17,23 +17,33 @@ export const AdminDashboard: React.FC = () => {
       const querySnapshot = await getDocs(collection(db, 'syncs'));
       const newData: Record<string, any> = {};
       
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.username && data.data) {
+      for (const document of querySnapshot.docs) {
+        const data = document.data();
+        if (data.username) {
            try {
-             let rawJsonString = data.data;
-             if (data.isCompressed) {
-               const decompressed = LZString.decompressFromBase64(data.data);
+             let rawJsonString = data.data || '';
+             
+             if (data.isChunked) {
+               const chunksSnapshot = await getDocs(collection(db, `syncs/${document.id}/chunks`));
+               const chunksData = chunksSnapshot.docs.map(c => c.data());
+               chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+               rawJsonString = chunksData.map(c => c.chunkData).join('');
+             }
+
+             if (data.isCompressed && rawJsonString) {
+               const decompressed = LZString.decompressFromBase64(rawJsonString);
                if (decompressed) {
                  rawJsonString = decompressed;
                }
              }
-             newData[data.username] = JSON.parse(rawJsonString);
+             if (rawJsonString) {
+               newData[data.username] = JSON.parse(rawJsonString);
+             }
            } catch (err) {
              console.error(`Failed to parse data for ${data.username}`, err);
            }
         }
-      });
+      }
       
       setGlobalData(newData);
     } catch (e: any) {
@@ -65,13 +75,27 @@ export const AdminDashboard: React.FC = () => {
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
+      const CHUNK_SIZE = 800000;
+      const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+      const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      await setDoc(doc(db, 'syncs', username.replace(/\s+/g, '_').toLowerCase()), {
+      // Save metadata document
+      await setDoc(doc(db, 'syncs', usernameId), {
         username,
-        data: compressedData,
         isCompressed: true,
+        isChunked: true,
+        numChunks,
         updatedAt: new Date().toISOString()
       });
+
+      // Save chunk documents
+      for (let i = 0; i < numChunks; i++) {
+        const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+        await setDoc(chunkDoc, {
+          chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+          chunkIndex: i
+        });
+      }
       
       setSyncStatus('success');
       fetchGlobalData();
@@ -86,7 +110,18 @@ export const AdminDashboard: React.FC = () => {
   const handleDeleteGuru = async (guru: string) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus data sinkronisasi guru "${guru}" dari server? Data aslinya di perangkat guru tersebut tidak akan hilang.`)) {
       try {
-        await deleteDoc(doc(db, 'syncs', guru.replace(/\s+/g, '_').toLowerCase()));
+        const usernameId = guru.replace(/\s+/g, '_').toLowerCase();
+        await deleteDoc(doc(db, 'syncs', usernameId));
+        
+        try {
+           const chunksSnapshot = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+           for (const c of chunksSnapshot.docs) {
+             await deleteDoc(c.ref);
+           }
+        } catch(ex) {
+           console.error('Failed to cleanup chunks', ex);
+        }
+        
         fetchGlobalData();
       } catch (e: any) {
         console.error('Failed to delete data', e);
