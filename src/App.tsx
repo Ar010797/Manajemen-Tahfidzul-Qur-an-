@@ -309,6 +309,21 @@ export default function App() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
+                  {user?.id === 'admin_impersonate' && (
+                    <button 
+                      onClick={() => {
+                        localStorage.setItem('user', JSON.stringify({
+                          id: Date.now().toString(),
+                          username: 'admin',
+                          role: 'admin'
+                        }));
+                        window.location.reload();
+                      }}
+                      className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200 shadow-sm transition-colors cursor-pointer"
+                    >
+                      Kembali ke Admin
+                    </button>
+                  )}
                   <div className="hidden sm:flex px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 shadow-sm shadow-amber-50">
                     Local Storage Mode
                   </div>
