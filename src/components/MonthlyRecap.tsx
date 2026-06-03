@@ -717,7 +717,7 @@ export default function MonthlyRecap() {
                 <tbody className="divide-y divide-stone-100 font-medium text-stone-600">
                   {recapData.map((s, idx) => (
                     <tr 
-                      key={s.id} 
+                      key={`${s.id}-${idx}`} 
                       className="hover:bg-stone-50/5 transition-colors group cursor-pointer"
                       onClick={() => setEditingStudent(s)}
                     >
@@ -865,10 +865,10 @@ export default function MonthlyRecap() {
                   @media print {
                     @page { size: A4 landscape; margin: 0; }
                     body { margin: 0; padding: 0; }
-                    #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 297mm !important; min-height: 210mm !important; }
+                    #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 297mm !important; }
                   }
                 ` }} />
-                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '297mm', minHeight: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark Logo */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, zIndex: 0 }}>
@@ -984,7 +984,7 @@ export default function MonthlyRecap() {
                     </thead>
                     <tbody>
                       {recapData.map((s, i) => (
-                        <tr key={s.id} className="text-stone-900 h-[40px]">
+                        <tr key={`${s.id}-${i}`} className="text-stone-900 h-[40px]">
                           <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{i + 1}</td>
                           <td className="border border-black p-1 font-bold pl-3 truncate" style={{ borderColor: '#000000' }}>{s.name}</td>
                           {hasHafalan && (

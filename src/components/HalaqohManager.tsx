@@ -129,8 +129,8 @@ export default function HalaqohManager() {
         </form>
 
         <div className="grid gap-4">
-          {halaqohs.map(h => (
-            <div key={h.id} className={cn("flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-100 transition-colors", `hover:${theme.border.replace('border-', 'border-')}`)}>
+          {halaqohs.map((h, idx) => (
+            <div key={`${h.id}-${idx}`} className={cn("flex items-center justify-between p-4 bg-stone-50 rounded-2xl border border-stone-100 transition-colors", `hover:${theme.border.replace('border-', 'border-')}`)}>
               {editingId === h.id ? (
                 <div className="flex-1 flex gap-2 mr-4">
                   <input 

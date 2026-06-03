@@ -543,9 +543,9 @@ export default function ReportCard() {
                 </div>
                 
                 <div className="grid grid-cols-1 gap-2">
-                  {halaqohStudents.map((s: any) => (
+                  {halaqohStudents.map((s: any, idx) => (
                     <button
-                      key={s.id}
+                      key={`${s.id}-${idx}`}
                       onClick={() => fetchExamData(s)}
                       className={cn(
                         "w-full text-left p-4 rounded-2xl transition-all border group relative overflow-hidden",
@@ -659,8 +659,8 @@ export default function ReportCard() {
                     <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em]">METODE UMMI</h4>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
-                    {examData.ummi.filter((e: any) => e.semester === semester).map((e: any) => (
-                      <div key={e.id} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
+                    {examData.ummi.filter((e: any) => e.semester === semester).map((e: any, idx) => (
+                      <div key={`${e.id}-${idx}`} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
                         <div className="flex items-center gap-3">
                            <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">{e.level}</span>
                            <span className="text-xs font-bold text-stone-600">{e.date}</span>
@@ -689,8 +689,8 @@ export default function ReportCard() {
                     <h4 className="text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em]">HAFALAN AL-QUR'AN</h4>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
-                    {examData.hafalan.filter((e: any) => e.semester === semester).map((e: any) => (
-                      <div key={e.id} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
+                    {examData.hafalan.filter((e: any) => e.semester === semester).map((e: any, idx) => (
+                      <div key={`${e.id}-${idx}`} className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-stone-200/60 group">
                         <div className="flex items-center gap-3">
                            <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">H</span>
                            <span className="text-xs font-bold text-stone-600">{e.date}</span>
@@ -769,10 +769,10 @@ export default function ReportCard() {
                     @media print {
                       @page { size: A4 portrait; margin: 0; }
                       body { margin: 0; padding: 0; }
-                      #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; min-height: 297mm !important; }
+                      #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
                     }
                   ` }} />
-                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[35mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[35mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>

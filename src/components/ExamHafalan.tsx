@@ -286,9 +286,9 @@ export default function ExamHafalan() {
               </div>
               
               <div className="space-y-2">
-                {halaqohStudents.map((s: any) => (
+                {halaqohStudents.map((s: any, idx) => (
                   <button
-                    key={s.id}
+                    key={`${s.id}-${idx}`}
                     onClick={() => handleSelectStudent(s)}
                     className={cn(
                       "w-full text-left p-3 rounded-xl transition-all border group",

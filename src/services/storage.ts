@@ -79,6 +79,12 @@ const saveRawData = (data: DataSchema) => {
   }
 };
 
+const generateId = () => {
+  return typeof crypto !== 'undefined' && crypto.randomUUID 
+    ? crypto.randomUUID() 
+    : Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+
 export const storage = {
   // Institution
   getInstitution: () => getRawData().institution,
@@ -92,7 +98,7 @@ export const storage = {
   getHalaqoh: () => getRawData().halaqoh,
   addHalaqoh: (name: string) => {
     const data = getRawData();
-    const newHalaqoh = { id: Date.now().toString(), name };
+    const newHalaqoh = { id: generateId(), name };
     data.halaqoh.push(newHalaqoh);
     saveRawData(data);
     return newHalaqoh;
@@ -122,7 +128,7 @@ export const storage = {
   },
   addStudent: (name: string, halaqoh_id: string | null, parent_phone: string = '') => {
     const data = getRawData();
-    const newStudent = { id: Date.now().toString(), name, halaqoh_id, parent_phone, order_index: data.students.length };
+    const newStudent = { id: generateId(), name, halaqoh_id, parent_phone, order_index: data.students.length };
     data.students.push(newStudent);
     saveRawData(data);
     return newStudent;
@@ -203,7 +209,7 @@ export const storage = {
   // Exams
   addUmmiExam: (exam: Omit<DataSchema['exams_ummi'][0], 'id'>) => {
     const data = getRawData();
-    const newExam = { ...exam, id: Date.now().toString() };
+    const newExam = { ...exam, id: generateId() };
     data.exams_ummi.push(newExam);
     saveRawData(data);
     return newExam;
@@ -223,7 +229,7 @@ export const storage = {
   },
   addHafalanExam: (exam: Omit<DataSchema['exams_hafalan'][0], 'id'>) => {
     const data = getRawData();
-    const newExam = { ...exam, id: Date.now().toString() };
+    const newExam = { ...exam, id: generateId() };
     data.exams_hafalan.push(newExam);
     saveRawData(data);
     return newExam;

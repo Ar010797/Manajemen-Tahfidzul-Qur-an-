@@ -468,9 +468,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                 onReorder={(newOrder) => handleReorder(halaqohName, newOrder)}
                 className="space-y-1"
               >
-                {(halaqohStudents as any[]).map(s => (
+                {(halaqohStudents as any[]).map((s, idx) => (
                   <StudentReorderItem 
-                    key={s.id}
+                    key={`${s.id}-${idx}`}
                     s={s}
                     selectedStudent={selectedStudent}
                     theme={theme}

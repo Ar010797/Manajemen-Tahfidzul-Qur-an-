@@ -308,9 +308,9 @@ export default function StudentManager() {
                           </div>
                         </td>
                       </tr>
-                      {(groupStudents as any[]).map(s => (
+                      {(groupStudents as any[]).map((s, idx) => (
                         <tr 
-                          key={s.id} 
+                          key={`${s.id}-${idx}`} 
                           className={cn(
                             "hover:bg-stone-50/50 transition-colors group",
                             selectedIds.includes(s.id) && "bg-emerald-50/30"
