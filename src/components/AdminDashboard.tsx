@@ -286,6 +286,16 @@ export const AdminDashboard: React.FC = () => {
             const guru = impersonateTarget;
             const d = globalData[guru];
             if (d) {
+              const adminUser = localStorage.getItem('current_username');
+              const keysToRemove: string[] = [];
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('tahfidz_data_') && key !== `tahfidz_data_${adminUser}`) {
+                   keysToRemove.push(key);
+                }
+              }
+              keysToRemove.forEach(key => localStorage.removeItem(key));
+
               setCurrentUser(guru);
               const success = storage.importData(JSON.stringify(d));
               if (success) {
