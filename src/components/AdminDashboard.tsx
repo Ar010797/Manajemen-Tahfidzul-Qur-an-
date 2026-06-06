@@ -6,6 +6,7 @@ import { storage, setCurrentUser } from '../services/storage';
 import { db } from '../services/firebase';
 import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import ConfirmModal from './ConfirmModal';
+import { AdminProgressReport } from './AdminProgressReport';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
@@ -277,6 +278,10 @@ export const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {!isLoading && gurus.length > 0 && (
+          <AdminProgressReport globalData={globalData} />
+      )}
 
       <ConfirmModal
         isOpen={!!impersonateTarget}
