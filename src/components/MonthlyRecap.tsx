@@ -369,7 +369,7 @@ export default function MonthlyRecap() {
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
-        format: 'a4',
+        format: [330, 215], // F4/Folio size
         compress: false // Disable compression to preserve the lossless ultra-high-resolution image perfectly
       });
       
@@ -876,12 +876,12 @@ export default function MonthlyRecap() {
               <div className="overflow-x-auto p-12 bg-white rounded-[3.5rem] shadow-2xl border border-stone-200/40">
                 <style dangerouslySetInnerHTML={{ __html: `
                   @media print {
-                    @page { size: A4 landscape; margin: 0; }
+                    @page { size: landscape; margin: 0; }
                     body { margin: 0; padding: 0; }
-                    #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 297mm !important; }
+                    #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 330mm !important; }
                   }
                 ` }} />
-                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '330mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark Logo */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, zIndex: 0 }}>
@@ -933,31 +933,31 @@ export default function MonthlyRecap() {
                   {/* Table with dynamic columns logic */}
                   <table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
                     <colgroup>
-                      <col style={{ width: '40px' }} />
-                      <col style={{ width: '160px' }} />
+                      <col style={{ width: '30px' }} />
+                      <col style={{ width: '130px' }} />
                       {hasHafalan && (
                         <>
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '40px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '35px' }} />
                         </>
                       )}
                       {hasTilawah && (
                         <>
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '40px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '35px' }} />
                         </>
                       )}
                       {hasUmmi && (
                         <>
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '85px' }} />
-                          <col style={{ width: '40px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '70px' }} />
+                          <col style={{ width: '35px' }} />
                         </>
                       )}
                       <col style={{ width: '50px' }} />
-                      <col style={{ width: '80px' }} />
+                      <col style={{ width: '60px' }} />
                       <col style={{ width: 'auto' }} />
                     </colgroup>
                     <thead>
@@ -1023,7 +1023,7 @@ export default function MonthlyRecap() {
                           )}
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size} / {maxActiveDays}</td>
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
-                          <td className="border border-black p-1 italic text-[8.5px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black p-1 px-2 italic text-[9px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
