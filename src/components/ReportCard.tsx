@@ -119,13 +119,63 @@ export default function ReportCard() {
     if (selectedStudent) fetchExamData(selectedStudent);
   };
 
-  const teacherNotes = useMemo(() => {
-    if (!examData?.hafalan) return '';
-    const notes = examData.hafalan
-      .filter((e: any) => e.semester === semester && e.note)
-      .map((e: any) => e.note);
-    return notes.length > 0 ? notes.join('; ') : '-';
-  }, [examData, semester]);
+  const [reportNote, setReportNote] = useState('');
+  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [tempNote, setTempNote] = useState('');
+
+  const generateAutoNote = () => {
+    if (!examData) return '';
+    const hafalanExams = examData.hafalan.filter((e: any) => e.semester === semester);
+    const ummiExams = examData.ummi.filter((e: any) => e.semester === semester);
+    
+    let notes = [];
+    if (hafalanExams.length > 0) {
+      const lastHafalan = hafalanExams[0];
+      notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan dengan capaian yang baik.`);
+      if (lastHafalan.note) {
+        notes.push(`${lastHafalan.note}.`);
+      }
+    }
+    
+    if (ummiExams.length > 0) {
+      const lastUmmi = ummiExams[0];
+      const levelStr = lastUmmi.level === 7 ? 'Tilawah' : `Jilid ${lastUmmi.level}`;
+      notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah mencapai bacaan ${levelStr}.`);
+    }
+    
+    if (notes.length === 0) {
+      notes.push("Alhamdulillah, terus tingkatkan semangat belajar dan murajaahnya.");
+    } else {
+      notes.push("Semoga Allah memberkahi, terus rajin murajaah dan tingkatkan terus prestasinya.");
+    }
+    
+    return notes.join(' ');
+  };
+
+  useEffect(() => {
+    if (selectedStudent && examData) {
+      const savedNote = storage.getReportNote(selectedStudent.id, semester);
+      if (savedNote) {
+        setReportNote(savedNote);
+      } else {
+        setReportNote(generateAutoNote());
+      }
+    }
+  }, [selectedStudent, examData, semester]);
+
+  const handleSaveNote = () => {
+    if (selectedStudent) {
+      storage.saveReportNote(selectedStudent.id, semester, tempNote);
+      setReportNote(tempNote);
+      setIsEditingNote(false);
+      alert('Catatan Rapor berhasil disimpan.');
+    }
+  };
+
+  const handleResetNote = () => {
+    const autoNote = generateAutoNote();
+    setTempNote(autoNote);
+  };
 
   const generateImage = async (imgFormat: 'jpg' | 'png') => {
     if (!selectedStudent || !examData || isGenerating) return;
@@ -717,6 +767,64 @@ export default function ReportCard() {
                 </div>
               </div>
 
+              {/* Report Note Editor */}
+              <div className="bg-stone-50 p-8 rounded-[2.5rem] border border-stone-200/60 shadow-sm space-y-6 no-print print:hidden">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("p-2 rounded-xl shadow-sm", theme.lightBg)}>
+                       <FileText size={16} className={theme.text} />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-display font-black text-stone-500 uppercase tracking-[0.25em]">CATATAN RAPOR</h4>
+                      <p className="text-xs font-semibold text-stone-400 mt-0.5">Dihasilkan otomatis, dapat diubah sesuai kebutuhan guru.</p>
+                    </div>
+                  </div>
+                  {!isEditingNote ? (
+                    <button 
+                      onClick={() => { setTempNote(reportNote); setIsEditingNote(true); }}
+                      className={cn("px-4 py-2 border rounded-xl text-xs font-bold transition-colors flex items-center gap-2", theme.text, theme.border, theme.hoverBorder, theme.lightBg)}
+                    >
+                      <Edit2 size={14} /> EDIT CATATAN
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                       <button 
+                        onClick={handleResetNote}
+                        className="px-4 py-2 border border-stone-200 text-stone-500 hover:bg-stone-100 rounded-xl text-xs font-bold transition-colors"
+                      >
+                        RESET OTOMATIS
+                      </button>
+                      <button 
+                        onClick={() => setIsEditingNote(false)}
+                        className="p-2 border border-stone-200 text-stone-500 hover:bg-stone-100 rounded-xl transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                      <button 
+                        onClick={handleSaveNote}
+                        className={cn("px-4 py-2 text-white shadow-md rounded-xl text-xs font-bold transition-colors flex items-center gap-2", theme.bg)}
+                      >
+                        <Save size={14} /> SIMPAN CATATAN
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {isEditingNote ? (
+                  <textarea 
+                    value={tempNote}
+                    onChange={(e) => setTempNote(e.target.value)}
+                    className={cn("w-full p-4 rounded-xl border border-stone-200 text-sm leading-relaxed focus:outline-none focus:ring-2", theme.ring)}
+                    rows={4}
+                    placeholder="Tuliskan catatan dan motivasi dari guru di sini..."
+                  />
+                ) : (
+                  <div className="p-4 bg-white border border-stone-100 rounded-xl shadow-inner min-h-[4rem]">
+                    <p className="text-sm italic text-stone-700 leading-relaxed">{reportNote}</p>
+                  </div>
+                )}
+              </div>
+
               {/* Tweak controls */}
               <div className="bg-stone-950 p-8 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-8 no-print print:hidden">
                 <div className="flex items-center gap-4">
@@ -860,7 +968,7 @@ export default function ReportCard() {
                   <div className="w-full border-2 border-black mb-12 relative z-10" style={{ borderColor: '#000000', color: '#000000' }}>
                     <div className="border-b-2 border-black px-4 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center" style={{ backgroundColor: '#f8fafc', borderBottomColor: '#000000', color: '#000000' }}>Catatan & Motivasi Guru</div>
                     <div className="p-4 min-h-[30mm] text-[11px] sm:text-xs italic leading-relaxed text-stone-900" style={{ color: '#000000' }}>
-                      {teacherNotes || 'Alhamdulillah, terus tingkatkan hafalannya dan jaga murajaahnya. Semoga Allah memberkahi setiap langkahmu dalam menghafal Al-Qur\'an.'}
+                      {reportNote || 'Alhamdulillah, terus tingkatkan hafalannya dan jaga murajaahnya. Semoga Allah memberkahi setiap langkahmu dalam menghafal Al-Qur\'an.'}
                     </div>
                   </div>
 

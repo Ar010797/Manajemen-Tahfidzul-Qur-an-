@@ -33,6 +33,7 @@ export interface DataSchema {
   exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string; target?: string }>;
   exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string; target?: string }>;
   monthly_recaps: Array<{ student_id: string; month: string; total_hafalan: string; notes: string }>;
+  report_notes: Array<{ student_id: string; semester: string; note: string }>;
   active_days: Record<string, number>; // key: YYYY-MM, value: number of active days
 }
 
@@ -56,6 +57,7 @@ const defaultData: DataSchema = {
   exams_ummi: [],
   exams_hafalan: [],
   monthly_recaps: [],
+  report_notes: [],
   active_days: {}
 };
 
@@ -148,6 +150,7 @@ export const storage = {
     data.exams_ummi = data.exams_ummi.filter(e => e.student_id !== id);
     data.exams_hafalan = data.exams_hafalan.filter(e => e.student_id !== id);
     data.monthly_recaps = data.monthly_recaps.filter(r => r.student_id !== id);
+    if (data.report_notes) data.report_notes = data.report_notes.filter(r => r.student_id !== id);
     saveRawData(data);
   },
   reorderStudents: (orders: Array<{ id: string; order_index: number }>) => {
@@ -202,6 +205,24 @@ export const storage = {
       data.monthly_recaps[index] = { student_id, month, total_hafalan, notes };
     } else {
       data.monthly_recaps.push({ student_id, month, total_hafalan, notes });
+    }
+    saveRawData(data);
+  },
+
+  // Report Notes
+  getReportNote: (student_id: string, semester: string) => {
+    const data = getRawData();
+    if (!data.report_notes) return null;
+    return data.report_notes.find(r => r.student_id === student_id && r.semester === semester)?.note || null;
+  },
+  saveReportNote: (student_id: string, semester: string, note: string) => {
+    const data = getRawData();
+    if (!data.report_notes) data.report_notes = [];
+    const index = data.report_notes.findIndex(r => r.student_id === student_id && r.semester === semester);
+    if (index !== -1) {
+      data.report_notes[index].note = note;
+    } else {
+      data.report_notes.push({ student_id, semester, note });
     }
     saveRawData(data);
   },
@@ -323,6 +344,7 @@ export const storage = {
         exams_ummi: Array.isArray(data.exams_ummi) ? data.exams_ummi : [],
         exams_hafalan: Array.isArray(data.exams_hafalan) ? data.exams_hafalan : [],
         monthly_recaps: Array.isArray(data.monthly_recaps) ? data.monthly_recaps : [],
+        report_notes: Array.isArray(data.report_notes) ? data.report_notes : [],
         active_days: (data.active_days && typeof data.active_days === 'object') ? data.active_days : {}
       };
 
