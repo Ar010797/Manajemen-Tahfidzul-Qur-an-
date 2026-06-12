@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 
+import { parseAndCalculateTotalHafalan } from '../lib/quranUtils';
+
 export default function MonthlyRecap() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
   const [selectedHalaqoh, setSelectedHalaqoh] = useState('');
@@ -560,7 +562,7 @@ export default function MonthlyRecap() {
                             theme.ring
                           )}
                           placeholder="Masukkan total hafalan..."
-                          value={recapSettings[editingStudent.id]?.total_hafalan || ''}
+                          value={recapSettings[editingStudent.id]?.total_hafalan !== undefined && recapSettings[editingStudent.id]?.total_hafalan !== '' ? recapSettings[editingStudent.id].total_hafalan : parseAndCalculateTotalHafalan(editingStudent.hafalan.akh)}
                           onChange={(e) => updateSettings(editingStudent.id, 'total_hafalan', e.target.value)}
                         />
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-300">
@@ -771,14 +773,14 @@ export default function MonthlyRecap() {
                             type="text"
                             placeholder="Isi total..."
                             className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
-                            value={recapSettings[s.id]?.total_hafalan || ''}
+                            value={recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : parseAndCalculateTotalHafalan(s.hafalan.akh)}
                             onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
                         <div className="md:hidden flex flex-col items-center gap-1">
                           <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 truncate max-w-full">
-                            {recapSettings[s.id]?.total_hafalan || 'Total...'}
+                            {recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : (parseAndCalculateTotalHafalan(s.hafalan.akh) || 'Total...')}
                           </span>
                         </div>
                       </td>
@@ -933,31 +935,31 @@ export default function MonthlyRecap() {
                   {/* Table with dynamic columns logic */}
                   <table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
                     <colgroup>
-                      <col style={{ width: '30px' }} />
+                      <col style={{ width: '25px' }} />
                       <col style={{ width: '130px' }} />
                       {hasHafalan && (
                         <>
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '35px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '30px' }} />
                         </>
                       )}
                       {hasTilawah && (
                         <>
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '35px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '30px' }} />
                         </>
                       )}
                       {hasUmmi && (
                         <>
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '70px' }} />
-                          <col style={{ width: '35px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '75px' }} />
+                          <col style={{ width: '30px' }} />
                         </>
                       )}
-                      <col style={{ width: '50px' }} />
-                      <col style={{ width: '60px' }} />
+                      <col style={{ width: '45px' }} />
+                      <col style={{ width: '100px' }} />
                       <col style={{ width: 'auto' }} />
                     </colgroup>
                     <thead>
@@ -1022,7 +1024,7 @@ export default function MonthlyRecap() {
                             </>
                           )}
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size} / {maxActiveDays}</td>
-                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan || '-'}</td>
+                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : (parseAndCalculateTotalHafalan(s.hafalan.akh) || '-')}</td>
                           <td className="border border-black p-1 px-2 italic text-[9px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
