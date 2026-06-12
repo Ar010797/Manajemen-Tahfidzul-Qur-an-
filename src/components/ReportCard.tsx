@@ -129,20 +129,24 @@ export default function ReportCard() {
     const ummiExams = examData.ummi.filter((e: any) => e.semester === semester);
     
     let notes = [];
+    let adviceList = [];
     
     if (hafalanExams.length > 0) {
       const lastHafalan = hafalanExams[0];
       const target = lastHafalan.target ? lastHafalan.target : '';
       
-      let allSurahsPass = true;
-      const grades = (lastHafalan.surahs || []).map((s:any) => s.grade);
-      if (grades.includes('C+') || grades.includes('C') || grades.includes('D')) {
-        allSurahsPass = false;
-      }
+      let needImprovementSurahs: string[] = [];
+      (lastHafalan.surahs || []).forEach((s:any) => {
+        if (s.grade.startsWith('C') || s.grade === 'D') {
+          needImprovementSurahs.push(s.name);
+        }
+      });
+      
+      const allSurahsPass = needImprovementSurahs.length === 0;
       
       const gradeComment = allSurahsPass 
         ? "dengan capaian kelancaran yang membanggakan (mumtaaz/jayyid jiddan)"
-        : "dengan beberapa catatan tajwid/kelancaran yang dapat diperbaiki lagi";
+        : "dengan beberapa catatan tajwid/kelancaran yang perlu diperbaiki";
         
       if (target) {
         notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan dengan pencapaian yang tertulis di atas, yang mana target hafalan pada semester ini adalah menuntaskan hafalan sampai ${target}.`);
@@ -150,8 +154,8 @@ export default function ReportCard() {
         notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan pada semester ini ${gradeComment}.`);
       }
       
-      if (lastHafalan.note && lastHafalan.note.trim() !== '') {
-        notes.push(`Pesan khusus: ${lastHafalan.note}.`);
+      if (!allSurahsPass) {
+         adviceList.push(`Perbanyak murajaah kembali untuk hafalan surah: ${needImprovementSurahs.join(', ')}.`);
       }
     }
     
@@ -161,22 +165,29 @@ export default function ReportCard() {
       const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
       const targetStr = target ? (target === '7' || target === 'Tilawah' || target === 'Al-Qur\'an (Tilawah)' ? 'Al-Qur\'an (Tilawah)' : `jilid ${target}`) : '';
       
-      const scores = Object.values(lastUmmi.scores || {}) as string[];
-      let hasC = false;
-      scores.forEach(s => {
-         if (s.startsWith('C') || s.startsWith('D')) hasC = true;
+      const scores = Object.entries(lastUmmi.scores || {});
+      let improvementAreas: string[] = [];
+      scores.forEach(([indicator, s]) => {
+         const scoreStr = String(s);
+         if (scoreStr.startsWith('C') || scoreStr === 'D') improvementAreas.push(indicator);
       });
       
+      const hasC = improvementAreas.length > 0;
+      
       const readingComment = hasC 
-            ? "meski masih ada poin makhroj dan kelancaran yang perlu disempurnakan" 
+            ? "meski masih ada catatan yang perlu disempurnakan" 
             : "dengan pencapaian fashohah dan bacaan yang memuaskan";
             
       if (targetStr && (lastUmmi.level >= parseInt(target || '99') || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah')))) {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
       } else if (targetStr) {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
       } else {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
+      }
+      
+      if (improvementAreas.length > 0) {
+        adviceList.push(`Untuk bacaan Ummi, perlu ada perbaikan khusus pada detail poin: ${improvementAreas.join(', ')}.`);
       }
     }
     
@@ -190,12 +201,19 @@ export default function ReportCard() {
     const randomMotivasi = motivasiList[Math.floor(Math.random() * motivasiList.length)];
     
     if (notes.length === 0) {
+      if (adviceList.length > 0) {
+         return "Sebuah motivasi untuk ananda: " + randomMotivasi + "\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- " + adviceList.join('\n- ');
+      }
       return "Sebuah motivasi untuk ananda: " + randomMotivasi;
     }
     
-    notes.push(randomMotivasi);
+    let finalNote = notes.join(' ') + ' ' + randomMotivasi;
     
-    return notes.join(' ');
+    if (adviceList.length > 0) {
+      finalNote += '\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- ' + adviceList.join('\n- ');
+    }
+    
+    return finalNote;
   };
 
   useEffect(() => {
@@ -204,7 +222,15 @@ export default function ReportCard() {
       if (savedNote) {
         setReportNote(savedNote);
       } else {
-        setReportNote(generateAutoNote());
+        const legacyNotes = examData.hafalan
+           .filter((e: any) => e.semester === semester && e.note && e.note.trim() !== '')
+           .map((e: any) => e.note);
+           
+        if (legacyNotes.length > 0) {
+           setReportNote(legacyNotes.join('; '));
+        } else {
+           setReportNote(generateAutoNote());
+        }
       }
     }
   }, [selectedStudent, examData, semester]);

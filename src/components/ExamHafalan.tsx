@@ -32,6 +32,7 @@ export default function ExamHafalan() {
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeExamId, setActiveExamId] = useState<string | null>(null);
+  const [activeExamStatus, setActiveExamStatus] = useState<'ongoing' | 'completed'>('ongoing');
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [themeColor, setThemeColor] = useState('emerald');
@@ -149,6 +150,7 @@ export default function ExamHafalan() {
     const active = data.hafalan.find((e: any) => e.status === 'ongoing');
     if (active) {
       setActiveExamId(active.id);
+      setActiveExamStatus('ongoing');
       setSurahs(active.surahs);
       setDaysProgress(active.days_progress);
       setNote(active.note);
@@ -156,6 +158,7 @@ export default function ExamHafalan() {
       setSemester(active.semester || 'Ganjil');
     } else {
       setActiveExamId(null);
+      setActiveExamStatus('ongoing');
       setSurahs([{ name: '', grade: 'A+', predicate: 'MUMTAAZ' }]);
       setDaysProgress({});
       setNote('');
@@ -186,9 +189,16 @@ export default function ExamHafalan() {
     setSurahs(newSurahs);
   };
 
-  const saveProgress = useCallback((status: 'ongoing' | 'completed' = 'ongoing') => {
+  const saveProgress = useCallback((statusArg: 'ongoing' | 'completed' | 'auto' = 'auto') => {
     if (!selectedStudent) return;
     setLoading(true);
+    
+    let finalStatus = 'ongoing';
+    if (statusArg === 'auto') {
+      finalStatus = activeExamStatus;
+    } else {
+      finalStatus = statusArg;
+    }
     
     const payload = {
       student_id: selectedStudent.id,
@@ -196,7 +206,7 @@ export default function ExamHafalan() {
       note,
       date: format(new Date(), 'yyyy-MM-dd'),
       days_progress: daysProgress,
-      status,
+      status: finalStatus,
       semester,
       target
     };
@@ -209,10 +219,13 @@ export default function ExamHafalan() {
         setActiveExamId(newExam.id);
       }
       
-      if (status === 'completed') {
+      setActiveExamStatus(finalStatus as 'ongoing' | 'completed');
+      
+      if (statusArg === 'completed') {
         alert('Ujian selesai dan disimpan!');
         setSelectedStudent(null);
         setActiveExamId(null);
+        setActiveExamStatus('ongoing');
         setShowListOnMobile(true);
       }
     } catch (e) {
@@ -220,12 +233,12 @@ export default function ExamHafalan() {
     } finally {
       setLoading(false);
     }
-  }, [selectedStudent, surahs, note, daysProgress, activeExamId, semester]);
+  }, [selectedStudent, surahs, note, daysProgress, activeExamId, semester, activeExamStatus]);
 
   // Autosave every 30 seconds if there are changes
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (selectedStudent) saveProgress('ongoing');
+      if (selectedStudent) saveProgress('auto');
     }, 30000);
     return () => clearTimeout(timer);
   }, [surahs, daysProgress, note, selectedStudent, saveProgress]);
@@ -235,22 +248,48 @@ export default function ExamHafalan() {
     setShowListOnMobile(false);
   };
 
-  const progressData = useMemo(() => {
+  const examHistory = useMemo(() => {
     if (!selectedStudent) return [];
     const exams = storage.getStudentExams(selectedStudent.id).hafalan;
     return [...exams]
       .filter(e => e.status === 'completed')
-      .sort((a, b) => a.date.localeCompare(b.date))
-      .map(e => ({
-        date: format(parseISO(e.date), 'dd/MM'),
-        fullDate: format(parseISO(e.date), 'dd MMM yyyy'),
-        surahCount: e.surahs.length,
-        avgGrade: e.surahs.reduce((acc: number, s: any) => {
-          const gradeMap: Record<string, number> = { 'A+': 5, 'A': 4, 'B+': 3, 'B': 2, 'C': 1 };
-          return acc + (gradeMap[s.grade] || 0);
-        }, 0) / e.surahs.length
-      }));
+      .sort((a, b) => b.date.localeCompare(a.date));
   }, [selectedStudent]);
+
+  const progressData = useMemo(() => {
+    if (!examHistory) return [];
+    return [...examHistory].reverse().map(e => ({
+      date: format(parseISO(e.date), 'dd/MM'),
+      fullDate: format(parseISO(e.date), 'dd MMM yyyy'),
+      surahCount: e.surahs?.length || 0,
+      avgGrade: (e.surahs || []).reduce((acc: number, s: any) => {
+        const gradeMap: Record<string, number> = { 'A+': 5, 'A': 4, 'B+': 3, 'B': 2, 'C': 1 };
+        return acc + (gradeMap[s.grade] || 0);
+      }, 0) / (e.surahs?.length || 1)
+    }));
+  }, [examHistory]);
+
+  const handleEditExam = (exam: any) => {
+    setActiveExamId(exam.id);
+    setActiveExamStatus(exam.status || 'completed');
+    setSurahs(exam.surahs || [{ name: '', grade: 'A+', predicate: 'MUMTAAZ' }]);
+    setDaysProgress(exam.days_progress || {});
+    setNote(exam.note || '');
+    setTarget(exam.target || '');
+    setSemester(exam.semester || 'Ganjil');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteExam = (examId: string) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus ujian ini? Data tidak dapat dikembalikan.')) {
+      storage.deleteHafalanExam(examId);
+      if (activeExamId === examId) {
+        fetchActiveExam(selectedStudent.id);
+      } else {
+        setSelectedStudent({ ...selectedStudent });
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
@@ -540,6 +579,59 @@ export default function ExamHafalan() {
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
+
+              {examHistory.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-stone-100">
+                  <h4 className="text-sm font-bold text-stone-900 mb-6 flex items-center gap-2">
+                    <Clock size={16} className={theme.text} />
+                    Riwayat Ujian Hafalan
+                  </h4>
+                  <div className="grid gap-4">
+                    {examHistory.map((exam: any) => (
+                      <div key={exam.id} className="bg-white border text-left border-stone-200 rounded-2xl p-5 hover:border-emerald-200 transition-colors shadow-sm relative group overflow-hidden">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={cn("px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider", theme.lightBg, theme.text)}>
+                                {exam.semester || 'Ganjil'}
+                              </span>
+                              <span className="text-xs font-bold text-stone-400">
+                                {format(parseISO(exam.date), 'dd MMMM yyyy')}
+                              </span>
+                            </div>
+                            <h5 className="font-bold text-stone-800 mb-1 leading-tight">
+                              Target: {exam.target || 'Juz 30'}
+                            </h5>
+                            <p className="text-xs text-stone-500 mb-2">
+                              {exam.surahs.length} Surat diujikan
+                            </p>
+                            {exam.note && (
+                              <p className="text-xs text-stone-600 italic bg-stone-50 p-2 rounded-lg border border-stone-100 line-clamp-2">
+                                "{exam.note}"
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-end gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => handleEditExam(exam)}
+                              className="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-bold rounded-xl hover:bg-stone-200 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteExam(exam.id)}
+                              className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 size={14} />
+                              Hapus
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (

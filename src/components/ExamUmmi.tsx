@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { BookOpen, Save, Search, ChevronLeft, TrendingUp, BarChart3 } from 'lucide-react';
+import { BookOpen, Save, Search, ChevronLeft, TrendingUp, BarChart3, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
@@ -32,6 +32,7 @@ export default function ExamUmmi() {
   const [target, setTarget] = useState('');
   const [semester, setSemester] = useState<'Ganjil' | 'Genap'>('Ganjil');
   const [allScores, setAllScores] = useState<Record<number, Record<string, string>>>({});
+  const [activeExamId, setActiveExamId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [themeColor, setThemeColor] = useState('emerald');
@@ -71,10 +72,34 @@ export default function ExamUmmi() {
       }, {} as Record<string, any[]>);
   }, [students, search]);
 
+  const examHistory = useMemo(() => {
+    if (!selectedStudent) return [];
+    const exams = storage.getStudentExams(selectedStudent.id).ummi;
+    return [...exams].sort((a, b) => b.date.localeCompare(a.date));
+  }, [selectedStudent]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent) return;
     
+    if (activeExamId) {
+       if (!allScores[level] || Object.keys(allScores[level]).length === 0) {
+         alert('Silakan lengkapi nilai untuk menyimpan perubahan.');
+         return;
+       }
+       storage.updateUmmiExam(activeExamId, {
+         level,
+         scores: allScores[level],
+         semester,
+         target
+       });
+       alert('Perubahan nilai ujian Ummi berhasil disimpan!');
+       setAllScores({});
+       setActiveExamId(null);
+       setSelectedStudent({ ...selectedStudent });
+       return;
+    }
+
     const levelsToSave = Object.keys(allScores).map(Number);
     
     if (levelsToSave.length === 0) {
@@ -96,9 +121,30 @@ export default function ExamUmmi() {
       
       alert('Semua nilai ujian Ummi berhasil disimpan!');
       setAllScores({});
+      setSelectedStudent({ ...selectedStudent });
     } catch (error) {
       console.error('Error saving Ummi exams:', error);
       alert('Gagal menyimpan nilai.');
+    }
+  };
+
+  const handleEditExam = (exam: any) => {
+    setActiveExamId(exam.id);
+    setLevel(exam.level);
+    setTarget(exam.target || '');
+    setSemester(exam.semester || 'Ganjil');
+    setAllScores({ [exam.level]: exam.scores });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteExam = (examId: string) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus ujian ini? Data tidak dapat dikembalikan.')) {
+      storage.deleteUmmiExam(examId);
+      if (activeExamId === examId) {
+        setActiveExamId(null);
+        setAllScores({});
+      }
+      setSelectedStudent({ ...selectedStudent });
     }
   };
 
@@ -114,6 +160,11 @@ export default function ExamUmmi() {
 
   const handleSelectStudent = (s: any) => {
     setSelectedStudent(s);
+    setAllScores({});
+    setActiveExamId(null);
+    setTarget('');
+    setSemester('Ganjil');
+    setLevel(1);
     setShowListOnMobile(false);
   };
 
@@ -436,9 +487,65 @@ export default function ExamUmmi() {
                 className={cn("w-full text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg", theme.bg, theme.hover, theme.shadow)}
               >
                 <Save size={20} />
-                Simpan Nilai Ujian
+                {activeExamId ? 'Update Nilai Ujian' : 'Simpan Nilai Ujian'}
               </button>
             </form>
+
+            {examHistory.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-stone-100">
+                <h4 className="text-sm font-bold text-stone-900 mb-6 flex items-center gap-2">
+                  <BookOpen size={16} className={theme.text} />
+                  Riwayat Ujian Ummi / Tilawah
+                </h4>
+                <div className="grid gap-4">
+                  {examHistory.map((exam: any) => (
+                    <div key={exam.id} className="bg-white border text-left border-stone-200 rounded-2xl p-5 hover:border-emerald-200 transition-colors shadow-sm relative group overflow-hidden">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={cn("px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider", theme.lightBg, theme.text)}>
+                              {exam.semester || 'Ganjil'}
+                            </span>
+                            <span className="text-xs font-bold text-stone-400">
+                              {format(parseISO(exam.date), 'dd MMMM yyyy')}
+                            </span>
+                          </div>
+                          <h5 className="font-bold text-stone-800 mb-1 leading-tight">
+                            {exam.level === 7 ? 'Tilawah' : `Jilid ${exam.level}`}
+                          </h5>
+                          <p className="text-xs text-stone-500 mb-2">
+                            Target: {exam.target || '-'}
+                          </p>
+                          <div className="flex items-center flex-wrap gap-2 mt-2">
+                             {Object.entries(exam.scores || {}).map(([key, val]) => (
+                               <div key={key} className="text-[10px] bg-stone-50 border border-stone-100 rounded-md px-2 py-1 text-stone-600">
+                                 {key}: <strong className="text-stone-800">{String(val)}</strong>
+                               </div>
+                             ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-end gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => handleEditExam(exam)}
+                            className="px-4 py-2 bg-stone-100 text-stone-600 text-xs font-bold rounded-xl hover:bg-stone-200 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            // @ts-ignore
+                            onClick={() => handleDeleteExam(exam.id)}
+                            className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors flex items-center gap-1"
+                          >
+                            <Trash2 size={14} />
+                            Hapus
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-stone-200 border-dashed text-stone-400">
