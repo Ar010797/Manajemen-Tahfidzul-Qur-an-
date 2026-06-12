@@ -129,25 +129,71 @@ export default function ReportCard() {
     const ummiExams = examData.ummi.filter((e: any) => e.semester === semester);
     
     let notes = [];
+    
     if (hafalanExams.length > 0) {
       const lastHafalan = hafalanExams[0];
-      notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan dengan capaian yang baik.`);
-      if (lastHafalan.note) {
-        notes.push(`${lastHafalan.note}.`);
+      const target = lastHafalan.target ? lastHafalan.target : '';
+      
+      let allSurahsPass = true;
+      const grades = (lastHafalan.surahs || []).map((s:any) => s.grade);
+      if (grades.includes('C+') || grades.includes('C') || grades.includes('D')) {
+        allSurahsPass = false;
+      }
+      
+      const gradeComment = allSurahsPass 
+        ? "dengan capaian kelancaran yang membanggakan (mumtaaz/jayyid jiddan)"
+        : "dengan beberapa catatan tajwid/kelancaran yang dapat diperbaiki lagi";
+        
+      if (target) {
+        notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan dengan pencapaian yang tertulis di atas, yang mana target hafalan pada semester ini adalah menuntaskan hafalan sampai ${target}.`);
+      } else {
+        notes.push(`Alhamdulillah, ananda telah menyelesaikan ujian hafalan pada semester ini ${gradeComment}.`);
+      }
+      
+      if (lastHafalan.note && lastHafalan.note.trim() !== '') {
+        notes.push(`Pesan khusus: ${lastHafalan.note}.`);
       }
     }
     
     if (ummiExams.length > 0) {
       const lastUmmi = ummiExams[0];
-      const levelStr = lastUmmi.level === 7 ? 'Tilawah' : `Jilid ${lastUmmi.level}`;
-      notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah mencapai bacaan ${levelStr}.`);
+      const target = lastUmmi.target;
+      const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
+      const targetStr = target ? (target === '7' || target === 'Tilawah' || target === 'Al-Qur\'an (Tilawah)' ? 'Al-Qur\'an (Tilawah)' : `jilid ${target}`) : '';
+      
+      const scores = Object.values(lastUmmi.scores || {}) as string[];
+      let hasC = false;
+      scores.forEach(s => {
+         if (s.startsWith('C') || s.startsWith('D')) hasC = true;
+      });
+      
+      const readingComment = hasC 
+            ? "meski masih ada poin makhroj dan kelancaran yang perlu disempurnakan" 
+            : "dengan pencapaian fashohah dan bacaan yang memuaskan";
+            
+      if (targetStr && (lastUmmi.level >= parseInt(target || '99') || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah')))) {
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
+      } else if (targetStr) {
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
+      } else {
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Metode Ummi / Tilawah), ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
+      }
     }
     
+    const motivasiList = [
+      "Tetap tawadhu', jangan mudah puas, dan teruslah perbaiki bacaan serta hafalanmu. Semoga kelak memakaikan mahkota kemuliaan bagi ayah dan ibu didalam syurga.",
+      "Barakallah fii ilmik. Teruslah bersemangat dalam menggali ilmu-ilmu Allah. Jadilah permata hati keluarga yang membanggakan.",
+      "Anak sholih/sholihah, jadikan Al-Qur'an sebagai sahabatmu di masa depan. Perbanyak doa dan selalu semangat untuk murajaah hafalannya di rumah.",
+      "Semoga Allah memberkahi, jagalah terus shalat lima waktu, berbakti kepada orang tua, dan perbanyak murajaah agar hafalan semakin mutqin."
+    ];
+    
+    const randomMotivasi = motivasiList[Math.floor(Math.random() * motivasiList.length)];
+    
     if (notes.length === 0) {
-      notes.push("Alhamdulillah, terus tingkatkan semangat belajar dan murajaahnya.");
-    } else {
-      notes.push("Semoga Allah memberkahi, terus rajin murajaah dan tingkatkan terus prestasinya.");
+      return "Sebuah motivasi untuk ananda: " + randomMotivasi;
     }
+    
+    notes.push(randomMotivasi);
     
     return notes.join(' ');
   };
