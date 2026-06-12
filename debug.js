@@ -1,6 +1,6 @@
 // Auto-generated
 
-export const juzData: Record<number, {name: string, start: number, end: number}[]> = {
+const juzData: Record<number, {name: string, start: number, end: number}[]> = {
   "1": [
     {
       "name": "Al-Faatiha",
@@ -738,9 +738,9 @@ export const juzData: Record<number, {name: string, start: number, end: number}[
   ]
 };
 
-export const CURRICULUM_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+const CURRICULUM_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
-export function calculateTotalHafalanFromNameAndAyah(inputSurahStr: string, inputAyah: number, isUjian: boolean = false): { juz: number, surah: number, ayah: number } | null {
+function calculateTotalHafalanFromNameAndAyah(inputSurahStr: string, inputAyah: number, isUjian: boolean = false): { juz: number, surah: number, ayah: number } | null {
   if (!inputSurahStr) return null;
   const normalize = (s: string) => s.toLowerCase()
     .replace(/qolam/g, 'qalam')
@@ -780,13 +780,15 @@ export function calculateTotalHafalanFromNameAndAyah(inputSurahStr: string, inpu
   let surahListInJuz: any[] = [];
   let foundSurahIndexInJuz = -1;
   
-  // Pass 1: Exact match
   for (let j = 1; j <= 30; j++) {
     const sList = juzData[j];
     for (let i = 0; i < sList.length; i++) {
        const s = sList[i];
        const n = normalize(s.name);
-       if (n === normalizedInput) {
+       // Since user input might be 'almulk', compare safely
+       if (n === normalizedInput || n.includes(normalizedInput) || normalizedInput.includes(n)) {
+          // check if ayah is within bounds for this juz
+          // if inputAyah is NaN, assume it's the beginning of the surah in whichever juz it starts
           if (isNaN(inputAyah) || (inputAyah >= s.start && inputAyah <= s.end)) {
              foundJuz = j;
              surahListInJuz = sList;
@@ -797,49 +799,22 @@ export function calculateTotalHafalanFromNameAndAyah(inputSurahStr: string, inpu
     }
     if (foundJuz !== -1) break;
   }
-
-  // Pass 2: Substring match (if exact match not found)
-  if (foundJuz === -1) {
-    let bestMatchScore = 0;
-    for (let j = 1; j <= 30; j++) {
-      const sList = juzData[j];
-      for (let i = 0; i < sList.length; i++) {
-         const s = sList[i];
-         const n = normalize(s.name);
-         if (n.includes(normalizedInput) || normalizedInput.includes(n)) {
-            if (isNaN(inputAyah) || (inputAyah >= s.start && inputAyah <= s.end)) {
-               // Prefer longer matches to avoid 'atur' matching 'takatur'
-               const score = Math.max(n.length, normalizedInput.length);
-               if (score > bestMatchScore) {
-                   bestMatchScore = score;
-                   foundJuz = j;
-                   surahListInJuz = sList;
-                   foundSurahIndexInJuz = i;
-               }
-            }
-         }
-      }
-    }
-  }
   
-  // Pass 3: Fallback without ayah bounds checking
   if (foundJuz === -1) {
-    let bestMatchScore = 0;
+    // try to match just by surah name and ignore ayah if it falls out of bound (fallback)
     for (let j = 1; j <= 30; j++) {
       const sList = juzData[j];
       for (let i = 0; i < sList.length; i++) {
          const s = sList[i];
          const n = normalize(s.name);
          if (n === normalizedInput || n.includes(normalizedInput) || normalizedInput.includes(n)) {
-            const score = (n === normalizedInput) ? 100 : Math.max(n.length, normalizedInput.length);
-            if (score > bestMatchScore) {
-                bestMatchScore = score;
-                foundJuz = j;
-                surahListInJuz = sList;
-                foundSurahIndexInJuz = i;
-            }
+            foundJuz = j;
+            surahListInJuz = sList;
+            foundSurahIndexInJuz = i;
+            break;
          }
       }
+      if (foundJuz !== -1) break;
     }
   }
 
@@ -934,3 +909,5 @@ export function parseAndCalculateTotalHafalan(hafalanAkhStr: string): string {
     }
     return parts.join(' ');
 }
+
+console.log('takatsur:', calculateTotalHafalanFromNameAndAyah('takatsur', NaN, true));

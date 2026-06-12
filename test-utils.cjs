@@ -764,7 +764,7 @@ const juzData = {
 const CURRICULUM_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 function calculateTotalHafalanFromNameAndAyah(inputSurahStr, inputAyah, isUjian = false) {
   if (!inputSurahStr) return null;
-  const normalize = (s) => s.toLowerCase().replace(/[^a-z]/g, "").replace(/ee/g, "i").replace(/oo/g, "u").replace(/ah$/g, "a").replace(/thth/g, "ts").replace(/sh/g, "sy").replace(/dh/g, "dz").replace(/th/g, "t").replace(/kh/g, "k").replace(/gh/g, "g").replace(/q/g, "k").replace(/c/g, "k").replace(/jin/g, "jin").replace(/imran/g, "imron").replace(/imraan/g, "imron").replace(/([a-z])\1+/g, "$1").replace(/aw/g, "au");
+  const normalize = (s) => s.toLowerCase().replace(/qolam/g, "qalam").replace(/takatsur/g, "takaathur").replace(/muthoffifin/g, "mutaffifin").replace(/muthaffifin/g, "mutaffifin").replace(/ghosiyah/g, "ghaashiya").replace(/ghoshiyah/g, "ghaashiya").replace(/waqiah/g, "waaqia").replace(/imron/g, "imraan").replace(/maidah/g, "maaida").replace(/baqoroh/g, "baqara").replace(/syuro/g, "shura").replace(/duha/g, "dhuhaa").replace(/thoha/g, "taahaa").replace(/jin/g, "jinn").replace(/[^a-z]/g, "").replace(/ee/g, "i").replace(/oo/g, "u").replace(/ah$/g, "a").replace(/thth/g, "ts").replace(/sh/g, "sy").replace(/dh/g, "dz").replace(/th/g, "t").replace(/kh/g, "k").replace(/gh/g, "g").replace(/q/g, "k").replace(/c/g, "k").replace(/([a-z])\1+/g, "$1").replace(/aw/g, "au");
   const normalizedInput = normalize(inputSurahStr);
   let foundJuz = -1;
   let surahListInJuz = [];
@@ -774,7 +774,7 @@ function calculateTotalHafalanFromNameAndAyah(inputSurahStr, inputAyah, isUjian 
     for (let i = 0; i < sList.length; i++) {
       const s = sList[i];
       const n = normalize(s.name);
-      if (n === normalizedInput || n.includes(normalizedInput) || normalizedInput.includes(n)) {
+      if (n === normalizedInput) {
         if (isNaN(inputAyah) || inputAyah >= s.start && inputAyah <= s.end) {
           foundJuz = j;
           surahListInJuz = sList;
@@ -786,19 +786,43 @@ function calculateTotalHafalanFromNameAndAyah(inputSurahStr, inputAyah, isUjian 
     if (foundJuz !== -1) break;
   }
   if (foundJuz === -1) {
+    let bestMatchScore = 0;
+    for (let j = 1; j <= 30; j++) {
+      const sList = juzData[j];
+      for (let i = 0; i < sList.length; i++) {
+        const s = sList[i];
+        const n = normalize(s.name);
+        if (n.includes(normalizedInput) || normalizedInput.includes(n)) {
+          if (isNaN(inputAyah) || inputAyah >= s.start && inputAyah <= s.end) {
+            const score = Math.max(n.length, normalizedInput.length);
+            if (score > bestMatchScore) {
+              bestMatchScore = score;
+              foundJuz = j;
+              surahListInJuz = sList;
+              foundSurahIndexInJuz = i;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (foundJuz === -1) {
+    let bestMatchScore = 0;
     for (let j = 1; j <= 30; j++) {
       const sList = juzData[j];
       for (let i = 0; i < sList.length; i++) {
         const s = sList[i];
         const n = normalize(s.name);
         if (n === normalizedInput || n.includes(normalizedInput) || normalizedInput.includes(n)) {
-          foundJuz = j;
-          surahListInJuz = sList;
-          foundSurahIndexInJuz = i;
-          break;
+          const score = n === normalizedInput ? 100 : Math.max(n.length, normalizedInput.length);
+          if (score > bestMatchScore) {
+            bestMatchScore = score;
+            foundJuz = j;
+            surahListInJuz = sList;
+            foundSurahIndexInJuz = i;
+          }
         }
       }
-      if (foundJuz !== -1) break;
     }
   }
   if (foundJuz === -1) return null;
