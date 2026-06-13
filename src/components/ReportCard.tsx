@@ -167,8 +167,19 @@ export default function ReportCard() {
     }
     
     if (ummiExams.length > 0) {
-      const lastUmmi = ummiExams[0];
-      const target = lastUmmi.target;
+      let highestUmmiExam = ummiExams[0];
+      let target = ummiExams[0].target;
+      
+      ummiExams.forEach((exam: any) => {
+         if (exam.level > highestUmmiExam.level) {
+             highestUmmiExam = exam;
+         }
+         if (!target && exam.target) {
+             target = exam.target;
+         }
+      });
+      
+      const lastUmmi = highestUmmiExam;
       const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
       
       let targetStr = '';
@@ -524,7 +535,13 @@ export default function ReportCard() {
 
   const renderUmmiTable = () => {
     const filteredUmmi = examData.ummi.filter((e: any) => e.semester === semester);
-    const targetUmmi = filteredUmmi[0]?.target || `Ummi jilid ${filteredUmmi[0]?.level || '-'}`;
+    let highestLevelExam = filteredUmmi[0];
+    let target = filteredUmmi[0]?.target;
+    filteredUmmi.forEach((e: any) => {
+        if (e.level > (highestLevelExam?.level || 0)) highestLevelExam = e;
+        if (!target && e.target) target = e.target;
+    });
+    const targetUmmi = target || `Ummi jilid ${highestLevelExam?.level || '-'}`;
     
     return (
       <div className="mt-4 w-full">
@@ -560,7 +577,11 @@ export default function ReportCard() {
 
   const renderHafalanTable = () => {
     const filteredHafalan = examData.hafalan.filter((e: any) => e.semester === semester);
-    const targetHafalan = filteredHafalan[0]?.target || 'Juz 30';
+    let target = filteredHafalan[0]?.target;
+    filteredHafalan.forEach((e: any) => {
+        if (!target && e.target) target = e.target;
+    });
+    const targetHafalan = target || 'Juz 30';
     
     let counter = 1;
     return (
