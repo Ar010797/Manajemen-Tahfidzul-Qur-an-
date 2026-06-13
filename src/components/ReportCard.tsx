@@ -168,33 +168,42 @@ export default function ReportCard() {
     
     if (ummiExams.length > 0) {
       let highestUmmiExam = ummiExams[0];
-      let target = ummiExams[0].target;
       
       ummiExams.forEach((exam: any) => {
-         if (exam.level > highestUmmiExam.level) {
+         if (Number(exam.level) > Number(highestUmmiExam.level)) {
              highestUmmiExam = exam;
-         }
-         if (!target && exam.target) {
-             target = exam.target;
          }
       });
       
       const lastUmmi = highestUmmiExam;
-      const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
+      let target = lastUmmi.target;
+      if (!target) {
+         // Fallback if highest exam doesn't have target, find any from same level
+         const sameLevel = ummiExams.find(e => Number(e.level) === Number(lastUmmi.level) && e.target);
+         if (sameLevel) target = sameLevel.target;
+      }
+      
+      const isTilawah = Number(lastUmmi.level) === 7;
+      const levelStr = isTilawah ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
       
       let targetStr = '';
       let targetNum = 99;
       if (target && String(target).trim() !== '') {
-        const tStr = String(target).toLowerCase();
-        if (tStr === '7' || tStr.includes('tilawah')) {
+        const tStr = String(target).trim();
+        const tStrLower = tStr.toLowerCase();
+        
+        if (isTilawah) {
+          targetStr = tStr; // For Tilawah, target is treated as the surah/ayat tested.
+          targetNum = 7;
+        } else if (tStrLower === '7' || tStrLower.includes('tilawah')) {
           targetStr = "Al-Qur'an (Tilawah)";
           targetNum = 7;
-        } else if (!tStr.includes('jilid')) {
-          targetStr = `jilid ${target}`;
-          targetNum = parseInt(tStr.replace(/\D/g, '')) || 99;
+        } else if (!tStrLower.includes('jilid')) {
+          targetStr = `jilid ${tStr}`;
+          targetNum = parseInt(tStrLower.replace(/\D/g, '')) || 99;
         } else {
-          targetStr = target;
-          targetNum = parseInt(tStr.replace(/\D/g, '')) || 99;
+          targetStr = tStr;
+          targetNum = parseInt(tStrLower.replace(/\D/g, '')) || 99;
         }
       }
       
@@ -218,14 +227,19 @@ export default function ReportCard() {
             ? "meski masih ada catatan yang perlu disempurnakan" 
             : "dengan pencapaian fashohah dan bacaan yang memuaskan";
             
-      const hasReachedTarget = targetStr ? (lastUmmi.level >= targetNum || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah'))) : false;
+      const hasReachedTarget = targetStr ? (Number(lastUmmi.level) >= targetNum || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah'))) : false;
       
-      if (targetStr && hasReachedTarget) {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
+      if (isTilawah && targetStr) {
+        // Special phrase for Tilawah where target is interpreted as the Surah/Ayat.
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), surah/ayat yang diujikan adalah ${targetStr} ${readingComment}.`);
+      } else if (isTilawah) {
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), ananda telah menyelesaikan ujian ${readingComment}.`);
+      } else if (targetStr && hasReachedTarget) {
+        notes.push(`Untuk penguasaan bacaan Ummi, ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
       } else if (targetStr) {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Ummi, ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
       } else {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Ummi, ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
       }
       
       if (improvementAreas.length > 0) {
@@ -249,21 +263,28 @@ export default function ReportCard() {
        }
     });
 
+    const evaluationHeader = "\n\n📌 Catatan Evaluasi (Mohon menjadi perhatian khusus bagi Orang Tua):\n- ";
+
+    if (manualNotes.length > 0) {
+       // If manual notes exist, do NOT use auto-generated notes!
+       let finalNote = manualNotes.join('. ');
+       if (adviceList.length > 0) {
+          finalNote += evaluationHeader + adviceList.join('\n- ');
+       }
+       return finalNote;
+    }
+
     if (notes.length === 0) {
       if (adviceList.length > 0) {
-         return (manualNotes.length > 0 ? manualNotes.join('. ') + '\n\n' : '') + "Sebuah motivasi untuk ananda: " + randomMotivasi + "\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- " + adviceList.join('\n- ');
+         return "Sebuah motivasi untuk ananda: " + randomMotivasi + evaluationHeader + adviceList.join('\n- ');
       }
-      return (manualNotes.length > 0 ? manualNotes.join('. ') + '\n\n' : '') + "Sebuah motivasi untuk ananda: " + randomMotivasi;
+      return "Sebuah motivasi untuk ananda: " + randomMotivasi;
     }
     
     let finalNote = notes.join(' ') + ' ' + randomMotivasi;
     
-    if (manualNotes.length > 0) {
-       finalNote = manualNotes.join('. ') + '\n\n' + finalNote;
-    }
-    
     if (adviceList.length > 0) {
-      finalNote += '\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- ' + adviceList.join('\n- ');
+      finalNote += evaluationHeader + adviceList.join('\n- ');
     }
     
     return finalNote;
@@ -536,12 +557,20 @@ export default function ReportCard() {
   const renderUmmiTable = () => {
     const filteredUmmi = examData.ummi.filter((e: any) => e.semester === semester);
     let highestLevelExam = filteredUmmi[0];
-    let target = filteredUmmi[0]?.target;
     filteredUmmi.forEach((e: any) => {
-        if (e.level > (highestLevelExam?.level || 0)) highestLevelExam = e;
-        if (!target && e.target) target = e.target;
+        if (Number(e.level) > Number(highestLevelExam?.level || 0)) highestLevelExam = e;
     });
-    const targetUmmi = target || `Ummi jilid ${highestLevelExam?.level || '-'}`;
+    
+    let target = highestLevelExam?.target;
+    if (!target) {
+       const sameLevel = filteredUmmi.find(e => Number(e.level) === Number(highestLevelExam?.level) && e.target);
+       if (sameLevel) target = sameLevel.target;
+    }
+    
+    let targetUmmi = target || `Ummi jilid ${highestLevelExam?.level || '-'}`;
+    if (Number(highestLevelExam?.level) === 7) {
+       targetUmmi = target || "Al-Qur'an (Tilawah)";
+    }
     
     return (
       <div className="mt-4 w-full">
