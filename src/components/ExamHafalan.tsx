@@ -227,6 +227,8 @@ export default function ExamHafalan() {
         setActiveExamId(null);
         setActiveExamStatus('ongoing');
         setShowListOnMobile(true);
+      } else if (statusArg === 'ongoing') {
+         alert('Perkembangan ujian (draft) berhasil disimpan!');
       }
     } catch (e) {
       console.error(e);

@@ -136,10 +136,14 @@ export default function ReportCard() {
       const target = lastHafalan.target ? lastHafalan.target : '';
       
       let needImprovementSurahs: string[] = [];
-      (lastHafalan.surahs || []).forEach((s:any) => {
-        if (s.grade.startsWith('C') || s.grade === 'D') {
-          needImprovementSurahs.push(s.name);
-        }
+      hafalanExams.forEach((exam: any) => {
+        (exam.surahs || []).forEach((s:any) => {
+          if (s.grade && (s.grade.startsWith('C') || s.grade === 'D')) {
+            if (!needImprovementSurahs.includes(s.name)) {
+               needImprovementSurahs.push(s.name);
+            }
+          }
+        });
       });
       
       const allSurahsPass = needImprovementSurahs.length === 0;
@@ -165,11 +169,14 @@ export default function ReportCard() {
       const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
       const targetStr = target ? (target === '7' || target === 'Tilawah' || target === 'Al-Qur\'an (Tilawah)' ? 'Al-Qur\'an (Tilawah)' : `jilid ${target}`) : '';
       
-      const scores = Object.entries(lastUmmi.scores || {});
       let improvementAreas: string[] = [];
-      scores.forEach(([indicator, s]) => {
-         const scoreStr = String(s);
-         if (scoreStr.startsWith('C') || scoreStr === 'D') improvementAreas.push(indicator);
+      ummiExams.forEach((exam: any) => {
+        Object.entries(exam.scores || {}).forEach(([indicator, s]) => {
+           const scoreStr = String(s);
+           if ((scoreStr.startsWith('C') || scoreStr === 'D') && !improvementAreas.includes(indicator)) {
+              improvementAreas.push(indicator);
+           }
+        });
       });
       
       const hasC = improvementAreas.length > 0;
@@ -792,7 +799,7 @@ export default function ReportCard() {
                            <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">{e.level}</span>
                            <span className="text-xs font-bold text-stone-600">{e.date}</span>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <div className="flex gap-2 transition-all">
                           <button onClick={() => setEditingExam({ type: 'ummi', data: { ...e } })} className="p-2 hover:bg-stone-50 rounded-lg text-emerald-600 transition-colors">
                             <Edit2 size={14} />
                           </button>
@@ -822,7 +829,7 @@ export default function ReportCard() {
                            <span className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-[10px] font-display font-black">H</span>
                            <span className="text-xs font-bold text-stone-600">{e.date}</span>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <div className="flex gap-2 transition-all">
                           <button onClick={() => setEditingExam({ type: 'hafalan', data: { ...e } })} className="p-2 hover:bg-stone-50 rounded-lg text-emerald-600 transition-colors">
                             <Edit2 size={14} />
                           </button>
