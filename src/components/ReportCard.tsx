@@ -133,17 +133,20 @@ export default function ReportCard() {
     
     if (hafalanExams.length > 0) {
       const lastHafalan = hafalanExams[0];
-      const target = lastHafalan.target ? lastHafalan.target : '';
+      const target = lastHafalan.target && lastHafalan.target.trim() !== '' ? lastHafalan.target : '';
+      
+      let latestSurahGrades: Record<string, string> = {};
+      [...hafalanExams].reverse().forEach((exam: any) => {
+        (exam.surahs || []).forEach((s: any) => {
+           if (s.name) latestSurahGrades[s.name] = s.grade || s.predicate || '';
+        });
+      });
       
       let needImprovementSurahs: string[] = [];
-      hafalanExams.forEach((exam: any) => {
-        (exam.surahs || []).forEach((s:any) => {
-          if (s.grade && (s.grade.startsWith('C') || s.grade === 'D')) {
-            if (!needImprovementSurahs.includes(s.name)) {
-               needImprovementSurahs.push(s.name);
-            }
-          }
-        });
+      Object.entries(latestSurahGrades).forEach(([name, grade]) => {
+         if (grade.startsWith('C') || grade === 'D') {
+            needImprovementSurahs.push(name);
+         }
       });
       
       const allSurahsPass = needImprovementSurahs.length === 0;
@@ -167,16 +170,35 @@ export default function ReportCard() {
       const lastUmmi = ummiExams[0];
       const target = lastUmmi.target;
       const levelStr = lastUmmi.level === 7 ? 'Al-Qur\'an (Tilawah)' : `jilid ${lastUmmi.level}`;
-      const targetStr = target ? (target === '7' || target === 'Tilawah' || target === 'Al-Qur\'an (Tilawah)' ? 'Al-Qur\'an (Tilawah)' : `jilid ${target}`) : '';
+      
+      let targetStr = '';
+      let targetNum = 99;
+      if (target && String(target).trim() !== '') {
+        const tStr = String(target).toLowerCase();
+        if (tStr === '7' || tStr.includes('tilawah')) {
+          targetStr = "Al-Qur'an (Tilawah)";
+          targetNum = 7;
+        } else if (!tStr.includes('jilid')) {
+          targetStr = `jilid ${target}`;
+          targetNum = parseInt(tStr.replace(/\D/g, '')) || 99;
+        } else {
+          targetStr = target;
+          targetNum = parseInt(tStr.replace(/\D/g, '')) || 99;
+        }
+      }
+      
+      let latestUmmiScores: Record<string, string> = {};
+      [...ummiExams].reverse().forEach((exam: any) => {
+         Object.entries(exam.scores || {}).forEach(([indicator, s]) => {
+            latestUmmiScores[indicator] = String(s);
+         });
+      });
       
       let improvementAreas: string[] = [];
-      ummiExams.forEach((exam: any) => {
-        Object.entries(exam.scores || {}).forEach(([indicator, s]) => {
-           const scoreStr = String(s);
-           if ((scoreStr.startsWith('C') || scoreStr === 'D') && !improvementAreas.includes(indicator)) {
-              improvementAreas.push(indicator);
-           }
-        });
+      Object.entries(latestUmmiScores).forEach(([indicator, scoreStr]) => {
+         if (scoreStr.startsWith('C') || scoreStr === 'D') {
+            improvementAreas.push(indicator);
+         }
       });
       
       const hasC = improvementAreas.length > 0;
@@ -185,7 +207,9 @@ export default function ReportCard() {
             ? "meski masih ada catatan yang perlu disempurnakan" 
             : "dengan pencapaian fashohah dan bacaan yang memuaskan";
             
-      if (targetStr && (lastUmmi.level >= parseInt(target || '99') || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah')))) {
+      const hasReachedTarget = targetStr ? (lastUmmi.level >= targetNum || (levelStr.includes('Tilawah') && targetStr.includes('Tilawah'))) : false;
+      
+      if (targetStr && hasReachedTarget) {
         notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
       } else if (targetStr) {
         notes.push(`Untuk penguasaan bacaan Al-Qur'an, ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
@@ -207,14 +231,25 @@ export default function ReportCard() {
     
     const randomMotivasi = motivasiList[Math.floor(Math.random() * motivasiList.length)];
     
+    let manualNotes: string[] = [];
+    hafalanExams.forEach((e: any) => {
+       if (e.note && e.note.trim() !== '') {
+          manualNotes.push(e.note.trim());
+       }
+    });
+
     if (notes.length === 0) {
       if (adviceList.length > 0) {
-         return "Sebuah motivasi untuk ananda: " + randomMotivasi + "\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- " + adviceList.join('\n- ');
+         return (manualNotes.length > 0 ? manualNotes.join('. ') + '\n\n' : '') + "Sebuah motivasi untuk ananda: " + randomMotivasi + "\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- " + adviceList.join('\n- ');
       }
-      return "Sebuah motivasi untuk ananda: " + randomMotivasi;
+      return (manualNotes.length > 0 ? manualNotes.join('. ') + '\n\n' : '') + "Sebuah motivasi untuk ananda: " + randomMotivasi;
     }
     
     let finalNote = notes.join(' ') + ' ' + randomMotivasi;
+    
+    if (manualNotes.length > 0) {
+       finalNote = manualNotes.join('. ') + '\n\n' + finalNote;
+    }
     
     if (adviceList.length > 0) {
       finalNote += '\n\n📌 Catatan Penting / Evaluasi untuk Ananda:\n- ' + adviceList.join('\n- ');
@@ -229,15 +264,7 @@ export default function ReportCard() {
       if (savedNote) {
         setReportNote(savedNote);
       } else {
-        const legacyNotes = examData.hafalan
-           .filter((e: any) => e.semester === semester && e.note && e.note.trim() !== '')
-           .map((e: any) => e.note);
-           
-        if (legacyNotes.length > 0) {
-           setReportNote(legacyNotes.join('; '));
-        } else {
-           setReportNote(generateAutoNote());
-        }
+        setReportNote(generateAutoNote());
       }
     }
   }, [selectedStudent, examData, semester]);
