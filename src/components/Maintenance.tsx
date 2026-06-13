@@ -236,6 +236,8 @@ export default function Maintenance() {
 
       // Save metadata document AFTER chunks are successfully uploaded
       const updatedAtStr = new Date().toISOString();
+      localStorage.setItem('localUpdatedAt', updatedAtStr);
+
       await setDoc(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
@@ -243,8 +245,6 @@ export default function Maintenance() {
         numChunks,
         updatedAt: updatedAtStr
       });
-      
-      localStorage.setItem('localUpdatedAt', updatedAtStr);
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);
