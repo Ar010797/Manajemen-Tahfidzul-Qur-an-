@@ -4,7 +4,7 @@ import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
 import ConfirmModal from './ConfirmModal';
 import { db } from '../services/firebase';
-import { doc, setDoc, getDocs, collection, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDocs, collection, deleteDoc, getDoc } from 'firebase/firestore';
 
 import LZString from 'lz-string';
 
@@ -144,6 +144,65 @@ export default function Maintenance() {
     window.location.href = '/';
   };
 
+  const handlePullFromCloud = async () => {
+    setSyncStatus('syncing');
+    try {
+      const username = localStorage.getItem('current_username') || 'guru';
+      const usernameId = username.replace(/\s+/g, '_').toLowerCase();
+      
+      const docRef = doc(db, 'syncs', usernameId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        alert('Data Anda tidak ditemukan di server. Pastikan Anda atau Admin sudah melakukan sinkronisasi sebelumnya.');
+        setSyncStatus('idle');
+        return;
+      }
+      
+      const data = docSnap.data();
+      let rawJsonString = data.data || '';
+      
+      if (data.isChunked) {
+        const chunksSnapshot = await getDocs(collection(db, `syncs/${docSnap.id}/chunks`));
+        let chunksData = chunksSnapshot.docs.map(c => c.data());
+        if (data.numChunks) {
+          chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
+          if (chunksData.length !== data.numChunks) {
+            throw new Error(`Incomplete chunks. Expected ${data.numChunks}, got ${chunksData.length}.`);
+          }
+        }
+        chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+        rawJsonString = chunksData.map(c => c.chunkData).join('');
+      }
+
+      if (data.isCompressed && rawJsonString) {
+        const decompressed = LZString.decompressFromBase64(rawJsonString);
+        if (decompressed) {
+          rawJsonString = decompressed;
+        }
+      }
+      
+      if (rawJsonString) {
+        const success = storage.importData(rawJsonString);
+        if (success) {
+          localStorage.setItem('localUpdatedAt', data.updatedAt || new Date().toISOString());
+          alert('Berhasil mengunduh dan menerapkan perubahan data dari Admin. Halaman akan dimuat ulang.');
+          window.location.reload();
+        } else {
+          alert('Gagal menerapkan data dari server.');
+        }
+      } else {
+         alert('Gagal mengunduh: Data kosong atau rusak.');
+      }
+      
+      setSyncStatus('idle');
+    } catch (e: any) {
+      console.error(e);
+      setSyncStatus('idle');
+      alert(`Gagal mengambil data dari server: ${e.message || e.toString()}`);
+    }
+  };
+
   const handleSyncMyData = async () => {
     setSyncStatus('syncing');
     try {
@@ -176,13 +235,16 @@ export default function Maintenance() {
       await Promise.all(chunkPromises);
 
       // Save metadata document AFTER chunks are successfully uploaded
+      const updatedAtStr = new Date().toISOString();
       await setDoc(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
         isChunked: true,
         numChunks,
-        updatedAt: new Date().toISOString()
+        updatedAt: updatedAtStr
       });
+      
+      localStorage.setItem('localUpdatedAt', updatedAtStr);
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);
@@ -333,19 +395,28 @@ export default function Maintenance() {
         </div>
 
         <div className="mt-12 p-8 bg-indigo-50 rounded-3xl border border-indigo-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h3 className="text-lg font-bold text-indigo-900 mb-1">Kirim Data ke Admin (Cloud Sync)</h3>
-            <p className="text-indigo-700/80 text-sm">
-              Gunakan fitur ini secara berkala agar Admin dapat melihat rekap dan mendownload setoran hafalan siswa Anda dari server.
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-indigo-900 mb-1">Sinkronisasi Cloud Admin</h3>
+            <p className="text-indigo-700/80 text-sm mb-4">
+              Gunakan fitur ini secara berkala agar Admin dapat melihat rekap dan mendownload setoran hafalan siswa Anda dari server, atau Anda bisa menarik data jika Admin telah mengedit / merubah data milik Anda agar perangkat ini diperbarui.
             </p>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <button 
+                onClick={handleSyncMyData}
+                disabled={syncStatus === 'syncing'}
+                className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50 text-center"
+              >
+                {syncStatus === 'syncing' ? '...' : syncStatus === 'success' ? 'Terkirim ✓' : 'Kirim Data (Push)'}
+              </button>
+              <button 
+                onClick={handlePullFromCloud}
+                disabled={syncStatus === 'syncing'}
+                className="flex-1 px-6 py-3 bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl font-bold transition-all shadow-sm disabled:opacity-50 text-center"
+              >
+                {syncStatus === 'syncing' ? '...' : 'Ambil Data (Pull)'}
+              </button>
+            </div>
           </div>
-          <button 
-            onClick={handleSyncMyData}
-            disabled={syncStatus === 'syncing'}
-            className="whitespace-nowrap px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50"
-          >
-            {syncStatus === 'syncing' ? 'Menyinkronkan...' : syncStatus === 'success' ? 'Terkirim ✓' : 'Kirim ke Server'}
-          </button>
         </div>
 
         <div className="mt-12 p-6 bg-amber-50 rounded-2xl border border-amber-100">

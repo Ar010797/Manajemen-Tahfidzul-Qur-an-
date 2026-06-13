@@ -231,19 +231,19 @@ export default function ReportCard() {
       
       if (isTilawah && targetStr) {
         // Special phrase for Tilawah where target is interpreted as the Surah/Ayat.
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), surah/ayat yang diujikan adalah ${targetStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), Ananda telah diujikan pada surat/ayat ${targetStr} ${readingComment}.`);
       } else if (isTilawah) {
-        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), ananda telah menyelesaikan ujian ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Al-Qur'an (Tilawah), Ananda telah menyelesaikan ujian ${readingComment}.`);
       } else if (targetStr && hasReachedTarget) {
-        notes.push(`Untuk penguasaan bacaan Ummi, ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Ummi, Ananda telah berhasil mencapai target ${targetStr} dan menyelesaikan tahapan bacaan ${levelStr} ${readingComment}.`);
       } else if (targetStr) {
-        notes.push(`Untuk penguasaan bacaan Ummi, ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Ummi, Ananda baru menyelesaikan tahapan bacaan ${levelStr} dari target ${targetStr} yang ditetapkan, ${readingComment}.`);
       } else {
-        notes.push(`Untuk penguasaan bacaan Ummi, ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
+        notes.push(`Untuk penguasaan bacaan Ummi, Ananda telah mencapai tahapan bacaan ${levelStr} ${readingComment}.`);
       }
       
       if (improvementAreas.length > 0) {
-        adviceList.push(`Untuk bacaan Ummi, perlu ada perbaikan khusus pada detail poin: ${improvementAreas.join(', ')}.`);
+        adviceList.push(`Untuk bacaan Ummi, perlu ada pendampingan/latihan lebih rajin pada poin: ${improvementAreas.join(', ')}.`);
       }
     }
     
@@ -263,15 +263,11 @@ export default function ReportCard() {
        }
     });
 
-    const evaluationHeader = "\n\n📌 Catatan Evaluasi (Mohon menjadi perhatian khusus bagi Orang Tua):\n- ";
+    const evaluationHeader = "\n\n📌 Catatan Evaluasi (Mohon menjadi perhatian khusus bagi Orang Tua agar kedepannya Ananda bisa lebih baik lagi):\n- ";
 
     if (manualNotes.length > 0) {
-       // If manual notes exist, do NOT use auto-generated notes!
-       let finalNote = manualNotes.join('. ');
-       if (adviceList.length > 0) {
-          finalNote += evaluationHeader + adviceList.join('\n- ');
-       }
-       return finalNote;
+       // If manual notes exist, do NOT use auto-generated notes at all
+       return manualNotes.join('. ');
     }
 
     if (notes.length === 0) {

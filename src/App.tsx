@@ -30,6 +30,9 @@ import SplashScreen from './components/SplashScreen';
 import NotificationSystem from './components/NotificationSystem';
 
 import { AdminDashboard } from './components/AdminDashboard';
+import { db } from './services/firebase';
+import { doc, onSnapshot, getDocs, collection } from 'firebase/firestore';
+import LZString from 'lz-string';
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -75,6 +78,66 @@ export default function App() {
     }
     setIsLoading(false);
   }, []);
+
+  const [isPullingData, setIsPullingData] = useState(false);
+
+  useEffect(() => {
+    if (!user || user.role !== 'guru') return;
+    
+    // Only auto-pull on the original teacher's device (admin impersonation acts as 'guru', 
+    // but the actual URL or user object might be enough. We allow admin to auto-pull too 
+    // while impersonating so they see live changes if someone else edits? Mostly for the teacher's app).
+    const usernameId = (user.username || 'guru').replace(/\s+/g, '_').toLowerCase();
+    
+    const unsubscribe = onSnapshot(doc(db, 'syncs', usernameId), async (docSnap) => {
+       if (docSnap.exists()) {
+           const data = docSnap.data();
+           const serverUpdatedAt = data.updatedAt;
+           const localUpdatedAt = localStorage.getItem('localUpdatedAt');
+           
+           if (serverUpdatedAt && localUpdatedAt && serverUpdatedAt > localUpdatedAt) {
+               console.log("Newer data found on server. Auto-pulling...");
+               setIsPullingData(true);
+               try {
+                  let rawJsonString = data.data || '';
+                  if (data.isChunked) {
+                     const chunksSnapshot = await getDocs(collection(db, `syncs/${docSnap.id}/chunks`));
+                     let chunksData = chunksSnapshot.docs.map(c => c.data());
+                     if (data.numChunks) {
+                       chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
+                     }
+                     chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+                     rawJsonString = chunksData.map(c => c.chunkData).join('');
+                  }
+                  
+                  if (data.isCompressed && rawJsonString) {
+                     const decompressed = LZString.decompressFromBase64(rawJsonString);
+                     if (decompressed) {
+                        rawJsonString = decompressed;
+                     }
+                  }
+                  
+                  if (rawJsonString) {
+                     if (storage.importData(rawJsonString)) {
+                        localStorage.setItem('localUpdatedAt', serverUpdatedAt);
+                        alert('Pemberitahuan: Data di perangkat Anda telah diperbarui otomatis dengan perubahan terbaru dari Admin. Halaman akan menyegarkan data.');
+                        window.location.reload();
+                     }
+                  }
+               } catch (e) {
+                 console.error("Auto pull failed", e);
+               } finally {
+                 setIsPullingData(false);
+               }
+           } else if (serverUpdatedAt && !localUpdatedAt) {
+               // First time logging in or sync hasn't been done locally yet
+               localStorage.setItem('localUpdatedAt', serverUpdatedAt);
+           }
+       }
+    });
+    
+    return () => unsubscribe();
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -157,6 +220,22 @@ export default function App() {
   return (
     <>
       <NotificationSystem />
+      
+      <AnimatePresence>
+        {isPullingData && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-stone-900/60 backdrop-blur-md flex flex-col items-center justify-center text-white"
+          >
+            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+            <h2 className="text-xl font-bold font-display">Memperbarui Data...</h2>
+            <p className="text-white/80 mt-2">Menerima perubahan terbaru dari Admin</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait">
         {showSplash ? (
           <SplashScreen key="splash" />
