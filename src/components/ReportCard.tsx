@@ -90,6 +90,28 @@ export default function ReportCard() {
     setShowListOnMobile(false);
   };
 
+  const currentHalaqohStudents = useMemo(() => {
+    if (!selectedStudent) return [];
+    const groupName = selectedStudent.halaqoh_name || 'Tanpa Halaqoh';
+    return groupedStudents[groupName] || [];
+  }, [selectedStudent, groupedStudents]);
+
+  const handlePrevStudent = () => {
+    if (!selectedStudent || currentHalaqohStudents.length === 0) return;
+    const currentIndex = currentHalaqohStudents.findIndex(s => s.id === selectedStudent.id);
+    if (currentIndex > 0) {
+      fetchExamData(currentHalaqohStudents[currentIndex - 1]);
+    }
+  };
+
+  const handleNextStudent = () => {
+    if (!selectedStudent || currentHalaqohStudents.length === 0) return;
+    const currentIndex = currentHalaqohStudents.findIndex(s => s.id === selectedStudent.id);
+    if (currentIndex > -1 && currentIndex < currentHalaqohStudents.length - 1) {
+      fetchExamData(currentHalaqohStudents[currentIndex + 1]);
+    }
+  };
+
   const resetExam = (type: 'ummi' | 'hafalan', id: string) => {
     setExamToDelete({ type, id });
     setIsDeleteModalOpen(true);
@@ -359,7 +381,7 @@ export default function ReportCard() {
       });
       
       const type = imgFormat === 'jpg' ? 'image/jpeg' : 'image/png';
-      const safeName = selectedStudent.name.replace(/[^a-z0-9]/gi, '_');
+      const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.${imgFormat}`;
 
       canvas.toBlob(async (blob) => {
@@ -497,9 +519,9 @@ export default function ReportCard() {
       let finalHeight = pdfHeight;
       
       if (imgRatio < pdfRatio) {
-        // Image is proportionally taller than A4 page -> scale strictly by height
-        finalWidth = pdfHeight * imgRatio;
-        finalHeight = pdfHeight;
+        // Image is proportionally taller than A4 page -> scale strictly by width so text doesn't shrink
+        finalWidth = pdfWidth;
+        finalHeight = pdfWidth / imgRatio;
       } else {
         // Image is proportionally wider than A4 page -> scale strictly by width
         finalWidth = pdfWidth;
@@ -510,7 +532,20 @@ export default function ReportCard() {
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = 0;
       
+      // If height is larger than 1 page, jsPDF addImage will draw off-page.
+      // We can add a new page if it exceeds A4 height significantly.
       pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
+      
+      // If the content spilled over to a second page mathematically, add one and draw the rest
+      let heightLeft = finalHeight - pdfHeight;
+      let position = yOffset - pdfHeight;
+      
+      while (heightLeft >= 0) {
+        pdf.addPage();
+        pdf.addImage(dataUrl, 'PNG', xOffset, position, finalWidth, finalHeight, undefined, 'NONE');
+        heightLeft -= pdfHeight;
+        position -= pdfHeight;
+      }
 
       const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
@@ -570,9 +605,9 @@ export default function ReportCard() {
         <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8fafc' }}>
-              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Jilid</th>
-              <th className="border border-black p-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
-              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
+              <th className="border border-black py-1 px-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Jilid</th>
+              <th className="border border-black py-1 px-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Materi Tajwid</th>
+              <th className="border border-black py-1 px-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
             </tr>
           </thead>
           <tbody>
@@ -580,9 +615,9 @@ export default function ReportCard() {
               const scores = typeof exam.scores === 'string' ? JSON.parse(exam.scores) : exam.scores;
               return Object.entries(scores || {}).filter(([_, v]) => v).map(([k, v], i) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
-                  <td className="border border-black p-2 text-left pl-3 align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{k}</td>
-                  <td className="border border-black p-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{v as string}</td>
+                  <td className="border border-black py-0 px-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{exam.level === 7 ? 'Tilawah' : exam.level}</td>
+                  <td className="border border-black py-0 px-2 text-left pl-3 align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{k}</td>
+                  <td className="border border-black py-0 px-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{v as string}</td>
                 </tr>
               ));
             }) : (
@@ -609,10 +644,10 @@ export default function ReportCard() {
         <table className="w-full border-collapse border-2 border-black text-[10px]" style={{ borderColor: '#000000' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8fafc' }}>
-              <th className="border border-black p-2 w-10 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>No</th>
-              <th className="border border-black p-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Surat / Ayat</th>
-              <th className="border border-black p-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
-              <th className="border border-black p-2 w-20 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Predikat</th>
+              <th className="border border-black py-1 px-2 w-10 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>No</th>
+              <th className="border border-black py-1 px-2 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Surat / Ayat</th>
+              <th className="border border-black py-1 px-2 w-12 text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Nilai</th>
+              <th className="border border-black py-1 px-2 w-[95px] whitespace-nowrap text-center align-middle font-bold" style={{ borderColor: '#000000' }}>Predikat</th>
             </tr>
           </thead>
           <tbody>
@@ -620,10 +655,10 @@ export default function ReportCard() {
               const surahs = typeof exam.surahs === 'string' ? JSON.parse(exam.surahs) : exam.surahs;
               return (surahs || []).map((s: any, i: number) => (
                 <tr key={`${exam.id}-${i}`}>
-                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{counter++}</td>
-                  <td className="border border-black p-2 text-left pl-3 align-middle" dir="auto" style={{ borderColor: '#000000', color: '#000000', fontFamily: "'Amiri', serif", letterSpacing: '0', fontVariantLigatures: 'common-ligatures' }}>{s.name}</td>
-                  <td className="border border-black p-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.grade}</td>
-                  <td className="border border-black p-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.predicate}</td>
+                  <td className="border border-black py-0 px-2 text-center align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{counter++}</td>
+                  <td className="border border-black py-0 px-2 text-left pl-3 align-middle" dir="auto" style={{ borderColor: '#000000', color: '#000000', fontFamily: "'Amiri', serif", letterSpacing: '0', fontVariantLigatures: 'common-ligatures' }}>{s.name}</td>
+                  <td className="border border-black py-0 px-2 text-center font-bold align-middle" style={{ borderColor: '#000000', color: '#000000' }}>{s.grade}</td>
+                  <td className="border border-black py-0 px-2 text-center align-middle whitespace-nowrap" style={{ borderColor: '#000000', color: '#000000' }}>{s.predicate}</td>
                 </tr>
               ));
             }) : (
@@ -798,6 +833,27 @@ export default function ReportCard() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                      <span className={cn("text-[10px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-md shadow-sm", theme.bg, "text-white")}>REPORT CARD</span>
+                     <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-md ml-2">
+                        <button 
+                          onClick={handlePrevStudent} 
+                          disabled={!currentHalaqohStudents.length || currentHalaqohStudents.findIndex(s => s.id === selectedStudent.id) <= 0}
+                          className="p-0.5 text-stone-500 hover:text-stone-900 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                          title="Siswa Sebelumnya"
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
+                        <span className="text-[10px] font-bold text-stone-500 px-1">
+                          {currentHalaqohStudents.findIndex(s => s.id === selectedStudent.id) + 1} / {currentHalaqohStudents.length}
+                        </span>
+                        <button 
+                          onClick={handleNextStudent}
+                          disabled={!currentHalaqohStudents.length || currentHalaqohStudents.findIndex(s => s.id === selectedStudent.id) >= currentHalaqohStudents.length - 1}
+                          className="p-0.5 text-stone-500 hover:text-stone-900 disabled:opacity-30 disabled:pointer-events-none transition-colors rotate-180"
+                          title="Siswa Selanjutnya"
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
+                     </div>
                   </div>
                   <h2 className="text-4xl font-display font-black text-stone-950 tracking-tight leading-none uppercase">{selectedStudent.name}</h2>
                   <p className="text-stone-500 font-medium">Laporan Pencapaian Tahfidz & Akademik</p>
@@ -1031,7 +1087,7 @@ export default function ReportCard() {
                       #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
                     }
                   ` }} />
-                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[45mm] pb-[25mm] relative bg-white flex flex-col overflow-hidden items-center justify-start" style={{ width: '210mm', height: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                  <div id="report-card-preview" className="mx-auto p-[15mm] pt-[20mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
@@ -1046,7 +1102,7 @@ export default function ReportCard() {
                   )}
 
                   {/* Header */}
-                  <div className="w-full relative z-10 mb-6">
+                  <div className="w-full relative z-10 mb-4">
                     <div className="w-full relative flex items-center justify-between pt-2">
                       <div className="w-[100px] flex-shrink-0 flex items-start justify-start">
                         {institution?.logo && (
@@ -1073,7 +1129,7 @@ export default function ReportCard() {
                     </div>
                     
                     {/* Thick Horizontal Line */}
-                    <div className="w-full h-1 bg-black mt-6 mb-4" style={{ height: '3px' }}></div>
+                    <div className="w-full h-1 bg-black mt-4 mb-3" style={{ height: '3px' }}></div>
                     
                     <div className="w-full text-center">
                       <div className="text-[11px] sm:text-[13px] font-bold uppercase tracking-[0.1em] space-y-0.5 text-stone-950">
@@ -1084,8 +1140,8 @@ export default function ReportCard() {
                   </div>
 
                   {/* Student Info */}
-                  <div className="w-full flex justify-between items-start text-[13px] mb-8 font-bold relative z-10">
-                    <div className="space-y-1.5 pt-4">
+                  <div className="w-full flex justify-between items-start text-[13px] mb-4 font-bold relative z-10">
+                    <div className="space-y-1.5 pt-2">
                       <div className="flex">
                         <span className="w-28 text-stone-950">Nama Siswa</span>
                         <span>: <span className="uppercase">{selectedStudent.name}</span></span>
@@ -1105,12 +1161,12 @@ export default function ReportCard() {
                   </div>
 
                   {/* Title Box */}
-                  <div className="w-full border-2 border-black py-2.5 flex flex-shrink-0 items-center justify-center font-bold text-base sm:text-lg mb-6 uppercase tracking-[0.25em] relative z-10" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
+                  <div className="w-full border-2 border-black py-2 flex flex-shrink-0 items-center justify-center font-bold text-base sm:text-lg mb-4 uppercase tracking-[0.25em] relative z-10" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
                     LAPORAN PENCAPAIAN TAHFIDZ
                   </div>
 
                   {/* Tables Container */}
-                  <div className="w-full grid grid-cols-2 gap-8 mb-6 relative z-10 flex-shrink-0">
+                  <div className="w-full grid grid-cols-[1.3fr_1fr] gap-6 mb-4 relative z-10 flex-shrink-0">
                     {renderHafalanTable()}
                     {renderUmmiTable()}
                   </div>
@@ -1126,13 +1182,13 @@ export default function ReportCard() {
                   {/* Signatures */}
                   <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10 flex-shrink-0">
                     <div className="flex flex-col items-center">
-                      <p className="mb-14">Orang Tua/Wali,</p>
+                      <p className="mb-10">Orang Tua/Wali,</p>
                       <p className="font-bold underline decoration-1 underline-offset-4">( .............................. )</p>
                     </div>
                     <div className="flex flex-col items-center">
                       <p className="mb-0.5">Mengetahui,</p>
-                      <p className="mb-6">Kepala Sekolah</p>
-                      <div className="relative flex items-center justify-center h-[90px] w-full mb-2">
+                      <p className="mb-4">Kepala Sekolah</p>
+                      <div className="relative flex items-center justify-center h-[50px] w-full mb-2">
                         {institution?.principal_signature && (
                           <img 
                             src={institution.principal_signature} 
@@ -1149,8 +1205,8 @@ export default function ReportCard() {
                       <p className="mb-0.5 text-[11px]">
                         {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
                       </p>
-                      <p className="mb-6">Koordinator Tahfidz,</p>
-                      <div className="relative flex items-center justify-center h-[90px] w-full mb-2">
+                      <p className="mb-4">Koordinator Tahfidz,</p>
+                      <div className="relative flex items-center justify-center h-[50px] w-full mb-2">
                         {institution?.coordinator_signature && (
                           <img 
                             src={institution.coordinator_signature} 
