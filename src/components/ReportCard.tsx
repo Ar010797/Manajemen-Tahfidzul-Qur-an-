@@ -352,9 +352,6 @@ export default function ReportCard() {
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
-          margin: '0',
-          padding: '0',
-          borderRadius: '0',
           boxShadow: 'none',
           width: `${element.scrollWidth}px`,
           height: `${element.scrollHeight}px`
@@ -474,9 +471,6 @@ export default function ReportCard() {
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
-          margin: '0',
-          padding: '0',
-          borderRadius: '0',
           boxShadow: 'none',
           width: `${element.scrollWidth}px`,
           height: `${element.scrollHeight}px`
@@ -1037,7 +1031,7 @@ export default function ReportCard() {
                       #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
                     }
                   ` }} />
-                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[35mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[45mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
