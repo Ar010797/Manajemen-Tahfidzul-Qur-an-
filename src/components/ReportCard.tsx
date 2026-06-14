@@ -1047,9 +1047,9 @@ export default function ReportCard() {
 
                   {/* Header */}
                   <div className="w-full relative z-10 mb-6">
-                    <div className="w-full relative flex flex-col items-center justify-center pt-2">
-                      {institution?.logo && (
-                        <div className="absolute left-0 top-0">
+                    <div className="w-full relative flex items-center justify-between pt-2">
+                      <div className="w-[100px] flex-shrink-0 flex items-start justify-start">
+                        {institution?.logo && (
                           <img 
                             src={institution.logo} 
                             alt="Logo" 
@@ -1057,14 +1057,19 @@ export default function ReportCard() {
                             className="w-24 h-24 object-contain" 
                             style={{ backgroundColor: 'transparent' }}
                           />
-                        </div>
-                      )}
+                        )}
+                      </div>
                       
-                      <p className="text-[28px] mb-1" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
-                        شهادة حفظ القرآن الكريم
-                      </p>
-                      <h1 className="text-2xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
-                      <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic">{institution?.address}</p>
+                      <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+                        <p className="text-[28px] mb-1" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
+                          شهادة حفظ القرآن الكريم
+                        </p>
+                        <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1 max-w-[150mm]">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                        <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic max-w-[150mm]">{institution?.address}</p>
+                      </div>
+
+                      {/* Spacer to balance the logo and keep text centered relative to the page width */}
+                      <div className="w-[100px] flex-shrink-0"></div>
                     </div>
                     
                     {/* Thick Horizontal Line */}
