@@ -1031,7 +1031,7 @@ export default function ReportCard() {
                       #report-card-preview { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
                     }
                   ` }} />
-                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[45mm] pb-[25mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                  <div id="report-card-preview" className="mx-auto p-[20mm] pt-[45mm] pb-[25mm] relative bg-white flex flex-col overflow-hidden items-center justify-start" style={{ width: '210mm', height: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
                   {/* Watermark */}
                   {institution?.watermark && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
@@ -1105,26 +1105,26 @@ export default function ReportCard() {
                   </div>
 
                   {/* Title Box */}
-                  <div className="w-full border-2 border-black py-2.5 flex items-center justify-center font-bold text-base sm:text-lg mb-10 uppercase tracking-[0.25em] relative z-10" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
+                  <div className="w-full border-2 border-black py-2.5 flex flex-shrink-0 items-center justify-center font-bold text-base sm:text-lg mb-6 uppercase tracking-[0.25em] relative z-10" style={{ borderColor: '#000000', backgroundColor: '#fafaf9', color: '#000000', minHeight: '2.5rem' }}>
                     LAPORAN PENCAPAIAN TAHFIDZ
                   </div>
 
                   {/* Tables Container */}
-                  <div className="w-full grid grid-cols-2 gap-8 mb-10 relative z-10">
+                  <div className="w-full grid grid-cols-2 gap-8 mb-6 relative z-10 flex-shrink-0">
                     {renderHafalanTable()}
                     {renderUmmiTable()}
                   </div>
 
                   {/* Footer Box - Catatan Guru */}
-                  <div className="w-full border-2 border-black mb-12 relative z-10" style={{ borderColor: '#000000', color: '#000000' }}>
+                  <div className="w-full border-2 border-black flex-shrink-0 relative z-10" style={{ borderColor: '#000000', color: '#000000' }}>
                     <div className="border-b-2 border-black px-4 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-center" style={{ backgroundColor: '#f8fafc', borderBottomColor: '#000000', color: '#000000' }}>Catatan & Motivasi Guru</div>
-                    <div className="p-4 min-h-[30mm] text-[11px] sm:text-xs italic leading-relaxed text-stone-900" style={{ color: '#000000' }}>
+                    <div className="p-4 min-h-[25mm] text-[11px] sm:text-xs italic leading-relaxed text-stone-900" style={{ color: '#000000' }}>
                       {reportNote || 'Alhamdulillah, terus tingkatkan hafalannya dan jaga murajaahnya. Semoga Allah memberkahi setiap langkahmu dalam menghafal Al-Qur\'an.'}
                     </div>
                   </div>
 
                   {/* Signatures */}
-                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-12 relative z-10">
+                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10 flex-shrink-0">
                     <div className="flex flex-col items-center">
                       <p className="mb-14">Orang Tua/Wali,</p>
                       <p className="font-bold underline decoration-1 underline-offset-4">( .............................. )</p>
