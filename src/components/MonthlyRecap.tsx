@@ -911,9 +911,9 @@ export default function MonthlyRecap() {
                           />
                         </div>
                       )}
-                      <div className="text-center pt-2">
-                        <h1 className="text-3xl font-bold uppercase tracking-tight text-stone-950">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
-                        <h2 className="text-2xl font-bold uppercase mt-1 text-stone-900">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
+                      <div className="text-center pt-2 px-32">
+                        <h1 className="text-3xl font-bold uppercase tracking-tight text-stone-950 leading-none pb-1">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
+                        <h2 className="text-2xl font-bold uppercase leading-tight text-stone-900">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
                       </div>
                     </div>
                     {/* Thick Horizontal Line */}

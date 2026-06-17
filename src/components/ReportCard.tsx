@@ -1120,9 +1120,9 @@ export default function ReportCard() {
                             <p className="text-[28px] mb-1 text-center" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
                               شهادة حفظ القرآن الكريم
                             </p>
-                            <div style={{ margin: '0 auto', maxWidth: '150mm' }}>
-                              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
-                              <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic">{institution?.address}</p>
+                            <div style={{ margin: '0 auto', maxWidth: '160mm' }}>
+                              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-none text-stone-950 pb-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                              <p className="text-[10px] sm:text-[11px] leading-snug font-medium text-stone-600 italic">{institution?.address}</p>
                             </div>
                           </td>
                           <td style={{ width: '100px', border: 'none', padding: 0 }}></td>

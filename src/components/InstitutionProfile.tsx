@@ -58,90 +58,41 @@ export default function InstitutionProfile() {
     setIsSaving(true);
     storage.updateInstitution(profile);
     
-    // Check if user is admin
-    const currentUserStr = localStorage.getItem('user');
-    const user = currentUserStr ? JSON.parse(currentUserStr) : null;
-    const isAdmin = user?.username === 'admin' || user?.id === 'admin_impersonate';
-    const currentLocalUser = localStorage.getItem('current_username');
+    try {
+        const username = localStorage.getItem('current_username') || 'guru';
+        const myData = storage.exportData();
+        const compressedData = LZString.compressToBase64(myData);
+        const CHUNK_SIZE = 200000;
+        const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+        const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-    if (isAdmin) {
-      try {
-         const syncsSnapshot = await getDocs(collection(db, 'syncs'));
-         
-         const promises = syncsSnapshot.docs.map(async (document) => {
-             const data = document.data();
-             // Skip the currently active account (already saved locally, but we don't want to skip admin just in case)
-             // We can just overwrite everyone to ensure they have the latest institution profile
-             if (!data.username) return;
+        try {
+           const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+           const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+           await Promise.all(deletePromises);
+        } catch(e) {}
 
-             let rawJsonString = data.data || '';
-             
-             if (data.isChunked) {
-               const chunksSnapshot = await getDocs(collection(db, `syncs/${document.id}/chunks`));
-               let chunksData = chunksSnapshot.docs.map(c => c.data());
-               if (data.numChunks) {
-                 chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
-               }
-               chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
-               rawJsonString = chunksData.map(c => c.chunkData).join('');
-             }
+        const chunkPromises = [];
+        for (let i = 0; i < numChunks; i++) {
+           const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+           chunkPromises.push(setDoc(chunkDoc, {
+               chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+               chunkIndex: i
+           }));
+        }
+        await Promise.all(chunkPromises);
 
-             if (data.isCompressed && rawJsonString) {
-               const decompressed = LZString.decompressFromBase64(rawJsonString);
-               if (decompressed) {
-                 rawJsonString = decompressed;
-               }
-             }
-
-             if (rawJsonString || data.username === currentLocalUser) {
-               let guruData;
-               if (data.username === currentLocalUser) {
-                  // For the current user being impersonated (or admin themselves), use the latest local data!
-                  guruData = JSON.parse(storage.exportData());
-               } else {
-                  guruData = JSON.parse(rawJsonString);
-               }
-               
-               guruData.institution = { ...profile }; // inject new profile
-               
-               const compressedData = LZString.compressToBase64(JSON.stringify(guruData));
-               const CHUNK_SIZE = 200000;
-               const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
-
-               try {
-                  const oldChunks = await getDocs(collection(db, `syncs/${document.id}/chunks`));
-                  const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
-                  await Promise.all(deletePromises);
-               } catch(e) {}
-
-               const chunkPromises = [];
-               for (let i = 0; i < numChunks; i++) {
-                   const chunkDoc = doc(db, `syncs/${document.id}/chunks`, `chunk_${i}`);
-                   chunkPromises.push(setDoc(chunkDoc, {
-                       chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
-                       chunkIndex: i
-                   }));
-               }
-               await Promise.all(chunkPromises);
-
-               await setDoc(doc(db, 'syncs', document.id), {
-                   ...data,
-                   isCompressed: true,
-                   isChunked: true,
-                   numChunks,
-                   updatedAt: new Date().toISOString()
-               });
-             }
-         });
-         
-         await Promise.all(promises);
-         alert('Profil lembaga berhasil diperbarui dan disinkronkan ke seluruh guru!');
-      } catch (err) {
-         console.error('Failed to broadcast institution profile', err);
-         alert('Profil tersimpan lokal, namun gagal disinkronkan. Mohon coba lagi.');
-      }
-    } else {
-       alert('Profil lembaga berhasil diperbarui!');
+        await setDoc(doc(db, 'syncs', usernameId), {
+           username,
+           isCompressed: true,
+           isChunked: true,
+           numChunks,
+           updatedAt: new Date().toISOString()
+        });
+        alert('Profil lembaga berhasil diperbarui!');
+    } catch (err) {
+        console.error('Failed to sync profile', err);
+        alert('Profil tersimpan lokal, namun gagal disinkronkan. Mohon coba lagi.');
     }
     
     setIsSaving(false);
