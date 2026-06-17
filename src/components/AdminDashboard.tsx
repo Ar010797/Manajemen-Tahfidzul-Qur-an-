@@ -12,6 +12,7 @@ export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
   const [docIds, setDocIds] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'idle'|'syncing'|'success'>('idle');
   const [impersonateTarget, setImpersonateTarget] = useState<string | null>(null);
 
@@ -153,6 +154,58 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleBroadcastProfilLembaga = async () => {
+    if (!window.confirm('Apakah Anda yakin ingin menimpa Profil Lembaga (Kop, TTD, Logo, Warna Tema) milik SEMUA guru dengan Profil Admin ini? (Guru akan menerimanya otomatis saat tersambung internet)')) {
+        return;
+    }
+    
+    setIsBroadcasting(true);
+    try {
+       const myInstitution = storage.getInstitution();
+       const gurusList = Object.keys(globalData);
+       
+       for (const guru of gurusList) {
+           const d = globalData[guru];
+           d.institution = { ...myInstitution };
+           const compressedData = LZString.compressToBase64(JSON.stringify(d));
+           const CHUNK_SIZE = 200000;
+           const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+           const usernameId = docIds[guru] || guru.replace(/\s+/g, '_').toLowerCase();
+
+           try {
+              const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+              const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+              await Promise.all(deletePromises);
+           } catch(e) {}
+
+           const chunkPromises = [];
+           for (let i = 0; i < numChunks; i++) {
+               const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+               chunkPromises.push(setDoc(chunkDoc, {
+                   chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+                   chunkIndex: i
+               }));
+           }
+           await Promise.all(chunkPromises);
+
+           await setDoc(doc(db, 'syncs', usernameId), {
+               username: guru,
+               isCompressed: true,
+               isChunked: true,
+               numChunks,
+               updatedAt: new Date().toISOString()
+           });
+       }
+       alert(`Berhasil mengirim Profil Lembaga ke ${gurusList.length} akun guru!`);
+       await fetchGlobalData();
+    } catch (e: any) {
+       console.error(e);
+       alert(`Gagal broadcast: ${e.message}`);
+    } finally {
+       setIsBroadcasting(false);
+    }
+  };
+
   const gurus = Object.keys(globalData);
 
   return (
@@ -184,13 +237,13 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm font-bold text-stone-500 uppercase tracking-widest">Total Guru / Akun</p>
+            <p className="text-sm font-bold text-stone-500 uppercase tracking-widest">Total Akun</p>
             <p className="text-3xl font-black text-stone-900">{gurus.length}</p>
           </div>
         </div>
@@ -208,6 +261,24 @@ export const AdminDashboard: React.FC = () => {
               >
                 {syncStatus === 'syncing' ? <RefreshCw className="w-4 h-4 animate-spin" /> : 
                  syncStatus === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : 'Push Data Lokal'}
+              </button>
+           </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-center">
+           <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-purple-800">Bagi Profil</h3>
+                <p className="text-xs text-purple-600/70 mt-1">Timpa profil semua guru.</p>
+              </div>
+              <button 
+                onClick={handleBroadcastProfilLembaga}
+                disabled={isBroadcasting}
+                title="Timpa profil lembaga (Kop, TTD, Logo) semua guru dengan profil Admin saat ini."
+                className="flex items-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-colors"
+              >
+                {isBroadcasting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4 hidden sm:block" />}
+                Kirim
               </button>
            </div>
         </div>

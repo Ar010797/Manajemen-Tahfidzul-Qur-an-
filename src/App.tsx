@@ -31,7 +31,7 @@ import NotificationSystem from './components/NotificationSystem';
 
 import { AdminDashboard } from './components/AdminDashboard';
 import { db } from './services/firebase';
-import { doc, onSnapshot, getDocs, collection } from 'firebase/firestore';
+import { doc, onSnapshot, getDocs, collection, setDoc, deleteDoc } from 'firebase/firestore';
 import LZString from 'lz-string';
 
 export default function App() {
@@ -390,7 +390,48 @@ export default function App() {
                 <div className="flex items-center gap-4">
                   {user?.id === 'admin_impersonate' && (
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
+                        try {
+                           const btn = document.getElementById('btn-kembali-admin');
+                           if (btn) btn.innerText = 'Menyimpan...';
+
+                           const username = localStorage.getItem('current_username') || 'guru';
+                           const myData = storage.exportData();
+                           
+                           const compressedData = LZString.compressToBase64(myData);
+                           const CHUNK_SIZE = 200000;
+                           const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+                           const usernameId = username.replace(/\s+/g, '_').toLowerCase();
+
+                           // Clean up old chunks
+                           const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
+                           const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+                           await Promise.all(deletePromises);
+
+                           // Save chunks
+                           const chunkPromises = [];
+                           for (let i = 0; i < numChunks; i++) {
+                             const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
+                             chunkPromises.push(setDoc(chunkDoc, {
+                               chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+                               chunkIndex: i
+                             }));
+                           }
+                           await Promise.all(chunkPromises);
+
+                           // Save metadata
+                           await setDoc(doc(db, 'syncs', usernameId), {
+                             username,
+                             isCompressed: true,
+                             isChunked: true,
+                             numChunks,
+                             updatedAt: new Date().toISOString()
+                           });
+                        } catch (e) {
+                           console.error(e);
+                        }
+                        
+                        localStorage.setItem('current_username', 'admin');
                         localStorage.setItem('user', JSON.stringify({
                           id: Date.now().toString(),
                           username: 'admin',
@@ -398,9 +439,10 @@ export default function App() {
                         }));
                         window.location.reload();
                       }}
+                      id="btn-kembali-admin"
                       className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200 shadow-sm transition-colors cursor-pointer"
                     >
-                      Kembali ke Admin
+                      Simpan & Kembali ke Admin
                     </button>
                   )}
                   <div className="hidden sm:flex px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100 shadow-sm shadow-amber-50">
