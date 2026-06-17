@@ -1103,30 +1103,32 @@ export default function ReportCard() {
 
                   {/* Header */}
                   <div className="w-full relative z-10 mb-4">
-                    <div className="w-full relative flex items-center justify-between pt-2">
-                      <div className="w-[100px] flex-shrink-0 flex items-start justify-start">
-                        {institution?.logo && (
-                          <img 
-                            src={institution.logo} 
-                            alt="Logo" 
-                            crossOrigin="anonymous" 
-                            className="w-24 h-24 object-contain" 
-                            style={{ backgroundColor: 'transparent' }}
-                          />
-                        )}
-                      </div>
-                      
-                      <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                        <p className="text-[28px] mb-1" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
-                          شهادة حفظ القرآن الكريم
-                        </p>
-                        <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1 max-w-[150mm]">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
-                        <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic max-w-[150mm]">{institution?.address}</p>
-                      </div>
-
-                      {/* Spacer to balance the logo and keep text centered relative to the page width */}
-                      <div className="w-[100px] flex-shrink-0"></div>
-                    </div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none' }} className="pt-2">
+                      <tbody>
+                        <tr>
+                          <td style={{ width: '100px', verticalAlign: 'top', border: 'none', padding: 0 }}>
+                            {institution?.logo && (
+                              <img 
+                                src={institution.logo} 
+                                alt="Logo" 
+                                crossOrigin="anonymous" 
+                                style={{ width: '96px', height: '96px', objectFit: 'contain', backgroundColor: 'transparent', maxWidth: 'none' }}
+                              />
+                            )}
+                          </td>
+                          <td style={{ verticalAlign: 'middle', textAlign: 'center', border: 'none', padding: '0 16px' }}>
+                            <p className="text-[28px] mb-1 text-center" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
+                              شهادة حفظ القرآن الكريم
+                            </p>
+                            <div style={{ margin: '0 auto', maxWidth: '150mm' }}>
+                              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight text-stone-950 mb-1">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                              <p className="text-[10px] sm:text-[11px] leading-relaxed font-medium text-stone-600 italic">{institution?.address}</p>
+                            </div>
+                          </td>
+                          <td style={{ width: '100px', border: 'none', padding: 0 }}></td>
+                        </tr>
+                      </tbody>
+                    </table>
                     
                     {/* Thick Horizontal Line */}
                     <div className="w-full h-1 bg-black mt-4 mb-3" style={{ height: '3px' }}></div>
