@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Share2, Download, Copy, Check, Quote, Camera, Sparkles } from 'lucide-react';
+import { Share2, Download, Copy, Check, Quote, Camera, Sparkles, RefreshCw } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
-import { getAdviceForDay, getDayOfYear, DailyAdvice } from '../constants/dailyAdvice';
+import { getAdviceForDay, getDayOfYear, DailyAdvice, DAILY_ADVICE } from '../constants/dailyAdvice';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 
@@ -11,6 +11,7 @@ export default function DailyAdviceCard() {
   const [dayNumber, setDayNumber] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [themeColor, setThemeColor] = useState('emerald');
   const captureRef = useRef<HTMLDivElement>(null);
 
@@ -18,11 +19,32 @@ export default function DailyAdviceCard() {
     const today = new Date();
     const day = getDayOfYear(today);
     setDayNumber(day);
-    setAdvice(getAdviceForDay(day));
+    
+    // Default to a random advice so it's fresh every time
+    handleShuffle();
     
     const institution = storage.getInstitution();
     setThemeColor(institution.theme_color || 'emerald');
   }, []);
+
+  const handleShuffle = () => {
+    setIsRefreshing(true);
+    let randomIndex = Math.floor(Math.random() * DAILY_ADVICE.length);
+    
+    // Attempt to find a different advice title to increase variety
+    let attempts = 0;
+    while (
+      advice && 
+      DAILY_ADVICE[randomIndex].title === advice.title && 
+      attempts < 10
+    ) {
+      randomIndex = Math.floor(Math.random() * DAILY_ADVICE.length);
+      attempts++;
+    }
+    
+    setAdvice(DAILY_ADVICE[randomIndex]);
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   const handleCopy = () => {
     if (!advice) return;
@@ -328,7 +350,16 @@ export default function DailyAdviceCard() {
                   <p className="text-[10px] uppercase tracking-widest font-bold text-white/30">Tebar Kebaikan Lewat Bagikan</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
+                  <button 
+                    onClick={handleShuffle}
+                    disabled={isRefreshing}
+                    className="group relative flex items-center justify-center gap-4 w-full py-5 sm:py-6 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-[1.5rem] font-display font-black text-xs uppercase tracking-[0.2em] shadow-xl transition-all disabled:opacity-50"
+                  >
+                    <RefreshCw size={18} className={cn("transition-transform group-hover:rotate-180", isRefreshing && "animate-spin")} />
+                    Insight Lainnya
+                  </button>
+
                   <button 
                     onClick={handleShare}
                     className="group relative flex items-center justify-center gap-4 w-full py-5 sm:py-6 bg-white text-black rounded-[1.5rem] font-display font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:translate-y-[-4px] active:translate-y-[2px]"

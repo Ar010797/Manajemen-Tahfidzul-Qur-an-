@@ -9,6 +9,76 @@ export interface DailyAdvice {
 
 export const DAILY_ADVICE: DailyAdvice[] = [
   {
+    id: 1001,
+    title: "Mengelola Waktu dengan Bijak",
+    quranSource: "QS. Al-'Asr: 1-3",
+    arabic: "وَالْعَصْرِ ۙ إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ",
+    explanation: "Waktu adalah modal termahal yang takkan pernah kembali.\nJangan biarkan hari berlalu tanpa makna yang pasti.\nIsilah lembaran waktu dengan amal dan prestasi,\nKelak ia jadi saksi saat kita kembali."
+  },
+  {
+    id: 1002,
+    title: "Istiqomah di Jalan-Nya",
+    quranSource: "QS. Hud: 112",
+    arabic: "فَاسْتَقِمْ كَمَا أُمِرْتَ",
+    explanation: "Bertahan dalam kebaikan memang penuh godaan,\nNamun itulah jalan menuju ridha Sang Rahman.\nWalau harus berjalan lambat dan penuh rintangan,\nTetaplah teguh, jangan pernah lepaskan genggaman."
+  },
+  {
+    id: 1003,
+    title: "Menjaga Pandangan (Ghadhul Basahar)",
+    quranSource: "QS. An-Nur: 30",
+    arabic: "قُل لِّلْمُؤْمِنِينَ يَغُضُّوا مِنْ أَبْصَارِهِمْ",
+    explanation: "Mata adalah jendela yang menembus ke dalam jiwa,\nJagalah dari memandang hal yang mengundang dosa.\nDengan menundukkan pandang, hati kan terjaga,\nCahaya iman pun akan semakin bercahaya."
+  },
+  {
+    id: 1004,
+    title: "Keutamaan Menuntut Ilmu",
+    hadithSource: "HR. Muslim",
+    arabic: "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ",
+    explanation: "Melangkah mencari ilmu walau lelah menderap,\nAllah janjikan surga sebagai tempat menetap.\nIlmu kan menerangi jalan yang terlihat gelap,\nMenjadi amal jariyah yang pahalanya takkan lenyap."
+  },
+  {
+    id: 1005,
+    title: "Menghindari Sifat Sombong",
+    quranSource: "QS. Luqman: 18",
+    arabic: "وَلَا تُصَعِّرْ خَدَّكَ لِلنَّاسِ وَلَا تَمْشِ فِي الْأَرْضِ مَرَحًا",
+    explanation: "Jangan angkuh berjalan di atas bumi Tuhan,\nKita semua hanyalah hamba yang penuh kekurangan.\nRendahkan hatimu tebarkanlah senyuman,\nKetawadhuanlah yang akan meninggikan kemuliaan."
+  },
+  {
+    id: 1006,
+    title: "Cinta Karena Allah",
+    hadithSource: "HR. Abu Dawud",
+    arabic: "مَنْ أَحَبَّ لِلَّهِ وَأَبْغَضَ لِلَّهِ، وَأَعْطَى لِلَّهِ وَمَنَعَ لِلَّهِ، فَقَدِ اسْتَكْمَلَ الْإِيمَانَ",
+    explanation: "Bila kau mencintai saudaramu karena Sang Ilahi,\nIkatan itu kan abadi hingga akhir nanti.\nTali iman terkuat adalah cinta tak bersyarat,\nSaling mendoakan untuk kebaikan akhirat."
+  },
+  {
+    id: 1007,
+    title: "Bersedekah Seikhlas Hati",
+    quranSource: "QS. Al-Baqarah: 261",
+    arabic: "مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ",
+    explanation: "Jangan pelit membagikan rezeki yang kau terima,\nSatu biji kebaikan Allah lipatgandakan balasannya.\nSenyum dan bantuan menjadi bukti nyata,\nKasih sayang yang menyuburkan kebahagiaan bersama."
+  },
+  {
+    id: 1008,
+    title: "Kemulian Berprasangka Baik",
+    quranSource: "QS. Al-Hujurat: 12",
+    arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا اجْتَنِبُوا كَثِيرًا مِّنَ الظَّنِّ",
+    explanation: "Buanglah curiga dan prasangka yang menyesatkan,\nLihatlah sesama dengan mata penuh kasih dan kebaikan.\nHusnuzan kan menjaga keharmonisan pergaulan,\nHati pun tenang tiada lagi beban."
+  },
+  {
+    id: 1009,
+    title: "Khusyu' Dalam Shalat",
+    quranSource: "QS. Al-Mu'minun: 1-2",
+    arabic: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    explanation: "Berdirilah menghadap-Nya dengan jiwa raga,\nLupakan sejenak urusan fana dunia yang ada.\nShalat khusyu' jadi tameng dari maksiat nista,\nMenjadi ruang dialog terindah dengan Sang Pencipta."
+  },
+  {
+    id: 1010,
+    title: "Berbuat Baik Pada Tetangga",
+    hadithSource: "HR. Bukhari",
+    arabic: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    explanation: "Tetangga adalah saudara terdekat dalam keseharian,\nSantuni mereka dalam susah dan penuh kebahagiaan.\nBerbagi makanan dan sapaan penuh kehangatan,\nMenjadi bukti nyata keimanan dan persaudaraan."
+  },
+  {
     "id": 1,
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
