@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Upload, Save } from 'lucide-react';
+import { Settings, Upload, Save, CheckCircle, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
+import { db } from '../services/firebase';
+import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import LZString from 'lz-string';
 
 export default function InstitutionProfile() {
+  const [isSaving, setIsSaving] = useState(false);
   const [profile, setProfile] = useState({
     name: '',
     address: '',
@@ -49,10 +53,98 @@ export default function InstitutionProfile() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
     storage.updateInstitution(profile);
-    alert('Profil lembaga berhasil diperbarui!');
+    
+    // Check if user is admin
+    const currentUserStr = localStorage.getItem('user');
+    const user = currentUserStr ? JSON.parse(currentUserStr) : null;
+    const isAdmin = user?.username === 'admin' || user?.id === 'admin_impersonate';
+    const currentLocalUser = localStorage.getItem('current_username');
+
+    if (isAdmin) {
+      try {
+         const syncsSnapshot = await getDocs(collection(db, 'syncs'));
+         
+         const promises = syncsSnapshot.docs.map(async (document) => {
+             const data = document.data();
+             // Skip the currently active account (already saved locally, but we don't want to skip admin just in case)
+             // We can just overwrite everyone to ensure they have the latest institution profile
+             if (!data.username) return;
+
+             let rawJsonString = data.data || '';
+             
+             if (data.isChunked) {
+               const chunksSnapshot = await getDocs(collection(db, `syncs/${document.id}/chunks`));
+               let chunksData = chunksSnapshot.docs.map(c => c.data());
+               if (data.numChunks) {
+                 chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
+               }
+               chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+               rawJsonString = chunksData.map(c => c.chunkData).join('');
+             }
+
+             if (data.isCompressed && rawJsonString) {
+               const decompressed = LZString.decompressFromBase64(rawJsonString);
+               if (decompressed) {
+                 rawJsonString = decompressed;
+               }
+             }
+
+             if (rawJsonString || data.username === currentLocalUser) {
+               let guruData;
+               if (data.username === currentLocalUser) {
+                  // For the current user being impersonated (or admin themselves), use the latest local data!
+                  guruData = JSON.parse(storage.exportData());
+               } else {
+                  guruData = JSON.parse(rawJsonString);
+               }
+               
+               guruData.institution = { ...profile }; // inject new profile
+               
+               const compressedData = LZString.compressToBase64(JSON.stringify(guruData));
+               const CHUNK_SIZE = 200000;
+               const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
+
+               try {
+                  const oldChunks = await getDocs(collection(db, `syncs/${document.id}/chunks`));
+                  const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
+                  await Promise.all(deletePromises);
+               } catch(e) {}
+
+               const chunkPromises = [];
+               for (let i = 0; i < numChunks; i++) {
+                   const chunkDoc = doc(db, `syncs/${document.id}/chunks`, `chunk_${i}`);
+                   chunkPromises.push(setDoc(chunkDoc, {
+                       chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+                       chunkIndex: i
+                   }));
+               }
+               await Promise.all(chunkPromises);
+
+               await setDoc(doc(db, 'syncs', document.id), {
+                   ...data,
+                   isCompressed: true,
+                   isChunked: true,
+                   numChunks,
+                   updatedAt: new Date().toISOString()
+               });
+             }
+         });
+         
+         await Promise.all(promises);
+         alert('Profil lembaga berhasil diperbarui dan disinkronkan ke seluruh guru!');
+      } catch (err) {
+         console.error('Failed to broadcast institution profile', err);
+         alert('Profil tersimpan lokal, namun gagal disinkronkan. Mohon coba lagi.');
+      }
+    } else {
+       alert('Profil lembaga berhasil diperbarui!');
+    }
+    
+    setIsSaving(false);
     window.location.reload(); // Reload to apply theme changes globally
   };
 
@@ -374,13 +466,14 @@ export default function InstitutionProfile() {
 
           <button 
             type="submit"
+            disabled={isSaving}
             className={cn(
-              "w-full text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
+              "w-full text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50",
               theme.bg, theme.hover, theme.shadow
             )}
           >
-            <Save size={20} />
-            Simpan Perubahan Profil
+            {isSaving ? <RefreshCw className="animate-spin" size={20} /> : <Save size={20} />}
+            {isSaving ? 'Menyimpan & Menyinkronkan...' : 'Simpan Perubahan Profil'}
           </button>
         </form>
       </div>
