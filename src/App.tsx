@@ -106,12 +106,19 @@ export default function App() {
                      if (data.numChunks) {
                        chunksData = chunksData.filter(c => c.chunkIndex < data.numChunks);
                      }
-                     chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
-                     rawJsonString = chunksData.map(c => c.chunkData).join('');
+                     if (chunksData.length === data.numChunks && data.numChunks > 0) {
+                       chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+                       rawJsonString = chunksData.map(c => c.chunkData).join('');
+                     } else if (chunksData.length > 0 && !data.data) {
+                       chunksData.sort((a, b) => a.chunkIndex - b.chunkIndex);
+                       rawJsonString = chunksData.map(c => c.chunkData).join('');
+                     }
                   }
                   
-                  if (data.isCompressed && rawJsonString) {
-                     const decompressed = LZString.decompressFromBase64(rawJsonString);
+                  const probablyCompressed = data.isCompressed || (rawJsonString && typeof rawJsonString === 'string' && rawJsonString.startsWith('N4Ig'));
+
+                  if (probablyCompressed && rawJsonString) {
+                     const decompressed = LZString.decompressFromBase64(rawJsonString) || LZString.decompressFromUTF16(rawJsonString);
                      if (decompressed) {
                         rawJsonString = decompressed;
                      }

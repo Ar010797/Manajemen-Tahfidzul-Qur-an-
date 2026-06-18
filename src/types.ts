@@ -8,6 +8,9 @@ export interface Institution {
   id: number;
   name: string;
   address: string;
+  name_mts?: string;
+  address_mts?: string;
+  logo_mts?: string;
   principal_name: string;
   coordinator_name: string;
   logo: string;

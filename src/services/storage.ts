@@ -26,17 +26,6 @@ export interface DataSchema {
     reminder_time?: string;
     principal_signature_size?: number;
     coordinator_signature_size?: number;
-    // MTs Configuration
-    name_mts?: string;
-    address_mts?: string;
-    principal_name_mts?: string;
-    coordinator_name_mts?: string;
-    logo_mts?: string;
-    watermark_mts?: string;
-    principal_signature_mts?: string;
-    coordinator_signature_mts?: string;
-    principal_signature_size_mts?: number;
-    coordinator_signature_size_mts?: number;
   };
   halaqoh: Array<{ id: string; name: string }>;
   students: Array<{ id: string; name: string; halaqoh_id: string | null; parent_phone?: string; order_index: number }>;

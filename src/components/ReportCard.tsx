@@ -375,6 +375,7 @@ export default function ReportCard() {
         style: {
           transform: 'none',
           boxShadow: 'none',
+          margin: '0',
           width: `${element.scrollWidth}px`,
           height: `${element.scrollHeight}px`
         }
@@ -494,6 +495,7 @@ export default function ReportCard() {
         style: {
           transform: 'none',
           boxShadow: 'none',
+          margin: '0',
           width: `${element.scrollWidth}px`,
           height: `${element.scrollHeight}px`
         }
@@ -742,6 +744,11 @@ export default function ReportCard() {
             themeColor === 'rose' ? 'accent-rose-600' :
             'accent-slate-600',
   };
+
+  const isMts = selectedStudent ? /mts|tsanawiyah|\b[789]\b|\bvii\b|\bviii\b|\bix\b/i.test(selectedStudent.halaqoh_name || '') : false;
+  const instLogo = isMts && institution?.logo_mts ? institution.logo_mts : institution?.logo;
+  const instName = isMts && institution?.name_mts ? institution.name_mts : institution?.name;
+  const instAddress = isMts && institution?.address_mts ? institution.address_mts : institution?.address;
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 font-sans">
@@ -1079,81 +1086,68 @@ export default function ReportCard() {
                    <div className="h-px bg-stone-200 flex-1" />
                 </div>
                 
-                {(() => {
-                  const halName = selectedStudent?.halaqoh_name?.toLowerCase() || '';
-                  const isMts = halName.includes('mts') || halName.includes('7') || halName.includes('8') || halName.includes('9');
-                  
-                  const instName = isMts && institution?.name_mts ? institution.name_mts : (institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM');
-                  const instAddress = isMts && institution?.address_mts ? institution.address_mts : institution?.address;
-                  const instLogo = isMts && institution?.logo_mts ? institution.logo_mts : institution?.logo;
-                  const instWatermark = isMts && institution?.watermark_mts ? institution.watermark_mts : institution?.watermark;
-                  const instPrincipalName = isMts && institution?.principal_name_mts ? institution.principal_name_mts : (institution?.principal_name || 'Cikun, S.Pd');
-                  const instCoordinatorName = isMts && institution?.coordinator_name_mts ? institution.coordinator_name_mts : (institution?.coordinator_name || 'Abdul Rohman');
-                  const instPrincipalSignature = isMts && institution?.principal_signature_mts ? institution.principal_signature_mts : institution?.principal_signature;
-                  const instCoordinatorSignature = isMts && institution?.coordinator_signature_mts ? institution.coordinator_signature_mts : institution?.coordinator_signature;
+                <div className="border border-stone-200/40 rounded-[3.5rem] overflow-x-auto shadow-2xl bg-white p-6 lg:p-16">
+                  <style dangerouslySetInnerHTML={{ __html: `
+                    @media print {
+                      @page { size: A4 portrait; margin: 0; }
+                      body { margin: 0; padding: 0; }
+                      #report-card-preview { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
+                    }
+                  ` }} />
+                  <div className="flex justify-center w-full min-w-max">
+                    <div id="report-card-preview" className="p-[15mm] pt-[20mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start" style={{ width: '210mm', minHeight: '297mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', boxSizing: 'border-box' }}>
+                    {/* Watermark */}
+                  {institution?.watermark && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
+                      <img 
+                        src={institution.watermark} 
+                        alt="" 
+                        crossOrigin="anonymous"
+                        className="w-[120mm] h-[120mm] object-contain" 
+                        style={{ backgroundColor: 'transparent' }} 
+                      />
+                    </div>
+                  )}
 
-                  return (
-                    <div className="border border-stone-200/40 rounded-[3.5rem] overflow-x-auto shadow-2xl bg-white p-6 lg:p-16 flex justify-center">
-                      <style dangerouslySetInnerHTML={{ __html: `
-                        @media print {
-                          @page { size: A4 portrait; margin: 0; }
-                          body { margin: 0; padding: 0; }
-                          #report-card-preview { margin: 0 !important; box-shadow: none !important; border: none !important; width: 210mm !important; }
-                        }
-                      ` }} />
-                      <div id="report-card-preview" className="bg-white flex flex-col items-center justify-start text-stone-950 relative" style={{ width: '210mm', minHeight: '297mm', padding: '20mm 15mm 15mm 15mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0', boxSizing: 'border-box' }}>
-                      {/* Watermark */}
-                      {instWatermark && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, backgroundColor: 'transparent', zIndex: 0 }}>
-                          <img 
-                            src={instWatermark} 
-                            alt="" 
-                            crossOrigin="anonymous"
-                            className="w-[120mm] h-[120mm] object-contain" 
-                            style={{ backgroundColor: 'transparent' }} 
-                          />
-                        </div>
-                      )}
-
-                      {/* Header */}
-                      <div className="w-full relative z-10 mb-4">
-                        <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none' }} className="pt-2">
-                          <tbody>
-                            <tr>
-                              <td style={{ width: '100px', verticalAlign: 'top', border: 'none', padding: 0 }}>
-                                {instLogo && (
-                                  <img 
-                                    src={instLogo} 
-                                    alt="Logo" 
-                                    crossOrigin="anonymous" 
-                                    style={{ width: '96px', height: '96px', objectFit: 'contain', backgroundColor: 'transparent', maxWidth: 'none' }}
-                                  />
-                                )}
-                              </td>
-                              <td style={{ verticalAlign: 'middle', textAlign: 'center', border: 'none', padding: '0 16px' }}>
-                                <p className="text-[28px] mb-1 text-center" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
-                                  شهادة حفظ القرآن الكريم
-                                </p>
-                                <div style={{ margin: '0 auto', maxWidth: '160mm' }}>
-                                  <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-none text-stone-950 pb-1">{instName}</h1>
-                                  <p className="text-[10px] sm:text-[11px] leading-snug font-medium text-stone-600 italic">{instAddress}</p>
-                                </div>
-                              </td>
-                              <td style={{ width: '100px', border: 'none', padding: 0 }}></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        
-                        {/* Thick Horizontal Line */}
-                        <div className="w-full h-1 bg-black mt-4 mb-3" style={{ height: '3px' }}></div>
-                        
-                        <div className="w-full text-center">
-                          <div className="text-[11px] sm:text-[13px] font-bold uppercase tracking-[0.1em] space-y-0.5 text-stone-950">
-                            <p>UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
-                            <p>TAHUN AJARAN {institution?.academic_year || '2025/2026'}</p>
-                          </div>
-                        </div>
+                  {/* Header */}
+                  <div className="w-full relative z-10 mb-4">
+                    <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none' }} className="pt-2">
+                      <tbody>
+                        <tr>
+                          <td style={{ width: '100px', verticalAlign: 'top', border: 'none', padding: 0 }}>
+                            {instLogo && (
+                              <img 
+                                src={instLogo} 
+                                alt="Logo" 
+                                crossOrigin="anonymous" 
+                                style={{ width: '96px', height: '96px', objectFit: 'contain', backgroundColor: 'transparent', maxWidth: 'none' }}
+                              />
+                            )}
+                          </td>
+                          <td style={{ verticalAlign: 'middle', textAlign: 'center', border: 'none', padding: '0 16px' }}>
+                            <p className="text-[28px] mb-1 text-center" dir="rtl" style={{ fontFamily: "'Amiri', serif", fontWeight: 400, letterSpacing: '0', fontVariantLigatures: 'common-ligatures', textRendering: 'optimizeLegibility' }}>
+                              شهادة حفظ القرآن الكريم
+                            </p>
+                            <div style={{ margin: '0 auto', maxWidth: '160mm' }}>
+                              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-none text-stone-950 pb-1">{instName || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h1>
+                              <p className="text-[10px] sm:text-[11px] leading-snug font-medium text-stone-600 italic">{instAddress}</p>
+                            </div>
+                          </td>
+                          <td style={{ width: '100px', border: 'none', padding: 0 }}></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    
+                    {/* Thick Horizontal Line */}
+                    <div className="w-full h-1 bg-black mt-4 mb-3" style={{ height: '3px' }}></div>
+                    
+                    <div className="w-full text-center">
+                      <div className="text-[11px] sm:text-[13px] font-bold uppercase tracking-[0.1em] space-y-0.5 text-stone-950">
+                        <p>UJIAN TAHFIDZUL QUR'AN SEMESTER {semester.toUpperCase()}</p>
+                        <p>TAHUN AJARAN {institution?.academic_year || '2025/2026'}</p>
                       </div>
+                    </div>
+                  </div>
 
                   {/* Student Info */}
                   <div className="w-full flex justify-between items-start text-[13px] mb-4 font-bold relative z-10">
@@ -1196,18 +1190,20 @@ export default function ReportCard() {
                   </div>
 
                   {/* Signatures */}
-                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10 flex-shrink-0">
-                    <div className="flex flex-col items-center">
-                      <p className="mb-10">Orang Tua/Wali,</p>
-                      <p className="font-bold underline decoration-1 underline-offset-4">( .............................. )</p>
+                  <div className="w-full grid grid-cols-3 text-[11px] sm:text-[12px] text-center mt-auto relative z-10 flex-shrink-0 pt-8">
+                    <div className="flex flex-col items-center h-full">
+                      <p className="invisible mb-0.5">.</p>
+                      <p className="mb-4">Orang Tua/Wali,</p>
+                      <div className="relative flex items-center justify-center h-[50px] w-full mb-2"></div>
+                      <p className="font-bold mt-auto tracking-[2px]">( ................................... )</p>
                     </div>
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center h-full">
                       <p className="mb-0.5">Mengetahui,</p>
                       <p className="mb-4">Kepala Sekolah</p>
                       <div className="relative flex items-center justify-center h-[50px] w-full mb-2">
-                        {instPrincipalSignature && (
+                        {institution?.principal_signature && (
                           <img 
-                            src={instPrincipalSignature} 
+                            src={institution.principal_signature} 
                             alt="Principal Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
@@ -1215,17 +1211,17 @@ export default function ReportCard() {
                           />
                         )}
                       </div>
-                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{instPrincipalName}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{institution?.principal_name || 'Cikun, S.Pd'}</p>
                     </div>
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center h-full">
                       <p className="mb-0.5 text-[11px]">
                         {institution?.report_date || `Cikunir, ${format(new Date(), 'dd MMMM yyyy', { locale: id })}`}
                       </p>
                       <p className="mb-4">Koordinator Tahfidz,</p>
                       <div className="relative flex items-center justify-center h-[50px] w-full mb-2">
-                        {instCoordinatorSignature && (
+                        {institution?.coordinator_signature && (
                           <img 
-                            src={instCoordinatorSignature} 
+                            src={institution.coordinator_signature} 
                             alt="Coordinator Signature" 
                             crossOrigin="anonymous" 
                             className="object-contain" 
@@ -1233,13 +1229,12 @@ export default function ReportCard() {
                           />
                         )}
                       </div>
-                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{instCoordinatorName}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4 mt-auto">{institution?.coordinator_name || 'Abdul Rohman'}</p>
                     </div>
                   </div>
                 </div>
               </div>
-            );
-          })()}
+            </div>
             </div>
           </div>
         </div>
