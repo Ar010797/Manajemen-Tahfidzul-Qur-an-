@@ -883,54 +883,69 @@ export default function MonthlyRecap() {
                     #recap-preview-container { margin: 0 auto !important; box-shadow: none !important; border: none !important; width: 330mm !important; }
                   }
                 ` }} />
-                <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '330mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
-                  {/* Watermark Logo */}
-                  {institution?.watermark && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, zIndex: 0 }}>
-                      <img 
-                        src={institution.watermark} 
-                        alt="" 
-                        crossOrigin="anonymous"
-                        className="w-[140mm] h-[140mm] object-contain" 
-                        style={{ backgroundColor: 'transparent' }}
-                      />
-                    </div>
-                  )}
+                {(() => {
+                  const currentHalaqohName = halaqohs.find(h => h.id == selectedHalaqoh)?.name || '';
+                  const halName = currentHalaqohName.toLowerCase();
+                  const isMts = halName.includes('mts') || halName.includes('7') || halName.includes('8') || halName.includes('9');
+                  
+                  const instName = isMts && institution?.name_mts ? institution.name_mts : (institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM');
+                  const instAddress = isMts && institution?.address_mts ? institution.address_mts : institution?.address;
+                  const instLogo = isMts && institution?.logo_mts ? institution.logo_mts : institution?.logo;
+                  const instWatermark = isMts && institution?.watermark_mts ? institution.watermark_mts : institution?.watermark;
+                  const instPrincipalName = isMts && institution?.principal_name_mts ? institution.principal_name_mts : (institution?.principal_name || 'Cikun, S.Pd');
+                  const instCoordinatorName = isMts && institution?.coordinator_name_mts ? institution.coordinator_name_mts : (institution?.coordinator_name || 'Abdul Rohman');
+                  const instPrincipalSignature = isMts && institution?.principal_signature_mts ? institution.principal_signature_mts : institution?.principal_signature;
+                  const instCoordinatorSignature = isMts && institution?.coordinator_signature_mts ? institution.coordinator_signature_mts : institution?.coordinator_signature;
 
-                  {/* Header matches image precisely */}
-                  <div className="w-full relative z-10 mb-8 mt-4">
-                    <div className="flex items-start justify-center relative">
-                      {institution?.logo && (
-                        <div className="absolute left-8 top-0">
+                  return (
+                    <div id="recap-preview-container" className="mx-auto p-[15mm] pt-[15mm] pb-[15mm] relative bg-white flex flex-col items-center justify-start text-stone-950" style={{ width: '330mm', fontFamily: "'Outfit', 'Inter', sans-serif", color: '#000000', margin: '0 auto', boxSizing: 'border-box' }}>
+                      {/* Watermark Logo */}
+                      {instWatermark && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.1, zIndex: 0 }}>
                           <img 
-                            src={institution.logo} 
-                            alt="Logo" 
-                            crossOrigin="anonymous" 
-                            className="w-24 h-24 object-contain" 
+                            src={instWatermark} 
+                            alt="" 
+                            crossOrigin="anonymous"
+                            className="w-[140mm] h-[140mm] object-contain" 
                             style={{ backgroundColor: 'transparent' }}
                           />
                         </div>
                       )}
-                      <div className="text-center pt-2 px-32">
-                        <h1 className="text-3xl font-bold uppercase tracking-tight text-stone-950 leading-none pb-1">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
-                        <h2 className="text-2xl font-bold uppercase leading-tight text-stone-900">{institution?.name || 'SEKOLAH ISLAM MIFTAHUSSALAM'}</h2>
-                      </div>
-                    </div>
-                    {/* Thick Horizontal Line */}
-                    <div className="w-full h-1 bg-black mt-6" style={{ height: '3px' }}></div>
-                  </div>
 
-                  <div className="w-full grid grid-cols-2 text-sm mb-6 font-medium relative z-10 px-8">
-                    <div className="space-y-2">
-                      <p className="flex"><span className="w-24 inline-block">Bulan</span> <span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</span></p>
-                      <p className="flex"><span className="w-24 inline-block">Halaqoh</span> <span>: {halaqohs.find(h => h.id == selectedHalaqoh)?.name || '-'}</span></p>
-                      <p className="flex font-bold"><span className="w-24 inline-block">Aktif Perbulan</span> <span>: {maxActiveDays} Hari</span></p>
-                    </div>
-                    <div className="text-right space-y-2">
-                      <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
-                      <p>Tahun Ajaran: {institution?.academic_year || '2025/2026'}</p>
-                    </div>
-                  </div>
+                      {/* Header matches image precisely */}
+                      <div className="w-full relative z-10 mb-8 mt-4">
+                        <div className="flex items-start justify-center relative">
+                          {instLogo && (
+                            <div className="absolute left-8 top-0">
+                              <img 
+                                src={instLogo} 
+                                alt="Logo" 
+                                crossOrigin="anonymous" 
+                                className="w-24 h-24 object-contain" 
+                                style={{ backgroundColor: 'transparent' }}
+                              />
+                            </div>
+                          )}
+                          <div className="text-center pt-2 px-32">
+                            <h1 className="text-3xl font-bold uppercase tracking-tight text-stone-950 leading-none pb-1">REKAPITULASI BULANAN TAHFIDZUL QUR'AN</h1>
+                            <h2 className="text-2xl font-bold uppercase leading-tight text-stone-900">{instName}</h2>
+                          </div>
+                        </div>
+                        {/* Thick Horizontal Line */}
+                        <div className="w-full h-1 bg-black mt-6" style={{ height: '3px' }}></div>
+                      </div>
+
+                      <div className="w-full grid grid-cols-2 text-sm mb-6 font-medium relative z-10 px-8">
+                        <div className="space-y-2">
+                          <p className="flex"><span className="w-24 inline-block">Bulan</span> <span>: {format(new Date(selectedMonth), 'MMMM yyyy', { locale: id })}</span></p>
+                          <p className="flex"><span className="w-24 inline-block">Halaqoh</span> <span>: {currentHalaqohName || '-'}</span></p>
+                          <p className="flex font-bold"><span className="w-24 inline-block">Aktif Perbulan</span> <span>: {maxActiveDays} Hari</span></p>
+                        </div>
+                        <div className="text-right space-y-2">
+                          <p>Pengampu: {institution?.halaqoh_teacher_name || '-'}</p>
+                          <p>Tahun Ajaran: {institution?.academic_year || '2025/2026'}</p>
+                        </div>
+                      </div>
 
                   {/* Table with dynamic columns logic */}
                   <table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
@@ -1036,9 +1051,9 @@ export default function MonthlyRecap() {
                       <p className="mb-0">Mengetahui,</p>
                       <p className="mb-4">Kepala Sekolah</p>
                       <div className="relative flex items-center justify-center h-[100px] w-full mb-2">
-                        {institution?.principal_signature && (
+                        {instPrincipalSignature && (
                           <img 
-                            src={institution.principal_signature} 
+                            src={instPrincipalSignature} 
                             alt="Principal Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
@@ -1046,15 +1061,15 @@ export default function MonthlyRecap() {
                           />
                         )}
                       </div>
-                      <p className="font-bold underline decoration-1 underline-offset-4">{institution?.principal_name || 'Cikun S.Pd'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">{instPrincipalName}</p>
                     </div>
                     <div className="flex flex-col items-center">
                       <p className="invisible mb-0">.</p>
                       <p className="mb-4">Koordinator Tahfidz,</p>
                       <div className="relative flex items-center justify-center h-[100px] w-full mb-2">
-                        {institution?.coordinator_signature && (
+                        {instCoordinatorSignature && (
                           <img 
-                            src={institution.coordinator_signature} 
+                            src={instCoordinatorSignature} 
                             alt="Coordinator Signature" 
                             crossOrigin="anonymous"
                             className="object-contain" 
@@ -1062,10 +1077,12 @@ export default function MonthlyRecap() {
                           />
                         )}
                       </div>
-                      <p className="font-bold underline decoration-1 underline-offset-4">{institution?.coordinator_name || 'Abdul Rohman'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">{instCoordinatorName}</p>
                     </div>
                   </div>
                 </div>
+              );
+              })()}
               </div>
             </div>
           </div>

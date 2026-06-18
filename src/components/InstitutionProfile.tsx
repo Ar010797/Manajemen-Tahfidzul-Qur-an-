@@ -24,8 +24,20 @@ export default function InstitutionProfile() {
     coordinator_signature_size: 80,
     theme_color: 'emerald' as const,
     reminder_enabled: false,
-    reminder_time: '15:00'
+    reminder_time: '15:00',
+    name_mts: '',
+    address_mts: '',
+    principal_name_mts: '',
+    coordinator_name_mts: '',
+    logo_mts: '',
+    watermark_mts: '',
+    principal_signature_mts: '',
+    coordinator_signature_mts: '',
+    principal_signature_size_mts: 80,
+    coordinator_signature_size_mts: 80,
   });
+
+  const [activeTab, setActiveTab] = useState<'SD' | 'MTS'>('SD');
 
   useEffect(() => {
     const fetchProfile = () => {
@@ -36,13 +48,23 @@ export default function InstitutionProfile() {
         coordinator_signature: data.coordinator_signature || '',
         theme_color: data.theme_color || 'emerald',
         reminder_enabled: data.reminder_enabled ?? false,
-        reminder_time: data.reminder_time || '15:00'
+        reminder_time: data.reminder_time || '15:00',
+        name_mts: data.name_mts || '',
+        address_mts: data.address_mts || '',
+        principal_name_mts: data.principal_name_mts || '',
+        coordinator_name_mts: data.coordinator_name_mts || '',
+        logo_mts: data.logo_mts || '',
+        watermark_mts: data.watermark_mts || '',
+        principal_signature_mts: data.principal_signature_mts || '',
+        coordinator_signature_mts: data.coordinator_signature_mts || '',
+        principal_signature_size_mts: data.principal_signature_size_mts || 80,
+        coordinator_signature_size_mts: data.coordinator_signature_size_mts || 80,
       });
     };
     fetchProfile();
   }, []);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logo' | 'watermark' | 'principal_signature' | 'coordinator_signature') => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: keyof typeof profile) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -171,16 +193,45 @@ export default function InstitutionProfile() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
-        <h2 className="text-2xl font-bold text-stone-900 mb-8 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-stone-900 mb-6 flex items-center gap-3">
           <Settings className={theme.text} />
           Profil Lembaga & Pengesahan
         </h2>
 
+        <div className="flex border-b border-stone-200 mb-8">
+          <button
+            type="button"
+            className={cn(
+              "px-6 py-3 font-bold text-sm tracking-wide transition-colors",
+              activeTab === 'SD' 
+                ? `border-b-2 border-current ${theme.text}` 
+                : "text-stone-400 hover:text-stone-600"
+            )}
+            onClick={() => setActiveTab('SD')}
+          >
+            PENGATURAN SD
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "px-6 py-3 font-bold text-sm tracking-wide transition-colors",
+              activeTab === 'MTS' 
+                ? `border-b-2 border-current ${theme.text}` 
+                : "text-stone-400 hover:text-stone-600"
+            )}
+            onClick={() => setActiveTab('MTS')}
+          >
+            PENGATURAN MTs
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-8">
+          {activeTab === 'SD' ? (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Instansi</label>
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Instansi SD</label>
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
@@ -189,7 +240,7 @@ export default function InstitutionProfile() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Alamat Lengkap</label>
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Alamat Lengkap SD</label>
                 <textarea 
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 min-h-[100px]"
                   value={profile.address || ''}
@@ -200,7 +251,7 @@ export default function InstitutionProfile() {
 
             <div className="space-y-6">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah</label>
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah SD</label>
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
@@ -209,7 +260,7 @@ export default function InstitutionProfile() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Koordinator Tahfidz</label>
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Koordinator Tahfidz SD</label>
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
@@ -349,10 +400,12 @@ export default function InstitutionProfile() {
                 />
               </div>
             </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
             <div className="space-y-4">
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah</label>
+
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.principal_signature ? <img src={profile.principal_signature} alt="TTD Kepsek" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
@@ -413,7 +466,175 @@ export default function InstitutionProfile() {
               </div>
             </div>
           </div>
-          </div>
+          </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Instansi MTs</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      value={profile.name_mts || ''}
+                      onChange={e => setProfile({...profile, name_mts: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Alamat Lengkap MTs</label>
+                    <textarea 
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 min-h-[100px]"
+                      value={profile.address_mts || ''}
+                      onChange={e => setProfile({...profile, address_mts: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah MTs</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      value={profile.principal_name_mts || ''}
+                      onChange={e => setProfile({...profile, principal_name_mts: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Koordinator Tahfidz MTs</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      value={profile.coordinator_name_mts || ''}
+                      onChange={e => setProfile({...profile, coordinator_name_mts: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Tahun Ajaran</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      placeholder="Contoh: 2025/2026"
+                      value={profile.academic_year || ''}
+                      onChange={e => setProfile({...profile, academic_year: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Tanggal Rapor (Opsional)</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                      placeholder="Contoh: Cikunir, 20 Juni 2025"
+                      value={profile.report_date || ''}
+                      onChange={e => setProfile({...profile, report_date: e.target.value})}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Logo Lembaga MTs (Kop Surat)</label>
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                      {profile.logo_mts ? <img src={profile.logo_mts} alt="Logo MTs" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
+                    </div>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={e => handleFileUpload(e, 'logo_mts' as any)}
+                      className={cn(
+                        "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                        `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Watermark Rapor MTs</label>
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                      {profile.watermark_mts ? <img src={profile.watermark_mts} alt="Watermark MTs" className="w-full h-full object-contain opacity-50" /> : <Upload className="text-stone-300" />}
+                    </div>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={e => handleFileUpload(e, 'watermark_mts' as any)}
+                      className={cn(
+                        "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                        `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah MTs</label>
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                      {profile.principal_signature_mts ? <img src={profile.principal_signature_mts} alt="TTD Kepsek MTs" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={e => handleFileUpload(e, 'principal_signature_mts' as any)}
+                        className={cn(
+                          "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                          `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                        )}
+                      />
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px]">
+                          <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.principal_signature_size_mts || 80}px</span>
+                        </div>
+                        <input 
+                          type="range" min="40" max="300" step="10"
+                          value={profile.principal_signature_size_mts || 80}
+                          onChange={e => setProfile({...profile, principal_signature_size_mts: parseInt(e.target.value)})}
+                          className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Koordinator Tahfidz MTs</label>
+                  <div className="flex items-center gap-6">
+                    <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                      {profile.coordinator_signature_mts ? <img src={profile.coordinator_signature_mts} alt="TTD Koord MTs" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={e => handleFileUpload(e, 'coordinator_signature_mts' as any)}
+                        className={cn(
+                          "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                          `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                        )}
+                      />
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px]">
+                          <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.coordinator_signature_size_mts || 80}px</span>
+                        </div>
+                        <input 
+                          type="range" min="40" max="300" step="10"
+                          value={profile.coordinator_signature_size_mts || 80}
+                          onChange={e => setProfile({...profile, coordinator_signature_size_mts: parseInt(e.target.value)})}
+                          className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           <button 
             type="submit"
