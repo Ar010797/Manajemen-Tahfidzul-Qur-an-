@@ -17,6 +17,7 @@ export default defineConfig(({mode}) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,ttf}'],
+          maximumFileSizeToCacheInBytes: 5000000,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/picsum\.photos\/.*/i,

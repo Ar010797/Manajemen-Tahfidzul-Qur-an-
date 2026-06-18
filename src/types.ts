@@ -12,6 +12,7 @@ export interface Institution {
   address_mts?: string;
   logo_mts?: string;
   principal_name: string;
+  principal_name_mts?: string;
   coordinator_name: string;
   logo: string;
   watermark: string;

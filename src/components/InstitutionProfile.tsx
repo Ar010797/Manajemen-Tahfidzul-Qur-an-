@@ -15,6 +15,7 @@ export default function InstitutionProfile() {
     address_mts: '',
     logo_mts: '',
     principal_name: '',
+    principal_name_mts: '',
     coordinator_name: '',
     halaqoh_teacher_name: '',
     academic_year: '',
@@ -223,12 +224,21 @@ export default function InstitutionProfile() {
 
             <div className="space-y-6">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah</label>
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah (SD / Umum)</label>
                 <input 
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.principal_name || ''}
                   onChange={e => setProfile({...profile, principal_name: e.target.value})}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Nama Kepala Sekolah (Tsanawiyah / MTS)</label>
+                <input 
+                  type="text"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
+                  value={profile.principal_name_mts || ''}
+                  onChange={e => setProfile({...profile, principal_name_mts: e.target.value})}
                 />
               </div>
               <div className="space-y-1">

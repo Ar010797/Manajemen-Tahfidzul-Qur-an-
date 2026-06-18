@@ -443,6 +443,7 @@ export default function MonthlyRecap() {
   const isMts = /mts|tsanawiyah|\b[789]\b|\bvii\b|\bviii\b|\bix\b/i.test(currentHalaqohName);
   const instLogo = isMts && institution?.logo_mts ? institution.logo_mts : institution?.logo;
   const instName = isMts && institution?.name_mts ? institution.name_mts : institution?.name;
+  const instPrincipal = isMts && institution?.principal_name_mts ? institution.principal_name_mts : institution?.principal_name;
 
   const theme = {
     text: themeColor === 'emerald' ? 'text-emerald-600' :
@@ -1052,7 +1053,7 @@ export default function MonthlyRecap() {
                           />
                         )}
                       </div>
-                      <p className="font-bold underline decoration-1 underline-offset-4">{institution?.principal_name || 'Cikun S.Pd'}</p>
+                      <p className="font-bold underline decoration-1 underline-offset-4">{instPrincipal || 'Cikun S.Pd'}</p>
                     </div>
                     <div className="flex flex-col items-center">
                       <p className="invisible mb-0">.</p>
