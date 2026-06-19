@@ -20,6 +20,8 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingHalaqoh, setIsGeneratingHalaqoh] = useState(false);
+  const [generatingHalaqohProgress, setGeneratingHalaqohProgress] = useState('');
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -581,6 +583,142 @@ export default function ReportCard() {
     }
   };
 
+  const generateHalaqohPDF = async () => {
+    if (!currentHalaqohStudents || currentHalaqohStudents.length === 0 || isGeneratingHalaqoh) return;
+
+    const initialStudent = selectedStudent;
+    setIsGeneratingHalaqoh(true);
+
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: false
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      let isFirstPage = true;
+
+      for (let i = 0; i < currentHalaqohStudents.length; i++) {
+        const student = currentHalaqohStudents[i];
+        setGeneratingHalaqohProgress(`Memproses ${i + 1} dari ${currentHalaqohStudents.length}...`);
+        
+        fetchExamData(student);
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const element = document.getElementById('report-card-preview');
+        if (!element) continue;
+
+        const images = element.getElementsByTagName('img');
+        const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
+
+        await Promise.all([
+          fontPromise,
+          ...Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        ]);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const pixelRatio = 2;
+        const dataUrl = await htmlToImage.toPng(element, {
+          width: element.offsetWidth,
+          height: Math.max(element.offsetHeight, element.scrollHeight),
+          pixelRatio: pixelRatio,
+          backgroundColor: '#ffffff',
+          style: {
+            transform: 'none',
+            boxShadow: 'none',
+            margin: '0',
+            width: `${element.offsetWidth}px`,
+            height: `${Math.max(element.offsetHeight, element.scrollHeight)}px`
+          }
+        });
+        
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const imgRatio = imgProps.width / imgProps.height;
+        const pdfRatio = pdfWidth / pdfHeight;
+        
+        let finalWidth = pdfWidth;
+        let finalHeight = pdfHeight;
+        
+        if (imgRatio < pdfRatio) {
+          finalWidth = pdfWidth;
+          finalHeight = pdfWidth / imgRatio;
+        } else {
+          finalWidth = pdfWidth;
+          finalHeight = pdfWidth / imgRatio;
+        }
+        
+        const xOffset = (pdfWidth - finalWidth) / 2;
+        const yOffset = 0;
+        
+        if (!isFirstPage) {
+          pdf.addPage();
+        }
+        isFirstPage = false;
+        
+        pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
+        
+        let heightLeft = finalHeight - pdfHeight;
+        let position = yOffset - pdfHeight;
+        
+        while (heightLeft >= 0) {
+          pdf.addPage();
+          pdf.addImage(dataUrl, 'PNG', xOffset, position, finalWidth, finalHeight, undefined, 'NONE');
+          heightLeft -= pdfHeight;
+          position -= pdfHeight;
+        }
+      }
+      
+      setGeneratingHalaqohProgress('Menyimpan PDF...');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const halaqaName = selectedStudent?.halaqoh_name || 'Semua';
+      const safeName = halaqaName.replace(/[^a-z0-9]/gi, '_');
+      const fileName = `Rapor_Halaqoh_${safeName}_Semester_${semester}.pdf`;
+      
+      const median = (window as any).median || (window as any).gonative;
+      if (median) {
+        try {
+          const base64PDF = pdf.output('datauristring');
+          if (median.share && typeof median.share.download === 'function') {
+            median.share.download({ url: base64PDF, filename: fileName });
+          } else if (median.download && typeof median.download.downloadFile === 'function') {
+            median.download.downloadFile({ url: base64PDF, filename: fileName });
+          } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+            median.fileDownload.download({ url: base64PDF, filename: fileName });
+          } else {
+            pdf.save(fileName);
+          }
+        } catch (memErr) {
+          console.warn("Base64 generation failed, falling back to direct save", memErr);
+          pdf.save(fileName);
+        }
+      } else {
+        pdf.save(fileName);
+      }
+      
+    } catch (error: any) {
+      console.error('PDF Halaqoh Generation Error:', error);
+      alert('Gagal mengunduh rapor halaqoh: ' + (error.message || 'Terjadi kesalahan teknis'));
+    } finally {
+      setIsGeneratingHalaqoh(false);
+      setGeneratingHalaqohProgress('');
+      if (initialStudent) {
+        fetchExamData(initialStudent);
+      }
+    }
+  };
+
   const renderUmmiTable = () => {
     const filteredUmmi = examData.ummi.filter((e: any) => e.semester === semester);
     let highestLevelExam = filteredUmmi[0];
@@ -890,10 +1028,10 @@ export default function ReportCard() {
                   </button>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <button 
                     onClick={generatePDF}
-                    disabled={isGenerating}
+                    disabled={isGenerating || isGeneratingHalaqoh}
                     className={cn(
                       "text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50",
                       theme.bg, theme.shadow
@@ -904,11 +1042,22 @@ export default function ReportCard() {
                   </button>
                   <button 
                     onClick={() => generateImage('jpg')}
-                    disabled={isGenerating}
+                    disabled={isGenerating || isGeneratingHalaqoh}
                     className="bg-stone-950 text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] hover:bg-stone-800 transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50"
                   >
                     <FileText size={16} />
                     {isGenerating ? 'Wait...' : 'EXPOR JPG'}
+                  </button>
+                  <button 
+                    onClick={generateHalaqohPDF}
+                    disabled={isGeneratingHalaqoh || isGenerating}
+                    className={cn(
+                      "text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50",
+                      theme.bg, theme.shadow
+                    )}
+                  >
+                    <Download size={16} />
+                    {isGeneratingHalaqoh ? (generatingHalaqohProgress || 'Wait...') : 'CETAK SATU HALAQOH (PDF)'}
                   </button>
                 </div>
               </div>
