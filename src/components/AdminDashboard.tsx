@@ -51,7 +51,10 @@ export const AdminDashboard: React.FC = () => {
              const probablyCompressed = data.isCompressed || (rawJsonString && typeof rawJsonString === 'string' && rawJsonString.startsWith('N4Ig'));
 
              if (probablyCompressed && rawJsonString) {
-               const decompressed = LZString.decompressFromBase64(rawJsonString) || LZString.decompressFromUTF16(rawJsonString);
+               const decompressed = LZString.decompressFromBase64(rawJsonString) || 
+                                    LZString.decompressFromUTF16(rawJsonString) ||
+                                    LZString.decompressFromEncodedURIComponent(rawJsonString) ||
+                                    LZString.decompress(rawJsonString);
                if (decompressed) {
                  rawJsonString = decompressed;
                }
@@ -97,18 +100,9 @@ export const AdminDashboard: React.FC = () => {
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
-      const CHUNK_SIZE = 200000;
+      const CHUNK_SIZE = 800000;
       const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
       const usernameId = username.replace(/\s+/g, '_').toLowerCase();
-
-      // Clean up existing chunks first
-      try {
-        const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
-        const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
-        await Promise.all(deletePromises);
-      } catch (ex) {
-        console.error('Failed to cleanup old chunks', ex);
-      }
 
       // Save chunk documents FIRST to ensure data integrity
       const chunkPromises = [];
@@ -176,15 +170,9 @@ export const AdminDashboard: React.FC = () => {
            const d = globalData[guru];
            d.institution = { ...myInstitution };
            const compressedData = LZString.compressToBase64(JSON.stringify(d));
-           const CHUNK_SIZE = 200000;
+           const CHUNK_SIZE = 800000;
            const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
            const usernameId = docIds[guru] || guru.replace(/\s+/g, '_').toLowerCase();
-
-           try {
-              const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
-              const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
-              await Promise.all(deletePromises);
-           } catch(e) {}
 
            const chunkPromises = [];
            for (let i = 0; i < numChunks; i++) {

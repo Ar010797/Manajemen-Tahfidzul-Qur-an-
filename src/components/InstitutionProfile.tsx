@@ -24,8 +24,12 @@ export default function InstitutionProfile() {
     watermark: '',
     principal_signature: '',
     coordinator_signature: '',
+    principal_signature_mts: '',
+    coordinator_signature_mts: '',
     principal_signature_size: 80,
     coordinator_signature_size: 80,
+    principal_signature_size_mts: 80,
+    coordinator_signature_size_mts: 80,
     theme_color: 'emerald' as const,
     reminder_enabled: false,
     reminder_time: '15:00'
@@ -38,6 +42,8 @@ export default function InstitutionProfile() {
         ...data,
         principal_signature: data.principal_signature || '',
         coordinator_signature: data.coordinator_signature || '',
+        principal_signature_mts: data.principal_signature_mts || '',
+        coordinator_signature_mts: data.coordinator_signature_mts || '',
         theme_color: data.theme_color || 'emerald',
         reminder_enabled: data.reminder_enabled ?? false,
         reminder_time: data.reminder_time || '15:00'
@@ -46,12 +52,38 @@ export default function InstitutionProfile() {
     fetchProfile();
   }, []);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logo' | 'watermark' | 'principal_signature' | 'coordinator_signature') => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logo' | 'watermark' | 'principal_signature' | 'coordinator_signature' | 'logo_mts' | 'principal_signature_mts' | 'coordinator_signature_mts') => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfile({ ...profile, [field]: reader.result as string });
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 512;
+          const MAX_HEIGHT = 512;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/png', 0.8);
+          setProfile(prev => ({ ...prev, [field]: dataUrl }));
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -66,15 +98,9 @@ export default function InstitutionProfile() {
         const username = localStorage.getItem('current_username') || 'guru';
         const myData = storage.exportData();
         const compressedData = LZString.compressToBase64(myData);
-        const CHUNK_SIZE = 200000;
+        const CHUNK_SIZE = 800000;
         const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
         const usernameId = username.replace(/\s+/g, '_').toLowerCase();
-
-        try {
-           const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
-           const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
-           await Promise.all(deletePromises);
-        } catch(e) {}
 
         const chunkPromises = [];
         for (let i = 0; i < numChunks; i++) {
@@ -403,7 +429,7 @@ export default function InstitutionProfile() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
             <div className="space-y-4">
-              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah</label>
+              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah (SD/Umum)</label>
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.principal_signature ? <img src={profile.principal_signature} alt="TTD Kepsek" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
@@ -434,7 +460,38 @@ export default function InstitutionProfile() {
             </div>
 
             <div className="space-y-4">
-              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Koordinator Tahfidz</label>
+              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Kepala Sekolah (MTS)</label>
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                  {profile.principal_signature_mts ? <img src={profile.principal_signature_mts} alt="TTD Kepsek MTS" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
+                </div>
+                <div className="flex-1 space-y-4">
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleFileUpload(e, 'principal_signature_mts')}
+                    className={cn(
+                      "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                      `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                    )}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.principal_signature_size_mts || 80}px</span>
+                    </div>
+                    <input 
+                      type="range" min="40" max="300" step="10"
+                      value={profile.principal_signature_size_mts || 80}
+                      onChange={e => setProfile({...profile, principal_signature_size_mts: parseInt(e.target.value)})}
+                      className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Koordinator Tahfidz (SD/Umum)</label>
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
                   {profile.coordinator_signature ? <img src={profile.coordinator_signature} alt="TTD Koord" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
@@ -457,6 +514,37 @@ export default function InstitutionProfile() {
                       type="range" min="40" max="300" step="10"
                       value={profile.coordinator_signature_size || 80}
                       onChange={e => setProfile({...profile, coordinator_signature_size: parseInt(e.target.value)})}
+                      className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">TTD Koordinator Tahfidz (MTS)</label>
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                  {profile.coordinator_signature_mts ? <img src={profile.coordinator_signature_mts} alt="TTD Koord MTS" className="w-full h-full object-contain" /> : <Upload className="text-stone-300" />}
+                </div>
+                <div className="flex-1 space-y-4">
+                  <input 
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleFileUpload(e, 'coordinator_signature_mts')}
+                    className={cn(
+                      "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
+                      `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
+                    )}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-stone-400 font-bold uppercase tracking-wider">Ukuran TTD: {profile.coordinator_signature_size_mts || 80}px</span>
+                    </div>
+                    <input 
+                      type="range" min="40" max="300" step="10"
+                      value={profile.coordinator_signature_size_mts || 80}
+                      onChange={e => setProfile({...profile, coordinator_signature_size_mts: parseInt(e.target.value)})}
                       className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>

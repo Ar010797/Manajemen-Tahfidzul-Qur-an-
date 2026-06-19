@@ -16,6 +16,15 @@ export interface Institution {
   coordinator_name: string;
   logo: string;
   watermark: string;
+  principal_signature?: string;
+  coordinator_signature?: string;
+  principal_signature_mts?: string;
+  coordinator_signature_mts?: string;
+  principal_signature_size?: number;
+  coordinator_signature_size?: number;
+  principal_signature_size_mts?: number;
+  coordinator_signature_size_mts?: number;
+  theme_color?: 'emerald' | 'blue' | 'amber' | 'indigo' | 'purple' | 'rose' | 'slate';
   reminder_enabled?: boolean;
   reminder_time?: string; // HH:mm format
 }

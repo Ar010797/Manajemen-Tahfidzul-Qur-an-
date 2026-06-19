@@ -95,8 +95,8 @@ export default function App() {
            const serverUpdatedAt = data.updatedAt;
            const localUpdatedAt = localStorage.getItem('localUpdatedAt');
            
-           if (serverUpdatedAt && localUpdatedAt && serverUpdatedAt > localUpdatedAt) {
-               console.log("Newer data found on server. Auto-pulling...");
+           if (serverUpdatedAt && (!localUpdatedAt || serverUpdatedAt > localUpdatedAt)) {
+               console.log("Newer data or first login found. Auto-pulling...");
                setIsPullingData(true);
                try {
                   let rawJsonString = data.data || '';
@@ -118,7 +118,10 @@ export default function App() {
                   const probablyCompressed = data.isCompressed || (rawJsonString && typeof rawJsonString === 'string' && rawJsonString.startsWith('N4Ig'));
 
                   if (probablyCompressed && rawJsonString) {
-                     const decompressed = LZString.decompressFromBase64(rawJsonString) || LZString.decompressFromUTF16(rawJsonString);
+                     const decompressed = LZString.decompressFromBase64(rawJsonString) || 
+                                          LZString.decompressFromUTF16(rawJsonString) ||
+                                          LZString.decompressFromEncodedURIComponent(rawJsonString) ||
+                                          LZString.decompress(rawJsonString);
                      if (decompressed) {
                         rawJsonString = decompressed;
                      }
@@ -136,9 +139,6 @@ export default function App() {
                } finally {
                  setIsPullingData(false);
                }
-           } else if (serverUpdatedAt && !localUpdatedAt) {
-               // First time logging in or sync hasn't been done locally yet
-               localStorage.setItem('localUpdatedAt', serverUpdatedAt);
            }
        }
     });
@@ -406,14 +406,9 @@ export default function App() {
                            const myData = storage.exportData();
                            
                            const compressedData = LZString.compressToBase64(myData);
-                           const CHUNK_SIZE = 200000;
+                           const CHUNK_SIZE = 800000;
                            const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
                            const usernameId = username.replace(/\s+/g, '_').toLowerCase();
-
-                           // Clean up old chunks
-                           const oldChunks = await getDocs(collection(db, `syncs/${usernameId}/chunks`));
-                           const deletePromises = oldChunks.docs.map(c => deleteDoc(c.ref));
-                           await Promise.all(deletePromises);
 
                            // Save chunks
                            const chunkPromises = [];

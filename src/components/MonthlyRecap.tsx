@@ -237,8 +237,8 @@ export default function MonthlyRecap() {
 
         // Use html-to-image which handles modern CSS (OKLCH, etc) much better
         const canvas = await htmlToImage.toCanvas(element, {
-          width: element.scrollWidth,
-          height: element.scrollHeight,
+          width: element.offsetWidth,
+          height: Math.max(element.offsetHeight, element.scrollHeight),
           pixelRatio: pixelRatio,
           backgroundColor: '#ffffff',
           style: {
@@ -247,8 +247,8 @@ export default function MonthlyRecap() {
             padding: '0',
             borderRadius: '0',
             boxShadow: 'none',
-            width: `${element.scrollWidth}px`,
-            height: `${element.scrollHeight}px`
+            width: `${element.offsetWidth}px`,
+            height: `${Math.max(element.offsetHeight, element.scrollHeight)}px`
           }
         });
         
@@ -353,8 +353,8 @@ export default function MonthlyRecap() {
       const pixelRatio = 4; 
 
       const dataUrl = await htmlToImage.toPng(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
+        width: element.offsetWidth,
+        height: Math.max(element.offsetHeight, element.scrollHeight),
         pixelRatio: pixelRatio,
         backgroundColor: '#ffffff',
         style: {
@@ -363,8 +363,8 @@ export default function MonthlyRecap() {
           padding: '0',
           borderRadius: '0',
           boxShadow: 'none',
-          width: `${element.scrollWidth}px`,
-          height: `${element.scrollHeight}px`
+          width: `${element.offsetWidth}px`,
+          height: `${Math.max(element.offsetHeight, element.scrollHeight)}px`
         }
       });
 

@@ -20,8 +20,6 @@ export default function ReportCard() {
   const [recapSettings, setRecapSettings] = useState<any>(null);
   const [showListOnMobile, setShowListOnMobile] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isGeneratingAll, setIsGeneratingAll] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
   const [principalSigSize, setPrincipalSigSize] = useState(80);
   const [coordinatorSigSize, setCoordinatorSigSize] = useState(80);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -370,16 +368,16 @@ export default function ReportCard() {
 
       // High-end capture for Image
       const canvas = await htmlToImage.toCanvas(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
+        width: element.offsetWidth,
+        height: Math.max(element.offsetHeight, element.scrollHeight),
         pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           boxShadow: 'none',
           margin: '0',
-          width: `${element.scrollWidth}px`,
-          height: `${element.scrollHeight}px`
+          width: `${element.offsetWidth}px`,
+          height: `${Math.max(element.offsetHeight, element.scrollHeight)}px`
         }
       });
       
@@ -490,16 +488,16 @@ export default function ReportCard() {
       const pixelRatio = 4; 
 
       const dataUrl = await htmlToImage.toPng(element, {
-        width: element.scrollWidth,
-        height: element.scrollHeight,
+        width: element.offsetWidth,
+        height: Math.max(element.offsetHeight, element.scrollHeight),
         pixelRatio: pixelRatio, 
         backgroundColor: '#ffffff',
         style: {
           transform: 'none',
           boxShadow: 'none',
           margin: '0',
-          width: `${element.scrollWidth}px`,
-          height: `${element.scrollHeight}px`
+          width: `${element.offsetWidth}px`,
+          height: `${Math.max(element.offsetHeight, element.scrollHeight)}px`
         }
       });
       
@@ -580,102 +578,6 @@ export default function ReportCard() {
       console.error('PDF Generation Error:', error);
       alert('Gagal mengunduh rapor: ' + (error.message || 'Terjadi kesalahan teknis'));
       setIsGenerating(false);
-    }
-  };
-
-  const generateAllPDF = async () => {
-    if (!currentHalaqohStudents || currentHalaqohStudents.length === 0 || isGeneratingAll) return;
-    
-    setIsGeneratingAll(true);
-    const originalStudent = selectedStudent;
-    
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: false
-    });
-
-    try {
-      for (let i = 0; i < currentHalaqohStudents.length; i++) {
-        const student = currentHalaqohStudents[i];
-        setGenerationProgress(i + 1);
-        
-        await fetchExamData(student);
-        await new Promise(resolve => setTimeout(resolve, 800)); // wait for renders and animations
-        
-        const element = document.getElementById('report-card-preview');
-        if (!element) continue;
-
-        const images = element.getElementsByTagName('img');
-        const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
-
-        await Promise.all([
-          fontPromise,
-          ...Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-              img.onload = resolve;
-              img.onerror = resolve;
-            });
-          })
-        ]);
-
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        const pixelRatio = 4;
-        const dataUrl = await htmlToImage.toPng(element, {
-          width: element.scrollWidth,
-          height: element.scrollHeight,
-          pixelRatio: pixelRatio,
-          backgroundColor: '#ffffff',
-          style: { transform: 'none', boxShadow: 'none', margin: '0', width: `${element.scrollWidth}px`, height: `${element.scrollHeight}px` }
-        });
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        const imgProps = pdf.getImageProperties(dataUrl);
-        const imgRatio = imgProps.width / imgProps.height;
-        const pdfRatio = pdfWidth / pdfHeight;
-        
-        let finalWidth = pdfWidth;
-        let finalHeight = pdfWidth / imgRatio;
-        
-        if (i > 0) {
-          pdf.addPage();
-        }
-        
-        pdf.addImage(dataUrl, 'PNG', 0, 0, finalWidth, finalHeight, undefined, 'NONE');
-      }
-      
-      const halaqohName = currentHalaqohStudents[0].halaqoh_name || 'Halaqoh';
-      const fileName = `Rapor_Semua_${halaqohName.replace(/[^a-z0-9]/gi, '_')}_Semester_${semester}.pdf`;
-
-      const median = (window as any).median || (window as any).gonative;
-      if (median) {
-        const base64PDF = pdf.output('datauristring');
-        if (median.share && typeof median.share.download === 'function') {
-          median.share.download({ url: base64PDF, filename: fileName });
-        } else if (median.download && typeof median.download.downloadFile === 'function') {
-          median.download.downloadFile({ url: base64PDF, filename: fileName });
-        } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
-          median.fileDownload.download({ url: base64PDF, filename: fileName });
-        } else {
-          pdf.save(fileName);
-        }
-      } else {
-        pdf.save(fileName);
-      }
-    } catch (err: any) {
-      console.error('Error batch PDF', err);
-      alert('Gagal menghasilkan rapor semua siswa: ' + err.message);
-    } finally {
-      if (originalStudent) {
-        await fetchExamData(originalStudent);
-      }
-      setIsGeneratingAll(false);
-      setGenerationProgress(0);
     }
   };
 
@@ -990,17 +892,8 @@ export default function ReportCard() {
 
                 <div className="flex gap-3">
                   <button 
-                    onClick={generateAllPDF}
-                    disabled={isGenerating || isGeneratingAll}
-                    title="Cetak PDF semua siswa di halaqoh ini"
-                    className="bg-emerald-600 text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50"
-                  >
-                    <Download size={16} />
-                    {isGeneratingAll ? `${generationProgress}/${currentHalaqohStudents.length}` : 'SEMUA PDF'}
-                  </button>
-                  <button 
                     onClick={generatePDF}
-                    disabled={isGenerating || isGeneratingAll}
+                    disabled={isGenerating}
                     className={cn(
                       "text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50",
                       theme.bg, theme.shadow
@@ -1011,7 +904,7 @@ export default function ReportCard() {
                   </button>
                   <button 
                     onClick={() => generateImage('jpg')}
-                    disabled={isGenerating || isGeneratingAll}
+                    disabled={isGenerating}
                     className="bg-stone-950 text-white px-6 py-3.5 rounded-2xl font-display font-black text-[10px] uppercase tracking-[0.2em] hover:bg-stone-800 transition-all flex items-center justify-center gap-2 shadow-2xl hover:translate-y-[-2px] active:translate-y-[1px] disabled:opacity-50"
                   >
                     <FileText size={16} />
