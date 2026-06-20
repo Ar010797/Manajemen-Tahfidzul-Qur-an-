@@ -349,10 +349,11 @@ export default function MonthlyRecap() {
         })
       ]);
 
-      // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
-      const pixelRatio = 4; 
+      // Use pixel ratio 2 for high quality without crashing due to memory limits
+      const pixelRatio = 2; 
 
-      const dataUrl = await htmlToImage.toPng(element, {
+      const dataUrl = await htmlToImage.toJpeg(element, {
+        quality: 0.95,
         width: element.offsetWidth,
         height: Math.max(element.offsetHeight, element.scrollHeight),
         pixelRatio: pixelRatio,
@@ -372,14 +373,12 @@ export default function MonthlyRecap() {
         orientation: 'landscape',
         unit: 'mm',
         format: [330, 215], // F4/Folio size
-        compress: false // Disable compression to preserve the lossless ultra-high-resolution image perfectly
+        compress: true // Enable compression
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Use full page dimensions since element is already A4 size (297x210mm)
-      // Use 'NONE' compression to keep the high-resolution PNG image perfectly crisp and lossless
       const imgProps = pdf.getImageProperties(dataUrl);
       const imgRatio = imgProps.width / imgProps.height;
       const pdfRatio = pdfWidth / pdfHeight;
@@ -388,11 +387,9 @@ export default function MonthlyRecap() {
       let finalHeight = pdfHeight;
       
       if (imgRatio < pdfRatio) {
-        // Image is taller proportionally -> scale to height
         finalWidth = pdfHeight * imgRatio;
         finalHeight = pdfHeight;
       } else {
-        // Image is wider proportionally -> scale to width
         finalWidth = pdfWidth;
         finalHeight = pdfWidth / imgRatio;
       }
@@ -400,7 +397,7 @@ export default function MonthlyRecap() {
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = 0;
       
-      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
+      pdf.addImage(dataUrl, 'JPEG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
 
       const fileName = `Rekap_${selectedMonth}_${(halaqohs.find(h => h.id === selectedHalaqoh)?.name || 'Halaqoh').replace(/[^a-z0-9]/gi, '_')}.pdf`;
       

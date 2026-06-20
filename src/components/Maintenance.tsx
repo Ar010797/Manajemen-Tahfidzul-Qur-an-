@@ -4,7 +4,7 @@ import { storage } from '../services/storage';
 import { cn } from '../lib/utils';
 import ConfirmModal from './ConfirmModal';
 import { db } from '../services/firebase';
-import { doc, setDoc, getDocs, collection, deleteDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDocs, collection, deleteDoc, getDoc, writeBatch } from 'firebase/firestore';
 
 import LZString from 'lz-string';
 
@@ -224,28 +224,28 @@ export default function Maintenance() {
       const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
       const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      // Save chunk documents FIRST to ensure data integrity
-      const chunkPromises = [];
+      const batch = writeBatch(db);
       for (let i = 0; i < numChunks; i++) {
         const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-        chunkPromises.push(setDoc(chunkDoc, {
+        batch.set(chunkDoc, {
           chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
           chunkIndex: i
-        }));
+        });
       }
-      await Promise.all(chunkPromises);
 
       // Save metadata document AFTER chunks are successfully uploaded
       const updatedAtStr = new Date().toISOString();
       localStorage.setItem('localUpdatedAt', updatedAtStr);
 
-      await setDoc(doc(db, 'syncs', usernameId), {
+      batch.set(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
         isChunked: true,
         numChunks,
         updatedAt: updatedAtStr
       });
+      
+      await batch.commit();
 
       setSyncStatus('success');
       setTimeout(() => setSyncStatus('idle'), 3000);

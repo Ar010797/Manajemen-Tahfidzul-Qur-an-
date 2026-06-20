@@ -1,4 +1,5 @@
 // src/services/storage.ts
+import { safeJsonParse } from '../utils/jsonUtils';
 
 let CURRENT_USER = localStorage.getItem('current_username') || 'default';
 const getStorageKey = () => `tahfidz_data_${CURRENT_USER}`;
@@ -322,9 +323,7 @@ export const storage = {
   },
   importData: (json: string) => {
     try {
-      // Clean the string from potential BOM or whitespace
-      const cleanJson = json.trim().replace(/^\uFEFF/, '');
-      const data = JSON.parse(cleanJson);
+      const data = safeJsonParse(json);
       
       if (!data || typeof data !== 'object') {
         throw new Error('Data bukan merupakan objek JSON yang valid');

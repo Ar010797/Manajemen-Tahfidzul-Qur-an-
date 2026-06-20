@@ -3,7 +3,7 @@ import { Settings, Upload, Save, CheckCircle, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import LZString from 'lz-string';
 
 export default function InstitutionProfile() {
@@ -102,23 +102,23 @@ export default function InstitutionProfile() {
         const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
         const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-        const chunkPromises = [];
+        const batch = writeBatch(db);
         for (let i = 0; i < numChunks; i++) {
            const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-           chunkPromises.push(setDoc(chunkDoc, {
+           batch.set(chunkDoc, {
                chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
                chunkIndex: i
-           }));
+           });
         }
-        await Promise.all(chunkPromises);
 
-        await setDoc(doc(db, 'syncs', usernameId), {
+        batch.set(doc(db, 'syncs', usernameId), {
            username,
            isCompressed: true,
            isChunked: true,
            numChunks,
            updatedAt: new Date().toISOString()
         });
+        await batch.commit();
         alert('Profil lembaga berhasil diperbarui!');
     } catch (err) {
         console.error('Failed to sync profile', err);

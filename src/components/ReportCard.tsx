@@ -486,10 +486,11 @@ export default function ReportCard() {
       // Small delay to ensure rendering is stable
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Set high pixel ratio (4) consistently to get ultra-high-resolution images for WhatsApp sharing and printing without blurriness
-      const pixelRatio = 4; 
+      // Set high pixel ratio (2 is enough for ultra-high-resolution without crashing)
+      const pixelRatio = 2; 
 
-      const dataUrl = await htmlToImage.toPng(element, {
+      const dataUrl = await htmlToImage.toJpeg(element, {
+        quality: 0.95,
         width: element.offsetWidth,
         height: Math.max(element.offsetHeight, element.scrollHeight),
         pixelRatio: pixelRatio, 
@@ -507,14 +508,12 @@ export default function ReportCard() {
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
-        compress: false // Disable compression to preserve the lossless ultra-high-resolution image perfectly
+        compress: true // Enable compression
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      // Use full page dimensions since element is already A4 size (210x297mm)
-      // Use 'NONE' compression to keep the high-resolution PNG image perfectly crisp and lossless
       const imgProps = pdf.getImageProperties(dataUrl);
       const imgRatio = imgProps.width / imgProps.height;
       const pdfRatio = pdfWidth / pdfHeight;
@@ -523,33 +522,17 @@ export default function ReportCard() {
       let finalHeight = pdfHeight;
       
       if (imgRatio < pdfRatio) {
-        // Image is proportionally taller than A4 page -> scale strictly by width so text doesn't shrink
-        finalWidth = pdfWidth;
-        finalHeight = pdfWidth / imgRatio;
+        finalWidth = pdfHeight * imgRatio;
+        finalHeight = pdfHeight;
       } else {
-        // Image is proportionally wider than A4 page -> scale strictly by width
         finalWidth = pdfWidth;
         finalHeight = pdfWidth / imgRatio;
       }
       
-      // Center image horizontally and align top
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = 0;
       
-      // If height is larger than 1 page, jsPDF addImage will draw off-page.
-      // We can add a new page if it exceeds A4 height significantly.
-      pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
-      
-      // If the content spilled over to a second page mathematically, add one and draw the rest
-      let heightLeft = finalHeight - pdfHeight;
-      let position = yOffset - pdfHeight;
-      
-      while (heightLeft >= 0) {
-        pdf.addPage();
-        pdf.addImage(dataUrl, 'PNG', xOffset, position, finalWidth, finalHeight, undefined, 'NONE');
-        heightLeft -= pdfHeight;
-        position -= pdfHeight;
-      }
+      pdf.addImage(dataUrl, 'JPEG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
 
       const safeName = (selectedStudent.name || 'Siswa').replace(/[^a-z0-9]/gi, '_');
       const fileName = `Rapor_${safeName}_Semester_${semester}.pdf`;
@@ -594,7 +577,7 @@ export default function ReportCard() {
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
-        compress: false
+        compress: true
       });
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -628,8 +611,9 @@ export default function ReportCard() {
 
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        const pixelRatio = 2;
-        const dataUrl = await htmlToImage.toPng(element, {
+        const pixelRatio = 2; // optimized for mass download memory efficiency
+        const dataUrl = await htmlToImage.toJpeg(element, {
+          quality: 0.9,
           width: element.offsetWidth,
           height: Math.max(element.offsetHeight, element.scrollHeight),
           pixelRatio: pixelRatio,
@@ -651,8 +635,8 @@ export default function ReportCard() {
         let finalHeight = pdfHeight;
         
         if (imgRatio < pdfRatio) {
-          finalWidth = pdfWidth;
-          finalHeight = pdfWidth / imgRatio;
+          finalWidth = pdfHeight * imgRatio;
+          finalHeight = pdfHeight;
         } else {
           finalWidth = pdfWidth;
           finalHeight = pdfWidth / imgRatio;
@@ -666,17 +650,7 @@ export default function ReportCard() {
         }
         isFirstPage = false;
         
-        pdf.addImage(dataUrl, 'PNG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'NONE');
-        
-        let heightLeft = finalHeight - pdfHeight;
-        let position = yOffset - pdfHeight;
-        
-        while (heightLeft >= 0) {
-          pdf.addPage();
-          pdf.addImage(dataUrl, 'PNG', xOffset, position, finalWidth, finalHeight, undefined, 'NONE');
-          heightLeft -= pdfHeight;
-          position -= pdfHeight;
-        }
+        pdf.addImage(dataUrl, 'JPEG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
       }
       
       setGeneratingHalaqohProgress('Menyimpan PDF...');
@@ -688,19 +662,15 @@ export default function ReportCard() {
       
       const median = (window as any).median || (window as any).gonative;
       if (median) {
-        try {
-          const base64PDF = pdf.output('datauristring');
-          if (median.share && typeof median.share.download === 'function') {
-            median.share.download({ url: base64PDF, filename: fileName });
-          } else if (median.download && typeof median.download.downloadFile === 'function') {
-            median.download.downloadFile({ url: base64PDF, filename: fileName });
-          } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
-            median.fileDownload.download({ url: base64PDF, filename: fileName });
-          } else {
-            pdf.save(fileName);
-          }
-        } catch (memErr) {
-          console.warn("Base64 generation failed, falling back to direct save", memErr);
+        const base64PDF = pdf.output('datauristring');
+        
+        if (median.share && typeof median.share.download === 'function') {
+          median.share.download({ url: base64PDF, filename: fileName });
+        } else if (median.download && typeof median.download.downloadFile === 'function') {
+          median.download.downloadFile({ url: base64PDF, filename: fileName });
+        } else if (median.fileDownload && typeof median.fileDownload.download === 'function') {
+          median.fileDownload.download({ url: base64PDF, filename: fileName });
+        } else {
           pdf.save(fileName);
         }
       } else {

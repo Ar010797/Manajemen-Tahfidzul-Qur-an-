@@ -236,7 +236,8 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
         const fontPromise = (document as any).fonts ? (document as any).fonts.ready : Promise.resolve();
         await fontPromise;
 
-        const imgData = await htmlToImage.toPng(el, { 
+        const imgData = await htmlToImage.toJpeg(el, { 
+          quality: 0.95,
           pixelRatio: 2, 
           backgroundColor: '#ffffff',
           style: {
@@ -251,7 +252,12 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
            if (hasMaxHClass) tcontainer.classList.add('max-h-96');
         }
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfPageHeight = pdf.internal.pageSize.getHeight();
         const imgProps = pdf.getImageProperties(imgData);
@@ -261,13 +267,13 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
         let heightLeft = totalPdfHeight;
         let position = 0;
         
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, totalPdfHeight, undefined, 'FAST');
         heightLeft -= pdfPageHeight;
         
-        while (heightLeft >= 0) {
+        while (heightLeft > 1) {
            position = heightLeft - totalPdfHeight;
            pdf.addPage();
-           pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+           pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, totalPdfHeight, undefined, 'FAST');
            heightLeft -= pdfPageHeight;
         }
         

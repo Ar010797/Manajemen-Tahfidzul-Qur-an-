@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Shield, RefreshCw, Download, Users, FileText, CheckCircle, Trash2, Eye } from 'lucide-react';
 import { motion } from 'motion/react';
 import LZString from 'lz-string';
+import { safeJsonParse } from '../utils/jsonUtils';
 import { storage, setCurrentUser } from '../services/storage';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import ConfirmModal from './ConfirmModal';
 import { AdminProgressReport } from './AdminProgressReport';
 
@@ -60,7 +61,7 @@ export const AdminDashboard: React.FC = () => {
                }
              }
              if (rawJsonString) {
-               newData[data.username] = JSON.parse(rawJsonString);
+               newData[data.username] = safeJsonParse(rawJsonString);
                newDocIds[data.username] = document.id;
              }
            } catch (err) {
@@ -104,25 +105,26 @@ export const AdminDashboard: React.FC = () => {
       const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
       const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-      // Save chunk documents FIRST to ensure data integrity
-      const chunkPromises = [];
+      // Save chunk documents safely with writeBatch
+      const batch = writeBatch(db);
       for (let i = 0; i < numChunks; i++) {
         const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-        chunkPromises.push(setDoc(chunkDoc, {
+        batch.set(chunkDoc, {
           chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
           chunkIndex: i
-        }));
+        });
       }
-      await Promise.all(chunkPromises);
 
       // Save metadata document AFTER
-      await setDoc(doc(db, 'syncs', usernameId), {
+      batch.set(doc(db, 'syncs', usernameId), {
         username,
         isCompressed: true,
         isChunked: true,
         numChunks,
         updatedAt: new Date().toISOString()
       });
+
+      await batch.commit();
 
       setSyncStatus('success');
       fetchGlobalData();
@@ -174,23 +176,24 @@ export const AdminDashboard: React.FC = () => {
            const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
            const usernameId = docIds[guru] || guru.replace(/\s+/g, '_').toLowerCase();
 
-           const chunkPromises = [];
+           const batch = writeBatch(db);
            for (let i = 0; i < numChunks; i++) {
                const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-               chunkPromises.push(setDoc(chunkDoc, {
+               batch.set(chunkDoc, {
                    chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
                    chunkIndex: i
-               }));
+               });
            }
-           await Promise.all(chunkPromises);
 
-           await setDoc(doc(db, 'syncs', usernameId), {
+           batch.set(doc(db, 'syncs', usernameId), {
                username: guru,
                isCompressed: true,
                isChunked: true,
                numChunks,
                updatedAt: new Date().toISOString()
            });
+           
+           await batch.commit();
        }
        alert(`Berhasil mengirim Profil Lembaga ke ${gurusList.length} akun guru!`);
        await fetchGlobalData();

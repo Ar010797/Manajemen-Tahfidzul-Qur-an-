@@ -31,7 +31,7 @@ import NotificationSystem from './components/NotificationSystem';
 
 import { AdminDashboard } from './components/AdminDashboard';
 import { db } from './services/firebase';
-import { doc, onSnapshot, getDocs, collection, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, onSnapshot, getDocs, collection, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import LZString from 'lz-string';
 
 export default function App() {
@@ -410,25 +410,26 @@ export default function App() {
                            const numChunks = Math.ceil(compressedData.length / CHUNK_SIZE);
                            const usernameId = username.replace(/\s+/g, '_').toLowerCase();
 
-                           // Save chunks
-                           const chunkPromises = [];
+                           // Save chunks safely with batch
+                           const batch = writeBatch(db);
                            for (let i = 0; i < numChunks; i++) {
                              const chunkDoc = doc(db, `syncs/${usernameId}/chunks`, `chunk_${i}`);
-                             chunkPromises.push(setDoc(chunkDoc, {
+                             batch.set(chunkDoc, {
                                chunkData: compressedData.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
                                chunkIndex: i
-                             }));
+                             });
                            }
-                           await Promise.all(chunkPromises);
 
                            // Save metadata
-                           await setDoc(doc(db, 'syncs', usernameId), {
+                           batch.set(doc(db, 'syncs', usernameId), {
                              username,
                              isCompressed: true,
                              isChunked: true,
                              numChunks,
                              updatedAt: new Date().toISOString()
                            });
+
+                           await batch.commit();
                         } catch (e) {
                            console.error(e);
                         }
