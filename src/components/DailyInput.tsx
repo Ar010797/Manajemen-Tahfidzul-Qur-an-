@@ -274,19 +274,43 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
       if (hafalanData && hafalanData.details && hafalanData.details.grade) {
         hasData = true;
         const d = hafalanData.details;
-        depositNotes.push(`- Hafalan: ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) - Nilai: ${d.grade}`);
+        const isGoodGrade = ['L', 'CL'].includes(d.grade);
+        let homework = '';
+        if (isGoodGrade) {
+          const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+          homework = `Lanjut ayat ${nextVerse}`;
+        } else {
+          homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+        }
+        depositNotes.push(`- Hafalan: ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}`);
       }
       
       if (ummiData && ummiData.details && ummiData.details.grade) {
         hasData = true;
         const d = ummiData.details;
-        depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} - Nilai: ${d.grade}`);
+        const isGoodGrade = ['A', 'B'].includes(d.grade);
+        let homework = '';
+        if (isGoodGrade) {
+          const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+          homework = `Lanjut hlm ${nextPage}`;
+        } else {
+          homework = `Mengulang hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
+        }
+        depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} | Nilai: ${d.grade} | PR: ${homework}`);
       }
       
       if (tilawahData && tilawahData.details && tilawahData.details.grade) {
         hasData = true;
         const d = tilawahData.details;
-        depositNotes.push(`- Tilawah: Juz ${d.juz} Surah ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) - Nilai: ${d.grade}`);
+        const isGoodGrade = ['A', 'B'].includes(d.grade);
+        let homework = '';
+        if (isGoodGrade) {
+          const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+          homework = `Lanjut ayat ${nextVerse}`;
+        } else {
+          homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+        }
+        depositNotes.push(`- Tilawah: Juz ${d.juz} ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}`);
       }
       
       if (hasData) {
