@@ -51,13 +51,14 @@ const TARGET_KURIKULUM = [
 ];
 
 export const AdminProgressReport = ({ globalData }: { globalData: Record<string, any> }) => {
-  const { studentsProgress, jilidStats, hafalanStats, halaqohAchievement } = useMemo(() => {
+  const { studentsProgress, jilidStats, hafalanStats, halaqohAchievement, grandTotal } = useMemo(() => {
     const studentsList: any[] = [];
     
     Object.keys(globalData).forEach(guru => {
       const d = globalData[guru];
       const students = d.students || [];
       const deposits = d.daily_deposits || [];
+      const halaqohs = d.halaqoh || [];
 
       students.forEach((student: any) => {
          const ummiDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'ummi');
@@ -102,7 +103,7 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          studentsList.push({
             name: student.name,
             guru: guru,
-            halaqoh: student.halaqoh_name || 'Tanpa Halaqoh',
+            halaqoh: student.halaqoh_name || halaqohs.find((h: any) => h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh',
             level: currentLevelStr,
             levelScore,
             category: category,
@@ -144,13 +145,18 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
       count: hafalanCounts[k]
     })).sort((a, b) => b.count - a.count).slice(0, 10); // top 10
 
-    // JUZ 30 Surahs for scoring (Forward progression)
-    const JUZ30 = [
-      "annaba", "annaziat", "abasa", "attakwir", "alinfitar", "almutaffifin", "alinsyiqaq", 
+    // Progression sequence from Juz 30 -> Juz 29 -> Juz 28
+    const SURAH_PROGRESSION = [
+      "annaba", "annaziat", "abasa", "attakwir", "alinfitar", "almutaffifin", "alinsyiqaq", // Kls 1
       "alburuj", "attariq", "alala", "algasyiyah", "alfajr", "albalad", "asysyams", "allail", 
-      "adduha", "asysyarh", "attin", "alalaq", "alqadr", "albayyinah", "azzalzalah", "aladiyat", 
-      "alqariah", "attakasur", "alasr", "alhumazah", "alfil", "quraisy", "almaun", "alkausar", 
-      "alkafirun", "annasr", "allahab", "alikhlas", "alfalaq", "annas"
+      "adduha", "asysyarh", "attin", "alalaq", // Kls 2
+      "alqadr", "albayyinah", "azzalzalah", "aladiyat", "alqariah", "attakasur", "alasr", "alhumazah", 
+      "alfil", "quraisy", "almaun", "alkausar", "alkafirun", "annasr", "allahab", "alikhlas", "alfalaq", "annas",
+      "almulk", "alqalam", "alhaqqah", // Kls 3
+      "almaarij", "nuh", "aljinn", // Kls 4
+      "almuzzammil", "almuddassir", "alqiyamah", "alinsan", "almursalat", // Kls 5 & 6
+      "almujadilah", "alhasyr", "almumtahanah", "ashshaff", // Kls 7
+      "aljumuah", "almunafiqun", "attagabun", "attalaq", "attahrim" // Kls 8 & 9
     ];
     
     // Calculate achievement per Halaqoh
@@ -170,17 +176,21 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        
        if (grade > 0) {
            let targetSurahIndex = 0;
-           let targetLevel = 0;
+           let targetLevel = 10; // Default to Al-Qur'an (Level 10)
            
            if (grade === 1) { targetSurahIndex = 6; targetLevel = 3; } // Al-Insyiqaq, Jilid 3
            else if (grade === 2) { targetSurahIndex = 18; targetLevel = 6; } // Al-'Alaq, Jilid 6
-           else if (grade >= 3) { targetSurahIndex = 36; targetLevel = 10; } // An-Nas, Al-Quran
+           else if (grade === 3) { targetSurahIndex = 39; targetLevel = 10; } // Al-Haqqah, Al-Quran
+           else if (grade === 4) { targetSurahIndex = 42; targetLevel = 10; } // Al-Jinn, Al-Quran
+           else if (grade === 5 || grade === 6) { targetSurahIndex = 47; targetLevel = 10; } // Al-Mursalat, Al-Quran
+           else if (grade === 7) { targetSurahIndex = 51; targetLevel = 10; } // Ash-Shaff, Al-Quran
+           else if (grade >= 8) { targetSurahIndex = 56; targetLevel = 10; } // At-Tahrim, Al-Quran
            
-           let studentSurahIdx = JUZ30.indexOf(s.normalizedHafalan);
-           // Special handling for juz 29 or random text (assume achieved if they aren't in juz 30 but grade is higher? Or just check if hafalan is anything valid)
+           let studentSurahIdx = SURAH_PROGRESSION.indexOf(s.normalizedHafalan);
+           
+           // If surah not found but has data, maybe it's higher juz or custom name
            if (studentSurahIdx === -1 && s.normalizedHafalan.length > 3) {
-               // Might be parsing external surah or Juz 29/etc
-               // Let's assume if grade>=7 it's achieved just by having some data
+               // We will be strict: if it's not in our progression, we'll mark as achieved ONLY if grade >= 7 as fallback
                if (grade >= 6) studentSurahIdx = 99; 
            }
            
@@ -196,7 +206,20 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        if (ummiAchieved) halaqohMap[h].achievedUmmi++;
     });
     
-    const halaqohAchievement = Object.keys(halaqohMap).map(k => ({
+    let totalAchievedHafalanAll = 0;
+    let totalAchievedUmmiAll = 0;
+    let totalUnachievedHafalanAll = 0;
+    let totalUnachievedUmmiAll = 0;
+    let grandTotalStudents = 0;
+
+    const halaqohAchievement = Object.keys(halaqohMap).map(k => {
+       grandTotalStudents += halaqohMap[k].total;
+       totalAchievedHafalanAll += halaqohMap[k].achievedHafalan;
+       totalAchievedUmmiAll += halaqohMap[k].achievedUmmi;
+       totalUnachievedHafalanAll += (halaqohMap[k].total - halaqohMap[k].achievedHafalan);
+       totalUnachievedUmmiAll += (halaqohMap[k].total - halaqohMap[k].achievedUmmi);
+
+       return {
        name: k,
        total: halaqohMap[k].total,
        achievedHafalan: halaqohMap[k].achievedHafalan,
@@ -205,9 +228,25 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        unachievedUmmi: halaqohMap[k].total - halaqohMap[k].achievedUmmi,
        percentageHafalan: halaqohMap[k].total > 0 ? Math.round((halaqohMap[k].achievedHafalan / halaqohMap[k].total) * 100) : 0,
        percentageUmmi: halaqohMap[k].total > 0 ? Math.round((halaqohMap[k].achievedUmmi / halaqohMap[k].total) * 100) : 0
-    })).sort((a,b) => b.percentageHafalan - a.percentageHafalan);
+       };
+    }).sort((a,b) => {
+       const gradeA = a.name.match(/([1-9])/) ? parseInt(a.name.match(/([1-9])/)[1]) : 99;
+       const gradeB = b.name.match(/([1-9])/) ? parseInt(b.name.match(/([1-9])/)[1]) : 99;
+       if (gradeA !== gradeB) return gradeA - gradeB;
+       return a.name.localeCompare(b.name);
+    });
 
-    return { studentsProgress: studentsList, jilidStats: jilidStatsArr, hafalanStats: hafalanStatsArr, halaqohAchievement };
+    const grandTotal = {
+       totalStudents: grandTotalStudents,
+       achievedHafalan: totalAchievedHafalanAll,
+       achievedUmmi: totalAchievedUmmiAll,
+       unachievedHafalan: totalUnachievedHafalanAll,
+       unachievedUmmi: totalUnachievedUmmiAll,
+       percentageHafalan: grandTotalStudents > 0 ? Math.round((totalAchievedHafalanAll / grandTotalStudents) * 100) : 0,
+       percentageUmmi: grandTotalStudents > 0 ? Math.round((totalAchievedUmmiAll / grandTotalStudents) * 100) : 0
+    };
+
+    return { studentsProgress: studentsList, jilidStats: jilidStatsArr, hafalanStats: hafalanStatsArr, halaqohAchievement, grandTotal };
   }, [globalData]);
 
 
@@ -414,6 +453,7 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                     )}
                  </tbody>
                </table>
+
              </div>
           </div>
 
@@ -421,6 +461,33 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
              <div className="p-4 border-b border-stone-200 bg-stone-100/50">
                <h3 className="font-bold text-stone-800 text-sm">Persentase Pencapaian Target Per Kelas / Halaqoh</h3>
              </div>
+             
+             {halaqohAchievement.length > 0 && (
+               <div className="p-6 bg-white border-b border-stone-100">
+                 <div className="h-72 w-full">
+                   <ResponsiveContainer width="100%" height="100%">
+                     <BarChart data={halaqohAchievement} margin={{ top: 20, right: 30, left: 0, bottom: 25 }}>
+                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e7e5e4" />
+                       <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#78716c' }} axisLine={false} tickLine={false} angle={-45} textAnchor="end" height={60} />
+                       <YAxis tick={{ fontSize: 11, fill: '#78716c' }} axisLine={false} tickLine={false} unit="%" />
+                       <Tooltip cursor={{ fill: '#f5f5f4' }} formatter={(value: any, name: any) => [`${value}%`, name === 'percentageHafalan' ? 'Target Hafalan' : 'Target Ummi']} labelStyle={{color: '#1c1917', fontWeight: 'bold'}} />
+                       <Bar dataKey="percentageHafalan" name="Target Hafalan" fill="#059669" radius={[4, 4, 0, 0]} barSize={24} />
+                       <Bar dataKey="percentageUmmi" name="Target Ummi" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={24} />
+                     </BarChart>
+                   </ResponsiveContainer>
+                 </div>
+                 <div className="flex justify-center gap-8 mt-6">
+                   <div className="flex items-center gap-2">
+                     <div className="w-4 h-4 rounded bg-[#059669]"></div>
+                     <span className="text-xs text-stone-700 font-bold">Hafalan Tercapai</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <div className="w-4 h-4 rounded bg-[#3b82f6]"></div>
+                     <span className="text-xs text-stone-700 font-bold">Ummi/Tilawah Tercapai</span>
+                   </div>
+                 </div>
+               </div>
+             )}
              <div className="overflow-x-auto text-xs text-stone-700">
                <table className="w-full text-left">
                  <thead className="bg-white sticky top-0 shadow-sm z-10">
@@ -465,6 +532,19 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                     {halaqohAchievement.length === 0 && (
                       <tr>
                         <td colSpan={8} className="px-4 py-8 text-center text-stone-400">Belum ada data pencapaian.</td>
+                      </tr>
+                    )}
+
+                    {halaqohAchievement.length > 0 && (
+                      <tr className="bg-stone-100/80 font-bold border-t-2 border-stone-200 text-stone-900">
+                        <td className="px-4 py-3 text-right">Total Keseluruhan</td>
+                        <td className="px-4 py-3 text-center border-l border-stone-200">{grandTotal.totalStudents}</td>
+                        <td className="px-4 py-3 text-center text-emerald-700 border-l border-stone-200">{grandTotal.achievedHafalan}</td>
+                        <td className="px-4 py-3 text-center text-rose-700 border-l border-stone-100">{grandTotal.unachievedHafalan}</td>
+                        <td className="px-4 py-3 text-center text-stone-900 border-l border-stone-100">{grandTotal.percentageHafalan}%</td>
+                        <td className="px-4 py-3 text-center text-emerald-700 border-l border-stone-200">{grandTotal.achievedUmmi}</td>
+                        <td className="px-4 py-3 text-center text-rose-700 border-l border-stone-100">{grandTotal.unachievedUmmi}</td>
+                        <td className="px-4 py-3 text-center text-stone-900 border-l border-stone-100">{grandTotal.percentageUmmi}%</td>
                       </tr>
                     )}
                  </tbody>

@@ -1,2644 +1,2574 @@
 export interface DailyAdvice {
   id: number;
   title: string;
-  explanation: string;
   quranSource?: string;
   hadithSource?: string;
   arabic?: string;
+  explanation: string;
 }
 
 export const DAILY_ADVICE: DailyAdvice[] = [
   {
-    id: 1001,
-    title: "Mengelola Waktu dengan Bijak",
-    quranSource: "QS. Al-'Asr: 1-3",
-    arabic: "وَالْعَصْرِ ۙ إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ",
-    explanation: "Waktu adalah modal termahal yang takkan pernah kembali.\nJangan biarkan hari berlalu tanpa makna yang pasti.\nIsilah lembaran waktu dengan amal dan prestasi,\nKelak ia jadi saksi saat kita kembali."
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 1
   },
   {
-    id: 1002,
-    title: "Istiqomah di Jalan-Nya",
-    quranSource: "QS. Hud: 112",
-    arabic: "فَاسْتَقِمْ كَمَا أُمِرْتَ",
-    explanation: "Bertahan dalam kebaikan memang penuh godaan,\nNamun itulah jalan menuju ridha Sang Rahman.\nWalau harus berjalan lambat dan penuh rintangan,\nTetaplah teguh, jangan pernah lepaskan genggaman."
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 2
   },
   {
-    id: 1003,
-    title: "Menjaga Pandangan (Ghadhul Basahar)",
-    quranSource: "QS. An-Nur: 30",
-    arabic: "قُل لِّلْمُؤْمِنِينَ يَغُضُّوا مِنْ أَبْصَارِهِمْ",
-    explanation: "Mata adalah jendela yang menembus ke dalam jiwa,\nJagalah dari memandang hal yang mengundang dosa.\nDengan menundukkan pandang, hati kan terjaga,\nCahaya iman pun akan semakin bercahaya."
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 3
   },
   {
-    id: 1004,
-    title: "Keutamaan Menuntut Ilmu",
-    hadithSource: "HR. Muslim",
-    arabic: "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ",
-    explanation: "Melangkah mencari ilmu walau lelah menderap,\nAllah janjikan surga sebagai tempat menetap.\nIlmu kan menerangi jalan yang terlihat gelap,\nMenjadi amal jariyah yang pahalanya takkan lenyap."
-  },
-  {
-    id: 1005,
-    title: "Menghindari Sifat Sombong",
-    quranSource: "QS. Luqman: 18",
-    arabic: "وَلَا تُصَعِّرْ خَدَّكَ لِلنَّاسِ وَلَا تَمْشِ فِي الْأَرْضِ مَرَحًا",
-    explanation: "Jangan angkuh berjalan di atas bumi Tuhan,\nKita semua hanyalah hamba yang penuh kekurangan.\nRendahkan hatimu tebarkanlah senyuman,\nKetawadhuanlah yang akan meninggikan kemuliaan."
-  },
-  {
-    id: 1006,
-    title: "Cinta Karena Allah",
-    hadithSource: "HR. Abu Dawud",
-    arabic: "مَنْ أَحَبَّ لِلَّهِ وَأَبْغَضَ لِلَّهِ، وَأَعْطَى لِلَّهِ وَمَنَعَ لِلَّهِ، فَقَدِ اسْتَكْمَلَ الْإِيمَانَ",
-    explanation: "Bila kau mencintai saudaramu karena Sang Ilahi,\nIkatan itu kan abadi hingga akhir nanti.\nTali iman terkuat adalah cinta tak bersyarat,\nSaling mendoakan untuk kebaikan akhirat."
-  },
-  {
-    id: 1007,
-    title: "Bersedekah Seikhlas Hati",
-    quranSource: "QS. Al-Baqarah: 261",
-    arabic: "مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ",
-    explanation: "Jangan pelit membagikan rezeki yang kau terima,\nSatu biji kebaikan Allah lipatgandakan balasannya.\nSenyum dan bantuan menjadi bukti nyata,\nKasih sayang yang menyuburkan kebahagiaan bersama."
-  },
-  {
-    id: 1008,
-    title: "Kemulian Berprasangka Baik",
-    quranSource: "QS. Al-Hujurat: 12",
-    arabic: "يَا أَيُّهَا الَّذِينَ آمَنُوا اجْتَنِبُوا كَثِيرًا مِّنَ الظَّنِّ",
-    explanation: "Buanglah curiga dan prasangka yang menyesatkan,\nLihatlah sesama dengan mata penuh kasih dan kebaikan.\nHusnuzan kan menjaga keharmonisan pergaulan,\nHati pun tenang tiada lagi beban."
-  },
-  {
-    id: 1009,
-    title: "Khusyu' Dalam Shalat",
-    quranSource: "QS. Al-Mu'minun: 1-2",
-    arabic: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
-    explanation: "Berdirilah menghadap-Nya dengan jiwa raga,\nLupakan sejenak urusan fana dunia yang ada.\nShalat khusyu' jadi tameng dari maksiat nista,\nMenjadi ruang dialog terindah dengan Sang Pencipta."
-  },
-  {
-    id: 1010,
-    title: "Berbuat Baik Pada Tetangga",
-    hadithSource: "HR. Bukhari",
-    arabic: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
-    explanation: "Tetangga adalah saudara terdekat dalam keseharian,\nSantuni mereka dalam susah dan penuh kebahagiaan.\nBerbagi makanan dan sapaan penuh kehangatan,\nMenjadi bukti nyata keimanan dan persaudaraan."
-  },
-  {
-    "id": 1,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nJanganlah engkau pernah bersedih hati.\nJadikan shalat sebagai tempat mengadu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 2,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nHanya kata yang baik yang pantas diberi.\nTinggalkan ghibah yang merusak nilai diri,\nNiscaya keselamatan menyertai setiap hari."
-  },
-  {
-    "id": 3,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nKembalilah pada-Nya dengan salam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 4,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nSenyum mereka adalah kunci keberkahan.\nPeluh ayah mencari nafkah setiap hari,\nKelak surga berada di bawah telapak kaki."
-  },
-  {
-    "id": 5,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nSenyum mereka adalah kunci keberkahan.\nBelaian ibu lebih hangat dari mentari,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 6,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nJanganlah engkau pernah bersedih hati.\nPasrahkan dirimu hanya kepada Rabb-mu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 7,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nJangan biarkan hatimu terus muram tenggelam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 8,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu tasbih mengikis debu di jiwa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 9,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Menyambung Silaturahmi",
     "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nPilih kata yang lembut dalam ucapan,\nPertahankan persaudaraan di atas segala perbedaan."
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 4
   },
   {
-    "id": 10,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nJangan sekalipun kau tinggikan ucapan.\nPeluh ayah mencari nafkah setiap hari,\nBaktimu adalah harta yang kekal abadi."
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 5
   },
   {
-    "id": 11,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nJangan jauh dari sang Maha Rahman.\nSatu tahmid mendatangkan bahagia,\nMenyiram hati bagai embun di pagi buta."
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 6
   },
   {
-    "id": 12,
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 7
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 8
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 9
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 10
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 11
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 12
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 13
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 14
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 15
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 16
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 17
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 18
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 19
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 20
+  },
+  {
+    "title": "Sabar dalam Ujian",
+    "quranSource": "QS. Al-Baqarah: 153",
+    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 21
+  },
+  {
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nKarena Allah membagi dengan sangat teliti.\nRaga yang tunduk dalam ruku' dan berserah,\nMembuat hidup berubah menjadi lebih indah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 22
   },
   {
-    "id": 13,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nDiam adalah emas bila ragu bicara hati.\nTinggalkan ghibah yang merusak nilai diri,\nNiscaya keselamatan menyertai setiap hari."
-  },
-  {
-    "id": 14,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nPintu ampunan terbuka bagi setiap alam.\nTeteskan air mata taubat yang syahdu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 15,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tahlil memperkuat iman di dada,\nBersama Allah, segalanya akan baik-baik saja."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 23
   },
   {
-    "id": 16,
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 24
+  },
+  {
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 25
+  },
+  {
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nJangan biarkan hatimu terus muram tenggelam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 26
   },
   {
-    "id": 17,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nKembalilah pada-Nya dengan salam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nAllah rindu mendengar lirih doamu."
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 27
   },
   {
-    "id": 18,
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 28
+  },
+  {
     "title": "Kejujuran dan Lisan",
     "hadithSource": "HR. Muslim",
     "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nDiam adalah emas bila ragu bicara hati.\nUbah umpatan dengan dzikir yang hakiki,\nHati terhindar dari rasa pedih dan sepi."
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 29
   },
   {
-    "id": 19,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nJanganlah engkau pernah bersedih hati.\nJadikan shalat sebagai tempat mengadu,\nNiscaya tenang akan menyelimuti jiwamu."
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 30
   },
   {
-    "id": 20,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nKetahuilah rahmat-Nya takkan pernah henti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nPahala tanpa hisab akan jadi milikmu."
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 31
   },
   {
-    "id": 21,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 32
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 33
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 34
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 35
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 36
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 37
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 38
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 39
+  },
+  {
+    "title": "Menyambung Silaturahmi",
     "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nSenyummu pada sesama adalah sedekah bermakna.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 40
   },
   {
-    "id": 22,
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 41
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 42
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 43
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 44
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 45
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 46
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 47
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 48
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 49
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 50
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 51
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 52
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 53
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 54
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 55
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 56
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nJanganlah engkau pernah bersedih hati.\nPasrahkan dirimu hanya kepada Rabb-mu,\nBersama kesulitan pasti ada langkah majumu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 57
   },
   {
-    "id": 23,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nSenyummu pada sesama adalah sedekah bermakna.\nTurunkan ego saat terjadi perselisihan,\nPertahankan persaudaraan di atas segala perbedaan."
+    "title": "Rasa Syukur",
+    "quranSource": "QS. Ibrahim: 7",
+    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 58
   },
   {
-    "id": 24,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nKalimat suci adalah penawar bagi perasaan.\nSatu tahmid mendatangkan bahagia,\nHingga ketenangan hakiki kau rasakan nyata."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 59
   },
   {
-    "id": 25,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nKematian pasti datang membawa cerita.\nSisihkan waktumu memetik hikmah berganda,\nMenikmati nikmat yang tiada tara putusnya."
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 60
   },
   {
-    "id": 26,
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 61
+  },
+  {
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nPintu ampunan terbuka bagi setiap alam.\nBasahi wajahmu dengan air wudhu,\nAmpunan-Nya selalu seluas samudera untukmu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 62
   },
   {
-    "id": 27,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Ukhuwah Islamiyah",
     "hadithSource": "HR. Bukhari",
     "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nMenyambung silaturahmi perpanjang usia.\nGenggam tangannya eratkan persahabatan,\nPertahankan persaudaraan di atas segala perbedaan."
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 63
   },
   {
-    "id": 28,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nJangan jauh dari sang Maha Rahman.\nSatu tasbih mengikis debu di jiwa,\nBersama Allah, segalanya akan baik-baik saja."
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 64
   },
   {
-    "id": 29,
     "title": "Kejujuran dan Lisan",
     "hadithSource": "HR. Muslim",
     "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nDiam adalah emas bila ragu bicara hati.\nHindari fitnah yang membakar seisi bumi,\nTimbangan amal kelak memberat tak terperi."
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 65
   },
   {
-    "id": 30,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nPercayakan takdir pada sang Maha Rahman.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 66
   },
   {
-    "id": 31,
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 67
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 68
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 69
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 70
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 71
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 72
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 73
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 74
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 75
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 76
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 77
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 78
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 79
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 80
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 81
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 82
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 83
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 84
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 85
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 86
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 87
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 88
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 89
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 90
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 91
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 92
+  },
+  {
+    "title": "Sabar dalam Ujian",
+    "quranSource": "QS. Al-Baqarah: 153",
+    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 93
+  },
+  {
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nPasti hidup terasa lebih membahagiakan hati.\nRaga yang tunduk dalam ruku' dan berserah,\nKarena syukur adalah rahasia jiwa yang pasrah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 94
   },
   {
-    "id": 32,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Kejarlah akhirat yang abadi nyata,\nWaktu terus berputar tak pernah tertunda.\nBangun akhirat sebelum nafas terhenti sirna,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 33,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nWaktu terus berputar tak pernah tertunda.\nSisihkan waktumu memetik hikmah berganda,\nMaka kau akan tersenyum di hari penghisaban kelak sana."
-  },
-  {
-    "id": 34,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu istighfar menghapus dosa yang terbawa,\nMengingatkan bahwa dunia hanya sementara."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 95
   },
   {
-    "id": 35,
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 96
+  },
+  {
     "title": "Tawakkal",
     "quranSource": "QS. At-Talaq: 3",
     "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nJadikan kepasrahan sebagai bekal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 97
   },
   {
-    "id": 36,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nWaktu terus berputar tak pernah tertunda.\nJadikan dunia tempat menanam pahala surga,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 37,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nKarena Allah membagi dengan sangat teliti.\nRaga yang tunduk dalam ruku' dan berserah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 38,
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nKembalilah pada-Nya dengan salam.\nBasahi wajahmu dengan air wudhu,\nDia akan membasuh bersih nodamu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 98
   },
   {
-    "id": 39,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nPercayakan takdir pada sang Maha Rahman.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 40,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Ukhuwah Islamiyah",
     "hadithSource": "HR. Bukhari",
     "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nMenyambung silaturahmi perpanjang usia.\nHindari prasangka tanpa sebuah pembuktian,\nKarena surga dihuni hati yang penuh kasih sayang."
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 99
   },
   {
-    "id": 41,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nJangan biarkan shalat luput dari waktumu.\nMencegah diri dari perbuatan yang hancur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 42,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nTak akan kecewa hati yang bertawakkal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 43,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nKejujuran menuntun kita pada surgawi.\nSampaikan kebenaran dengan lembut di nurani,\nNiscaya keselamatan menyertai setiap hari."
-  },
-  {
-    "id": 44,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 45,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nBantu sesama, Allah bantu kau di dunia.\nTurunkan ego saat terjadi perselisihan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 46,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nRidha mereka adalah jalan keselamatan.\nDoa mereka penembus langit yang tak terperi,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 47,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembuat lisan ini senantiasa bersyukur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 48,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 49,
     "title": "Dunia Hanya Sementara",
     "quranSource": "QS. Al-Hadid: 20",
     "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nHanya amal shalih bekal kita ke sana.\nGunakan hartamu menolong mereka yang papa,\nBahagia selamanya terhindar dari duka merana."
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 100
   },
   {
-    "id": 50,
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 101
+  },
+  {
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 102
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 103
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 104
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 105
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 106
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 107
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 108
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 109
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 110
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 111
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 112
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 113
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 114
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 115
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 116
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 117
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 118
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 119
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 120
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 121
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 122
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 123
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 124
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 125
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 126
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 127
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 128
+  },
+  {
+    "title": "Sabar dalam Ujian",
+    "quranSource": "QS. Al-Baqarah: 153",
+    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 129
+  },
+  {
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nNiscaya hidupmu terhindar dari rasa iri.\nLisan yang selalu mengucap alhamdulillah,\nKarena syukur adalah rahasia jiwa yang pasrah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 130
   },
   {
-    "id": 51,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nSelembar kain kafan tak bersaku harta.\nSisihkan waktumu memetik hikmah berganda,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 52,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nSabar adalah lentera yang abadi.\nPasrahkan dirimu hanya kepada Rabb-mu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 53,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nMeski hasil kadang tak sesuai akal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 54,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nPintu ampunan terbuka bagi setiap alam.\nBasahi wajahmu dengan air wudhu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 55,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Jika air mata jatuh membasahi pipi,\nKetahuilah rahmat-Nya takkan pernah henti.\nJadikan shalat sebagai tempat mengadu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 56,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nKarena satu dusta menuntut dusta lagi.\nTinggalkan ghibah yang merusak nilai diri,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 57,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nKarena satu dusta menuntut dusta lagi.\nSampaikan kebenaran dengan lembut di nurani,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 58,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nHanya amal shalih bekal kita ke sana.\nSisihkan waktumu memetik hikmah berganda,\nMaka kau akan tersenyum di hari penghisaban kelak sana."
-  },
-  {
-    "id": 59,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nSabar adalah lentera yang abadi.\nJadikan shalat sebagai tempat mengadu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 60,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembuat lisan ini senantiasa bersyukur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 61,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nMembersihkan niat dari sifat yang takabbur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 62,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 63,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nPintu ampunan terbuka bagi setiap alam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 64,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 65,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tahlil memperkuat iman di dada,\nMengingatkan bahwa dunia hanya sementara."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 131
   },
   {
-    "id": 66,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nKarena mukmin itu ibarat satu raga.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 67,
     "title": "Shalat Tiang Agama",
     "hadithSource": "HR. Abu Daud",
     "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembersihkan niat dari sifat yang takabbur,\nNiscaya hidupmu akan tenang dan teratur."
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 132
   },
   {
-    "id": 68,
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 133
+  },
+  {
+    "title": "Taubat dan Ampunan",
+    "quranSource": "QS. Az-Zumar: 53",
+    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 134
+  },
+  {
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 135
+  },
+  {
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 136
+  },
+  {
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 137
+  },
+  {
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 138
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 139
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 140
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 141
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 142
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 143
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 144
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 145
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 146
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 147
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 148
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 149
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 150
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 151
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 152
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 153
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 154
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 155
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 156
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 157
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 158
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 159
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 160
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 161
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 162
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 163
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 164
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nKetahuilah rahmat-Nya takkan pernah henti.\nAngkat kedua tanganmu dalam syahdu,\nNiscaya tenang akan menyelimuti jiwamu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 165
   },
   {
-    "id": 69,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nJangan biarkan hatimu terus muram tenggelam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 70,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nKasih sayang mereka takkan pernah bisa dicari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 71,
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nCukupkanlah dirimu dengan yang kau miliki.\nHati yang ridha atas segala anugerah,\nAkan mengundang limpahan rahmat dan berkah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 166
   },
   {
-    "id": 72,
+    "title": "Menjernihkan Hati (Dzikir)",
+    "quranSource": "QS. Ar-Ra'd: 28",
+    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 167
+  },
+  {
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 168
+  },
+  {
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 169
+  },
+  {
+    "title": "Taubat dan Ampunan",
+    "quranSource": "QS. Az-Zumar: 53",
+    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 170
+  },
+  {
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 171
+  },
+  {
     "title": "Dunia Hanya Sementara",
     "quranSource": "QS. Al-Hadid: 20",
     "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nHanya amal shalih bekal kita ke sana.\nSisihkan waktumu memetik hikmah berganda,\nBertemu Rasulullah di telaga yang mempesona."
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 172
   },
   {
-    "id": 73,
     "title": "Kejujuran dan Lisan",
     "hadithSource": "HR. Muslim",
     "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nDiam adalah emas bila ragu bicara hati.\nSampaikan kebenaran dengan lembut di nurani,\nSebuah ketenangan jiwa jadi milik sejati."
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 173
   },
   {
-    "id": 74,
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 174
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 175
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 176
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 177
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 178
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 179
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 180
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 181
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 182
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 183
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 184
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 185
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 186
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 187
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 188
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 189
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 190
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 191
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 192
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 193
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 194
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 195
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 196
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 197
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 198
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 199
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 200
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Jika air mata jatuh membasahi pipi,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nKelak surga bersiap menyambutmu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 201
   },
   {
-    "id": 75,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nHanya amal shalih bekal kita ke sana.\nGunakan hartamu menolong mereka yang papa,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 76,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nKalimat suci adalah penawar bagi perasaan.\nSatu istighfar menghapus dosa yang terbawa,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 77,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nSenyummu pada sesama adalah sedekah bermakna.\nTurunkan ego saat terjadi perselisihan,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 78,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nKematian pasti datang membawa cerita.\nBangun akhirat sebelum nafas terhenti sirna,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 79,
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nKarena Allah membagi dengan sangat teliti.\nHati yang ridha atas segala anugerah,\nAkan mengundang limpahan rahmat dan berkah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 202
   },
   {
-    "id": 80,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nJangan jauh dari sang Maha Rahman.\nSatu tahmid mendatangkan bahagia,\nHingga ketenangan hakiki kau rasakan nyata."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 203
   },
   {
-    "id": 81,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKejujuran menuntun kita pada surgawi.\nTinggalkan ghibah yang merusak nilai diri,\nTimbangan amal kelak memberat tak terperi."
-  },
-  {
-    "id": 82,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nJangan jauh dari sang Maha Rahman.\nSatu istighfar menghapus dosa yang terbawa,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 83,
     "title": "Shalat Tiang Agama",
     "hadithSource": "HR. Abu Daud",
     "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nBawa keluh kesahmu dalam doa-doamu.\nMembuat lisan ini senantiasa bersyukur,\nKarena ia tiang kokoh yang takkan luntur."
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 204
   },
   {
-    "id": 84,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nKejujuran menuntun kita pada surgawi.\nUbah umpatan dengan dzikir yang hakiki,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 85,
     "title": "Tawakkal",
     "quranSource": "QS. At-Talaq: 3",
     "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nMeski hasil kadang tak sesuai akal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 205
   },
   {
-    "id": 86,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Taubat dan Ampunan",
+    "quranSource": "QS. Az-Zumar: 53",
+    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 206
+  },
+  {
+    "title": "Ukhuwah Islamiyah",
     "hadithSource": "HR. Bukhari",
     "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nHindari prasangka tanpa sebuah pembuktian,\nMalaikat pun turun membawa keberkahan."
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 207
   },
   {
-    "id": 87,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nBawa keluh kesahmu dalam doa-doamu.\nMembersihkan niat dari sifat yang takabbur,\nMembawamu ke surga dengan langkah yang makmur."
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 208
   },
   {
-    "id": 88,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nJangan jauh dari sang Maha Rahman.\nSatu tahmid mendatangkan bahagia,\nHingga ketenangan hakiki kau rasakan nyata."
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 209
   },
   {
-    "id": 89,
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 210
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 211
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 212
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 213
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 214
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 215
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 216
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 217
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 218
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 219
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 220
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 221
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 222
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 223
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 224
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 225
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 226
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 227
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 228
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 229
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 230
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 231
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 232
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 233
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 234
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 235
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 236
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nSabar adalah lentera yang abadi.\nPasrahkan dirimu hanya kepada Rabb-mu,\nBersama kesulitan pasti ada langkah majumu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 237
   },
   {
-    "id": 90,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nJangan biarkan hatimu terus muram tenggelam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 91,
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nCukupkanlah dirimu dengan yang kau miliki.\nRaga yang tunduk dalam ruku' dan berserah,\nKarena syukur adalah rahasia jiwa yang pasrah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 238
   },
   {
-    "id": 92,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nKarena mukmin itu ibarat satu raga.\nTurunkan ego saat terjadi perselisihan,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 93,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nHanya amal shalih bekal kita ke sana.\nJadikan dunia tempat menanam pahala surga,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 94,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nSenyummu pada sesama adalah sedekah bermakna.\nHindari prasangka tanpa sebuah pembuktian,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 95,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nPercayakan takdir pada sang Maha Rahman.\nTak akan kecewa hati yang bertawakkal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 96,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nCukupkanlah dirimu dengan yang kau miliki.\nHati yang ridha atas segala anugerah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 97,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu tahmid mendatangkan bahagia,\nMenyiram hati bagai embun di pagi buta."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 239
   },
   {
-    "id": 98,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nKasih sayang mereka takkan pernah bisa dicari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 99,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nPintu ampunan terbuka bagi setiap alam.\nBersimpuhlah hamba yang merindu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 100,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nPasrahkan hati dalam rengkuhan keimanan.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 101,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 102,
     "title": "Shalat Tiang Agama",
     "hadithSource": "HR. Abu Daud",
     "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembuat lisan ini senantiasa bersyukur,\nKarena ia tiang kokoh yang takkan luntur."
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 240
   },
   {
-    "id": 103,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nJangan jauh dari sang Maha Rahman.\nSatu tasbih mengikis debu di jiwa,\nBersama Allah, segalanya akan baik-baik saja."
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 241
   },
   {
-    "id": 104,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nJangan sekalipun kau tinggikan ucapan.\nKasih sayang mereka takkan pernah bisa dicari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 105,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nKarena mukmin itu ibarat satu raga.\nGenggam tangannya eratkan persahabatan,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 106,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nKarena satu dusta menuntut dusta lagi.\nSampaikan kebenaran dengan lembut di nurani,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 107,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nCukupkanlah dirimu dengan yang kau miliki.\nHati yang ridha atas segala anugerah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 108,
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nKembalilah pada-Nya dengan salam.\nTeteskan air mata taubat yang syahdu,\nAllah rindu mendengar lirih doamu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 242
   },
   {
-    "id": 109,
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 243
+  },
+  {
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 244
+  },
+  {
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 245
+  },
+  {
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 246
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 247
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 248
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 249
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 250
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 251
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 252
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 253
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 254
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 255
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 256
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 257
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 258
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 259
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 260
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 261
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 262
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 263
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 264
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 265
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 266
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 267
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 268
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 269
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 270
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 271
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 272
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nJanganlah engkau pernah bersedih hati.\nPasrahkan dirimu hanya kepada Rabb-mu,\nPahala tanpa hisab akan jadi milikmu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 273
   },
   {
-    "id": 110,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nRahmat-Nya merangkul di siang dan malam.\nBasahi wajahmu dengan air wudhu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 111,
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nPasti hidup terasa lebih membahagiakan hati.\nLisan yang selalu mengucap alhamdulillah,\nMembuat hidup berubah menjadi lebih indah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 274
   },
   {
-    "id": 112,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nJangan biarkan shalat luput dari waktumu.\nMencegah diri dari perbuatan yang hancur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 113,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nKembalilah pada-Nya dengan salam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 114,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nTawakkal adalah puncak dari ketenangan.\nMeski hasil kadang tak sesuai akal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 115,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nSenyum mereka adalah kunci keberkahan.\nKasih sayang mereka takkan pernah bisa dicari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 116,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKejujuran menuntun kita pada surgawi.\nUbah umpatan dengan dzikir yang hakiki,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 117,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nKematian pasti datang membawa cerita.\nSisihkan waktumu memetik hikmah berganda,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 118,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nJanganlah engkau pernah bersedih hati.\nJadikan shalat sebagai tempat mengadu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 119,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu istighfar menghapus dosa yang terbawa,\nBersama Allah, segalanya akan baik-baik saja."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 275
   },
   {
-    "id": 120,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKarena satu dusta menuntut dusta lagi.\nHindari fitnah yang membakar seisi bumi,\nHati terhindar dari rasa pedih dan sepi."
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 276
   },
   {
-    "id": 121,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nBantu sesama, Allah bantu kau di dunia.\nPilih kata yang lembut dalam ucapan,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 122,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nHanya amal shalih bekal kita ke sana.\nGunakan hartamu menolong mereka yang papa,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 123,
     "title": "Tawakkal",
     "quranSource": "QS. At-Talaq: 3",
     "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nKarena rencana-Nya pasti takkan gagal."
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 277
   },
   {
-    "id": 124,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Jika air mata jatuh membasahi pipi,\nIngatlah janji Allah yang pasti menanti.\nAngkat kedua tanganmu dalam syahdu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 125,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nPasrahkan hati dalam rengkuhan keimanan.\nTak akan kecewa hati yang bertawakkal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 126,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 127,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nSenyum mereka adalah kunci keberkahan.\nDoa mereka penembus langit yang tak terperi,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 128,
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nPintu ampunan terbuka bagi setiap alam.\nBasahi wajahmu dengan air wudhu,\nAmpunan-Nya selalu seluas samudera untukmu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 278
   },
   {
-    "id": 129,
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 279
+  },
+  {
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 280
+  },
+  {
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 281
+  },
+  {
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 282
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 283
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 284
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 285
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 286
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 287
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 288
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 289
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 290
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 291
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 292
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 293
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 294
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 295
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 296
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 297
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 298
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 299
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 300
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 301
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 302
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 303
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 304
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 305
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 306
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 307
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 308
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nNiscaya tenang akan menyelimuti jiwamu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 309
   },
   {
-    "id": 130,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nJangan sekalipun kau tinggikan ucapan.\nDoa mereka penembus langit yang tak terperi,\nCintailah mereka sebelum ajal menghampiri."
+    "title": "Rasa Syukur",
+    "quranSource": "QS. Ibrahim: 7",
+    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 310
   },
   {
-    "id": 131,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nRidha mereka adalah jalan keselamatan.\nDoa mereka penembus langit yang tak terperi,\nKelak surga berada di bawah telapak kaki."
+    "title": "Menjernihkan Hati (Dzikir)",
+    "quranSource": "QS. Ar-Ra'd: 28",
+    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 311
   },
   {
-    "id": 132,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nKarena mukmin itu ibarat satu raga.\nGenggam tangannya eratkan persahabatan,\nKarena surga dihuni hati yang penuh kasih sayang."
+    "title": "Shalat Tiang Agama",
+    "hadithSource": "HR. Abu Daud",
+    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 312
   },
   {
-    "id": 133,
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 313
+  },
+  {
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nPintu ampunan terbuka bagi setiap alam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 314
   },
   {
-    "id": 134,
+    "title": "Ukhuwah Islamiyah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 315
+  },
+  {
+    "title": "Dunia Hanya Sementara",
+    "quranSource": "QS. Al-Hadid: 20",
+    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 316
+  },
+  {
+    "title": "Kejujuran dan Lisan",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 317
+  },
+  {
+    "title": "Berbakti kepada Orang Tua",
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 318
+  },
+  {
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 319
+  },
+  {
+    "title": "Kemuliaan Menuntut Ilmu",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 320
+  },
+  {
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 321
+  },
+  {
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 322
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 323
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 324
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 325
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 326
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 327
+  },
+  {
+    "title": "Menyambung Silaturahmi",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 328
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 329
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 330
+  },
+  {
+    "title": "Doa Mustajab di Sepertiga Malam",
+    "hadithSource": "HR. Bukhari & Muslim",
+    "arabic": "يَنْزِلُ رَبُّنَا تَبَارَكَ وَتَعَالَى كُلَّ لَيْلَةٍ إِلَى السَّمَاءِ الدُّنْيَا حِينَ يَبْقَى ثُلُثُ اللَّيْلِ الآخِرُ",
+    "explanation": "Di kala dunia tertidur lelap dalam sunyi,\nBangunlah, bentangkan sajadahmu di malam sepi.\nSampaikan keluh kesahmu pada Sang Ilahi,\nDoa di sepertiga malam bagai anak panah yang pasti.",
+    "id": 331
+  },
+  {
+    "title": "Menebar Salam",
+    "hadithSource": "HR. Muslim",
+    "arabic": "أَفْشُوا السَّلَامَ بَيْنَكُمْ",
+    "explanation": "Ucapkanlah salam pada yang kau kenal dan tidak kenal,\nSebuah sapaan ringan namun berpahala kekal.\nSalam menumbuhkan cinta di antara umat,\nMenyatukan hati dalam ikatan yang erat.",
+    "id": 332
+  },
+  {
+    "title": "Menghormati Tetangga",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "explanation": "Tetangga adalah saudara terdekat di kala duka,\nYang pertama datang bila bencana melanda.\nBerbuat baiklah dan jangan sakiti hatinya,\nItulah tanda iman yang luhur dan mulia.",
+    "id": 333
+  },
+  {
+    "title": "Kasih Sayang Kepada Anak Yatim",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "explanation": "Usaplah kepala yatim dengan penuh kelembutan,\nBerikan mereka pelukan dan juga harapan.\nSiapa yang mengasihi mereka dengan ketulusan,\nKelak bersanding dengan Nabi di surga idaman.",
+    "id": 334
+  },
+  {
+    "title": "Rendah Hati (Tawadhu')",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
+    "explanation": "Seperti padi yang kian merunduk saat berisi,\nBegitulah jiwa yang berilmu dan rendah hati.\nJanganlah sombong menepuk dada sendiri,\nKarena Allah mengangkat derajat mereka yang tawadhu'.",
+    "id": 335
+  },
+  {
+    "title": "Bersegera dalam Kebaikan",
+    "quranSource": "QS. Al-Baqarah: 148",
+    "arabic": "فَاسْتَبِقُوا الْخَيْرَاتِ",
+    "explanation": "Jangan menunda amal shalih hingga esok tiba,\nKarena esok belum pasti menjadi milik kita.\nBerlombalah dalam kebaikan saat raga masih bernyawa,\nSebelum datang masa penyesalan di alam baka.",
+    "id": 336
+  },
+  {
+    "title": "Keutamaan Istighfar",
+    "quranSource": "QS. Nuh: 10-11",
+    "arabic": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا",
+    "explanation": "Bila jalan terasa buntu dan masalah menghimpit,\nPerbanyaklah istighfar walau hati terasa sempit.\nIa membuka pintu rezeki yang tadinya tertutup,\nMenghadirkan ketenangan dalam jiwa yang redup.",
+    "id": 337
+  },
+  {
+    "title": "Menjaga Shalat Subuh",
+    "hadithSource": "HR. Muslim",
+    "arabic": "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+    "explanation": "Udara pagi yang segar menjadi saksi,\nBagi hamba yang rela meninggalkan mimpi.\nShalat subuh menjamin dirimu dalam perlindungan Ilahi,\nMemulai hari dengan berkah yang suci.",
+    "id": 338
+  },
+  {
+    "title": "Adab Berpakaian",
+    "quranSource": "QS. Al-A'raf: 26",
+    "arabic": "وَلِبَاسُ التَّقْوَىٰ ذَٰلِكَ خَيْرٌ",
+    "explanation": "Pakaian indah menutup aurat dan menghias raga,\nNamun ada yang lebih mulia dari sehelai sutra.\nItulah pakaian taqwa, penjaga jiwa dan etika,\nMembuatmu terhormat di mata manusia dan Pencipta.",
+    "id": 339
+  },
+  {
+    "title": "Sifat Malu",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "الْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+    "explanation": "Malu berbuat maksiat di saat sendirian,\nMalu melanggar titah Sang Rahman.\nSifat malu adalah mahkota keimanan,\nYang senantiasa mendatangkan segala kebaikan.",
+    "id": 340
+  },
+  {
+    "title": "Menghindari Marah",
+    "hadithSource": "HR. Bukhari",
+    "arabic": "لَا تَغْضَبْ وَلَكَ الْجَنَّةُ",
+    "explanation": "Amarah yang memuncak bagaikan api neraka,\nMembakar akal sehat dan merusak segala cinta.\nTahanlah emosimu, kendalikan asa,\nKarena surga menanti mereka yang sabar menjaga.",
+    "id": 341
+  },
+  {
+    "title": "Membaca Al-Qur'an",
+    "hadithSource": "HR. Muslim",
+    "arabic": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ",
+    "explanation": "Buku kehidupan penyejuk jiwa yang lara,\nBukan sekadar pajangan berdebu di lemari kaca.\nBacalah ayatnya, tadabburi maknanya,\nKelak ia datang sebagai pemberi syafa'at di padang mahsyar.",
+    "id": 342
+  },
+  {
+    "title": "Qana'ah (Merasa Cukup)",
+    "hadithSource": "HR. Muslim",
+    "arabic": "قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللَّهُ بِمَا آتَاهُ",
+    "explanation": "Bukan tentang seberapa banyak harta yang terkumpul,\nNamun tentang hati yang bersyukur dan tidak memukul.\nQana'ah membuat hidup terasa ringan dan damai,\nMenjadi orang kaya yang sejati nan pandai.",
+    "id": 343
+  },
+  {
+    "title": "Pentingnya Doa Ibu",
+    "hadithSource": "HR. Tirmidzi",
+    "arabic": "رِضَا الرَّبِّ فِي رِضَا الْوَالِدِ وَسَخَطُ الرَّبِّ فِي سَخَطِ الْوَالِدِ",
+    "explanation": "Jangan pernah remehkan air mata ibumu,\nSetiap tetesnya bisa menjadi penentu nasibmu.\nDoanya sanggup menembus langit ketujuh,\nMeraih ridha-Nya, menggapai sukses yang teguh.",
+    "id": 344
+  },
+  {
     "title": "Sabar dalam Ujian",
     "quranSource": "QS. Al-Baqarah: 153",
     "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Jika air mata jatuh membasahi pipi,\nSabar adalah lentera yang abadi.\nJadikan shalat sebagai tempat mengadu,\nBersama kesulitan pasti ada langkah majumu."
+    "explanation": "Meski badai ujian datang silih berganti,\nSabar adalah sauh agar perahu tak mati.\nUsap dadamu dan pautkan asamu pada Ilahi,\nDi setiap kesulitan ada kemudahan yang menanti.",
+    "id": 345
   },
   {
-    "id": 135,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nRidha mereka adalah jalan keselamatan.\nKasih sayang mereka takkan pernah bisa dicari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 136,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nSelembar kain kafan tak bersaku harta.\nJadikan dunia tempat menanam pahala surga,\nMaka kau akan tersenyum di hari penghisaban kelak sana."
-  },
-  {
-    "id": 137,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nSabar adalah lentera yang abadi.\nUsap dadamu dan sebut asma Tuhan-mu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 138,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nKematian pasti datang membawa cerita.\nSisihkan waktumu memetik hikmah berganda,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 139,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nJangan biarkan shalat luput dari waktumu.\nShalat adalah pelita di gelapnya kubur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 140,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nKasih sayang mereka takkan pernah bisa dicari,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 141,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nDoa mereka penembus langit yang tak terperi,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 142,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembersihkan niat dari sifat yang takabbur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 143,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nPeluh ayah mencari nafkah setiap hari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 144,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nHanya kata yang baik yang pantas diberi.\nTinggalkan ghibah yang merusak nilai diri,\nTimbangan amal kelak memberat tak terperi."
-  },
-  {
-    "id": 145,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nSenyum mereka adalah kunci keberkahan.\nDoa mereka penembus langit yang tak terperi,\nKelak surga berada di bawah telapak kaki."
-  },
-  {
-    "id": 146,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nSabar adalah lentera yang abadi.\nAngkat kedua tanganmu dalam syahdu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 147,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nJangan sekalipun kau tinggikan ucapan.\nBelaian ibu lebih hangat dari mentari,\nKelak surga berada di bawah telapak kaki."
-  },
-  {
-    "id": 148,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah doa dan usaha kau sejajarkan,\nTawakkal adalah puncak dari ketenangan.\nJadikan kepasrahan sebagai bekal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 149,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nJangan sekalipun kau tinggikan ucapan.\nDoa mereka penembus langit yang tak terperi,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 150,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nBelaian ibu lebih hangat dari mentari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 151,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nPercayakan takdir pada sang Maha Rahman.\nBukan tugas kita merisaukan hal yang kekal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 152,
     "title": "Rasa Syukur",
     "quranSource": "QS. Ibrahim: 7",
     "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nCukupkanlah dirimu dengan yang kau miliki.\nLisan yang selalu mengucap alhamdulillah,\nKarena syukur adalah rahasia jiwa yang pasrah."
+    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nBerapapun rezeki yang kau dapati hari ini.\nJiwa yang ruku' dalam kepasrahan dan berserah,\nAkan mengundang turunnya beribu rahmat dan berkah.",
+    "id": 346
   },
   {
-    "id": 153,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nIngatlah janji Allah yang pasti menanti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 154,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nSerahkan semua hasilnya pada Tuhan.\nTak akan kecewa hati yang bertawakkal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 155,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nJangan biarkan shalat luput dari waktumu.\nMembuat lisan ini senantiasa bersyukur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 156,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Kejarlah akhirat yang abadi nyata,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nMaka kau akan tersenyum di hari penghisaban kelak sana."
-  },
-  {
-    "id": 157,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nKetahuilah rahmat-Nya takkan pernah henti.\nAngkat kedua tanganmu dalam syahdu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 158,
     "title": "Menjernihkan Hati (Dzikir)",
     "quranSource": "QS. Ar-Ra'd: 28",
     "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nKalimat suci adalah penawar bagi perasaan.\nSatu tahmid mendatangkan bahagia,\nBersama Allah, segalanya akan baik-baik saja."
+    "explanation": "Jika sepi menyelimuti jiwa dalam gulita,\nMengingat-Nya adalah lentera di atas lentera.\nSatu tasbih mengikis noda dan resah di dada,\nBersama Allah, segala beban pasti sirna.",
+    "id": 347
   },
   {
-    "id": 159,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nTawakkal adalah puncak dari ketenangan.\nMeski hasil kadang tak sesuai akal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 160,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah doa dan usaha kau sejajarkan,\nPasrahkan hati dalam rengkuhan keimanan.\nTak akan kecewa hati yang bertawakkal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 161,
     "title": "Shalat Tiang Agama",
     "hadithSource": "HR. Abu Daud",
     "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nJangan biarkan shalat luput dari waktumu.\nMembersihkan niat dari sifat yang takabbur,\nNiscaya hidupmu akan tenang dan teratur."
+    "explanation": "Sesibuk apapun urusan duniamu melanda,\nJangan biarkan shalat luput dari pandang mata.\nShalat adalah pelita di gelap gulita alam baka,\nPenentu utama saat engkau berhadapan dengan-Nya.",
+    "id": 348
   },
   {
-    "id": 162,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nHanya pada-Nya engkau temukan penolongmu.\nShalat adalah pelita di gelapnya kubur,\nMenjadikan amalan lain mudah untuk diukur."
+    "title": "Tawakkal",
+    "quranSource": "QS. At-Talaq: 3",
+    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
+    "explanation": "Jika ikhtiar maksimal sudah tercurahkan,\nLepaskan resah, serahkan pada kekuasaan Tuhan.\nTak akan kecewa hati yang tulus menyerahkan,\nKarena skenario-Nya tak pernah salah tujuan.",
+    "id": 349
   },
   {
-    "id": 163,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nKarena Allah membagi dengan sangat teliti.\nHati yang ridha atas segala anugerah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 164,
     "title": "Taubat dan Ampunan",
     "quranSource": "QS. Az-Zumar: 53",
     "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nRahmat-Nya merangkul di siang dan malam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
+    "explanation": "Meski tubuh pernah berlumur khilaf dan dosa,\nPintu ampunan-Nya tak pernah tertutup selamanya.\nTeteskan air mata taubat yang penuh makna,\nAmpunan-Nya selalu seluas cakrawala.",
+    "id": 350
   },
   {
-    "id": 165,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nHanya kata yang baik yang pantas diberi.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 166,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Ukhuwah Islamiyah",
     "hadithSource": "HR. Bukhari",
     "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nBantu sesama, Allah bantu kau di dunia.\nGenggam tangannya eratkan persahabatan,\nKarena surga dihuni hati yang penuh kasih sayang."
+    "explanation": "Hapus dendam yang membara di dalam jiwa,\nSenyumanmu pada sesama adalah sedekah termulia.\nGenggam tangan saudaramu eratkan ikatan cinta,\nMalaikat pun turun merestui ukhuwah kita.",
+    "id": 351
   },
   {
-    "id": 167,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nJangan jauh dari sang Maha Rahman.\nSatu istighfar menghapus dosa yang terbawa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 168,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKejujuran menuntun kita pada surgawi.\nSampaikan kebenaran dengan lembut di nurani,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 169,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nJangan jauh dari sang Maha Rahman.\nSatu tahlil memperkuat iman di dada,\nMenyiram hati bagai embun di pagi buta."
-  },
-  {
-    "id": 170,
     "title": "Dunia Hanya Sementara",
     "quranSource": "QS. Al-Hadid: 20",
     "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nBertemu Rasulullah di telaga yang mempesona."
+    "explanation": "Harta, tahta, dan paras hanya titipan semata,\nKain kafan kelak tak memiliki saku penyimpan harta.\nBangunlah rumah abadi di surga sebelum masa tiba,\nKelak engkau tersenyum manis di ujung usia.",
+    "id": 352
   },
   {
-    "id": 171,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nJanganlah engkau pernah bersedih hati.\nUsap dadamu dan sebut asma Tuhan-mu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 172,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nJangan biarkan shalat luput dari waktumu.\nMembuat lisan ini senantiasa bersyukur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 173,
     "title": "Kejujuran dan Lisan",
     "hadithSource": "HR. Muslim",
     "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nDiam adalah emas bila ragu bicara hati.\nHindari fitnah yang membakar seisi bumi,\nTimbangan amal kelak memberat tak terperi."
+    "explanation": "Berkata jujur walau terkadang terasa getir di lisan,\nHanya kata-kata bermakna yang pantas diucapkan.\nSampaikan kebenaran dengan kelembutan dan kesabaran,\nKelak lisanmu akan selamat dari pedihnya siksaan.",
+    "id": 353
   },
   {
-    "id": 174,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nBantu sesama, Allah bantu kau di dunia.\nHindari prasangka tanpa sebuah pembuktian,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 175,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nBantu sesama, Allah bantu kau di dunia.\nPilih kata yang lembut dalam ucapan,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 176,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Kejarlah akhirat yang abadi nyata,\nSelembar kain kafan tak bersaku harta.\nSisihkan waktumu memetik hikmah berganda,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 177,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nSenyummu pada sesama adalah sedekah bermakna.\nHindari prasangka tanpa sebuah pembuktian,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 178,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nTawakkal adalah puncak dari ketenangan.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 179,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nPasrahkan hati dalam rengkuhan keimanan.\nJadikan kepasrahan sebagai bekal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 180,
     "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nJangan sekalipun kau tinggikan ucapan.\nPeluh ayah mencari nafkah setiap hari,\nCintailah mereka sebelum ajal menghampiri."
+    "quranSource": "QS. Al-Isra: 23",
+    "arabic": "وَبِالْوَالِدَيْنِ إِحْسَانًا",
+    "explanation": "Surga merunduk di bawah telapak kaki ibu,\nDan keridhaan ayah adalah sayap kesuksesanmu.\nRawatlah mereka selagi nafas masih menderu,\nSebagaimana mereka merawatmu di waktu dulu.",
+    "id": 354
   },
   {
-    "id": 181,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nSenyum mereka adalah kunci keberkahan.\nDoa mereka penembus langit yang tak terperi,\nCium tangannya, peluklah dengan sepenuh sanubari."
+    "title": "Husnudzon (Berbaik Sangka)",
+    "hadithSource": "Hadits Qudsi HR. Bukhari",
+    "arabic": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "explanation": "Jangan mudah mengeluh atas takdir yang pahit,\nMungkin Allah sedang menyiapkan senyum yang legit.\nBerbaik sangkalah pada Sang Maha Pengatur,\nAgar hatimu damai dan tidurmu selalu nyenyak terlelap.",
+    "id": 355
   },
   {
-    "id": 182,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nSerahkan semua hasilnya pada Tuhan.\nBukan tugas kita merisaukan hal yang kekal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 183,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nJangan jauh dari sang Maha Rahman.\nSatu tahmid mendatangkan bahagia,\nMengingatkan bahwa dunia hanya sementara."
-  },
-  {
-    "id": 184,
-    "title": "Kejujuran dan Lisan",
+    "title": "Kemuliaan Menuntut Ilmu",
     "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nKarena satu dusta menuntut dusta lagi.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
+    "arabic": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا، سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "explanation": "Ilmu adalah pelita penuntun langkah di kegelapan,\nMengangkat derajat hamba melampaui gemerlap kekayaan.\nTuntutlah ilmu dari buaian hingga ke liang lahat,\nIa adalah warisan para Nabi dan bekal paling bermanfaat.",
+    "id": 356
   },
   {
-    "id": 185,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nJadikan kepasrahan sebagai bekal,\nHidup ini hanya tempat kita singgah dan tertinggal."
+    "title": "Khusyu' Dalam Shalat",
+    "quranSource": "QS. Al-Mu'minun: 1-2",
+    "arabic": "قَدْ أَفْلَحَ الْمُؤْمِنُونَ - الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+    "explanation": "Menghadap kiblat jangan sekadar membalikkan badan,\nHadirkan hatimu sepenuhnya pada Tuhan Semesta Alam.\nShalat yang khusyu' menenangkan setiap kepanikan,\nMenjadikan kehidupanmu selaras, tenang dan tentram.",
+    "id": 357
   },
   {
-    "id": 186,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
+    "title": "Mengelola Waktu dengan Bijak",
+    "quranSource": "QS. Al-'Asr: 1-2",
+    "arabic": "وَالْعَصْرِ - إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+    "explanation": "Waktu yang berlalu takkan mungkin kembali berputar,\nJangan biarkan ia habis untuk hal yang hambar.\nIsilah pergantian siang dan malam dengan zikir dan sabar,\nKelak engkau tak merugi saat kiamat membakar.",
+    "id": 358
+  },
+  {
+    "title": "Menghindari Sifat Sombong",
+    "hadithSource": "HR. Muslim",
+    "arabic": "لَا يَدْخُلُ الْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+    "explanation": "Setitik debu kesombongan dalam relung hati,\nCukup untuk menutup pintu surga dari diri ini.\nIngatlah asalmmu yang hanya dari setetes mani,\nDan tempat kembalimu hanyalah segunduk tanah sepi.",
+    "id": 359
+  },
+  {
+    "title": "Membantu Kesulitan Saudara",
+    "hadithSource": "HR. Muslim",
+    "arabic": "وَاللَّهُ فِى عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِى عَوْنِ أَخِيهِ",
+    "explanation": "Ringankan tanganmu membantu mereka yang kesusahan,\nSeburuk apapun kondisimu, jadilah perantara kebaikan.\nSiapa yang melapangkan dada saudaranya dari kesulitan,\nKelak Allah akan menolongnya di hari kebangkitan.",
+    "id": 360
+  },
+  {
+    "title": "Keikhlasan Dalam Beramal",
+    "quranSource": "QS. Al-Bayyinah: 5",
+    "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ",
+    "explanation": "Segala amal ibadah yang tak dilandasi ikhlas,\nIbarat membangun rumah di atas pasir yang lepas.\nTuluskan niat hanya untuk mengharap ridha-Nya,\nKelak pahala dan berkah akan mengalir tanpa batas.",
+    "id": 361
+  },
+  {
+    "title": "Menjaga Lisan (Ghibah)",
+    "quranSource": "QS. Al-Hujurat: 12",
+    "arabic": "وَلَا يَغْتَب بَّعْضُكُم بَعْضًا",
+    "explanation": "Tajamnya pedang dapat menyayat raga,\nNamun tajamnya lisan menusuk hingga ke jiwa.\nTahanlah lisan dari membicarakan aib sesama,\nKarena ghibah itu memakan daging saudara.",
+    "id": 362
+  },
+  {
+    "title": "Memaafkan Sesama",
+    "quranSource": "QS. Ali 'Imran: 134",
+    "arabic": "وَالْكَاظِمِينَ الْغَيْظَ وَالْعَافِينَ عَنِ النَّاسِ",
+    "explanation": "Menyimpan dendam bagai menggenggam bara,\nHanya melukai diri yang menahannya.\nMaafkanlah mereka yang pernah membuatmu terluka,\nSungguh Allah mencintai hamba yang berlapang dada.",
+    "id": 363
+  },
+  {
+    "title": "Menyambung Silaturahmi",
     "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nKarena mukmin itu ibarat satu raga.\nTurunkan ego saat terjadi perselisihan,\nNiscaya hidup rukun dalam kedamaian."
-  },
-  {
-    "id": 187,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKejujuran menuntun kita pada surgawi.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 188,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nSenyum mereka adalah kunci keberkahan.\nPeluh ayah mencari nafkah setiap hari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 189,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembersihkan niat dari sifat yang takabbur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 190,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nKarena Allah membagi dengan sangat teliti.\nHati yang ridha atas segala anugerah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 191,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nSenyum mereka adalah kunci keberkahan.\nBelaian ibu lebih hangat dari mentari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 192,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nKalimat suci adalah penawar bagi perasaan.\nSatu tasbih mengikis debu di jiwa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 193,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu tahlil memperkuat iman di dada,\nMengingatkan bahwa dunia hanya sementara."
-  },
-  {
-    "id": 194,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nBantu sesama, Allah bantu kau di dunia.\nHindari prasangka tanpa sebuah pembuktian,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 195,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 196,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nSenyum mereka adalah kunci keberkahan.\nKasih sayang mereka takkan pernah bisa dicari,\nKelak surga berada di bawah telapak kaki."
-  },
-  {
-    "id": 197,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah doa dan usaha kau sejajarkan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 198,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nSerahkan semua hasilnya pada Tuhan.\nTak akan kecewa hati yang bertawakkal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 199,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 200,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nShalat adalah pelita di gelapnya kubur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 201,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nRahmat-Nya merangkul di siang dan malam.\nBersimpuhlah hamba yang merindu,\nDia akan membasuh bersih nodamu."
-  },
-  {
-    "id": 202,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Saat gundah gulana datang merisaukan,\nKalimat suci adalah penawar bagi perasaan.\nSatu tahlil memperkuat iman di dada,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 203,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nHanya pada-Nya engkau temukan penolongmu.\nMencegah diri dari perbuatan yang hancur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 204,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Walau jejak noda telah tertanam,\nRahmat-Nya merangkul di siang dan malam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 205,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nHanya pada-Nya engkau temukan penolongmu.\nShalat adalah pelita di gelapnya kubur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 206,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nKarena Allah membagi dengan sangat teliti.\nLisan yang selalu mengucap alhamdulillah,\nAkan mengundang limpahan rahmat dan berkah."
-  },
-  {
-    "id": 207,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 208,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nPasti hidup terasa lebih membahagiakan hati.\nHati yang ridha atas segala anugerah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 209,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKarena satu dusta menuntut dusta lagi.\nHindari fitnah yang membakar seisi bumi,\nTimbangan amal kelak memberat tak terperi."
-  },
-  {
-    "id": 210,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nJangan biarkan hatimu terus muram tenggelam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 211,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nHanya kata yang baik yang pantas diberi.\nUbah umpatan dengan dzikir yang hakiki,\nTimbangan amal kelak memberat tak terperi."
-  },
-  {
-    "id": 212,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nJangan jauh dari sang Maha Rahman.\nSatu tahlil memperkuat iman di dada,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 213,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tahlil memperkuat iman di dada,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 214,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 215,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nBantu sesama, Allah bantu kau di dunia.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 216,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nPintu ampunan terbuka bagi setiap alam.\nBasahi wajahmu dengan air wudhu,\nDia akan membasuh bersih nodamu."
-  },
-  {
-    "id": 217,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nTawakkal adalah puncak dari ketenangan.\nTak akan kecewa hati yang bertawakkal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 218,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nPasrahkan dirimu hanya kepada Rabb-mu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 219,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nKarena satu dusta menuntut dusta lagi.\nUbah umpatan dengan dzikir yang hakiki,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 220,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nHindari prasangka tanpa sebuah pembuktian,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 221,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nKarena Allah membagi dengan sangat teliti.\nLisan yang selalu mengucap alhamdulillah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 222,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nCukupkanlah dirimu dengan yang kau miliki.\nJiwa yang mengerti arti bersusah payah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 223,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nJangan jauh dari sang Maha Rahman.\nSatu tahlil memperkuat iman di dada,\nMengingatkan bahwa dunia hanya sementara."
-  },
-  {
-    "id": 224,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nMencegah diri dari perbuatan yang hancur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 225,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu istighfar menghapus dosa yang terbawa,\nMengingatkan bahwa dunia hanya sementara."
-  },
-  {
-    "id": 226,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah doa dan usaha kau sejajarkan,\nPasrahkan hati dalam rengkuhan keimanan.\nMeski hasil kadang tak sesuai akal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 227,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Jika air mata jatuh membasahi pipi,\nKetahuilah rahmat-Nya takkan pernah henti.\nUsap dadamu dan sebut asma Tuhan-mu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 228,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah doa dan usaha kau sejajarkan,\nPercayakan takdir pada sang Maha Rahman.\nTak akan kecewa hati yang bertawakkal,\nAllah mencukupkan rezeki tanpa ada yang tercegal."
-  },
-  {
-    "id": 229,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nMengingat-Nya adalah sebuah perlindungan.\nSatu istighfar menghapus dosa yang terbawa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 230,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nHanya pada-Nya engkau temukan penolongmu.\nMencegah diri dari perbuatan yang hancur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 231,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nWaktu terus berputar tak pernah tertunda.\nGunakan hartamu menolong mereka yang papa,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 232,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nRahmat-Nya merangkul di siang dan malam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 233,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nShalat adalah pelita di gelapnya kubur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 234,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 235,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nSenyummu pada sesama adalah sedekah bermakna.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 236,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nBukan tugas kita merisaukan hal yang kekal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 237,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nPintu ampunan terbuka bagi setiap alam.\nBersimpuhlah hamba yang merindu,\nDia akan membasuh bersih nodamu."
-  },
-  {
-    "id": 238,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nDoa mereka penembus langit yang tak terperi,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 239,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nSelembar kain kafan tak bersaku harta.\nSisihkan waktumu memetik hikmah berganda,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 240,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu tasbih mengikis debu di jiwa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 241,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nHanya pada-Nya engkau temukan penolongmu.\nMembersihkan niat dari sifat yang takabbur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 242,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nDoa mereka penembus langit yang tak terperi,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 243,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nJangan biarkan shalat luput dari waktumu.\nMembersihkan niat dari sifat yang takabbur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 244,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nPasti hidup terasa lebih membahagiakan hati.\nHati yang ridha atas segala anugerah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 245,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nBantu sesama, Allah bantu kau di dunia.\nGenggam tangannya eratkan persahabatan,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 246,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nCukupkanlah dirimu dengan yang kau miliki.\nRaga yang tunduk dalam ruku' dan berserah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 247,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nShalat adalah pelita di gelapnya kubur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 248,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nPasti hidup terasa lebih membahagiakan hati.\nLisan yang selalu mengucap alhamdulillah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 249,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nPintu ampunan terbuka bagi setiap alam.\nBersimpuhlah hamba yang merindu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 250,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nRahmat-Nya merangkul di siang dan malam.\nBersimpuhlah hamba yang merindu,\nDia akan membasuh bersih nodamu."
-  },
-  {
-    "id": 251,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu istighfar menghapus dosa yang terbawa,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 252,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nBelaian ibu lebih hangat dari mentari,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 253,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jagalah lisan agar tak melukai,\nKarena satu dusta menuntut dusta lagi.\nHindari fitnah yang membakar seisi bumi,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 254,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nJadikan kepasrahan sebagai bekal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 255,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nDiam adalah emas bila ragu bicara hati.\nUbah umpatan dengan dzikir yang hakiki,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 256,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nRidha mereka adalah jalan keselamatan.\nDoa mereka penembus langit yang tak terperi,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 257,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nMencegah diri dari perbuatan yang hancur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 258,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nHindari prasangka tanpa sebuah pembuktian,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 259,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nPasti hidup terasa lebih membahagiakan hati.\nRaga yang tunduk dalam ruku' dan berserah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 260,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 261,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Kejarlah akhirat yang abadi nyata,\nHanya amal shalih bekal kita ke sana.\nBangun akhirat sebelum nafas terhenti sirna,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 262,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nJangan biarkan hatimu terus muram tenggelam.\nTeteskan air mata taubat yang syahdu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 263,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nRidha mereka adalah jalan keselamatan.\nBelaian ibu lebih hangat dari mentari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 264,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nHanya amal shalih bekal kita ke sana.\nSisihkan waktumu memetik hikmah berganda,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 265,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nPasti hidup terasa lebih membahagiakan hati.\nLisan yang selalu mengucap alhamdulillah,\nAkan mengundang limpahan rahmat dan berkah."
-  },
-  {
-    "id": 266,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nSenyum mereka adalah kunci keberkahan.\nDoa mereka penembus langit yang tak terperi,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 267,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nNiscaya hidupmu terhindar dari rasa iri.\nHati yang ridha atas segala anugerah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 268,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nIngatlah janji Allah yang pasti menanti.\nJadikan shalat sebagai tempat mengadu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 269,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nPasti hidup terasa lebih membahagiakan hati.\nHati yang ridha atas segala anugerah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 270,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nNiscaya hidupmu terhindar dari rasa iri.\nJiwa yang mengerti arti bersusah payah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 271,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nBantu sesama, Allah bantu kau di dunia.\nGenggam tangannya eratkan persahabatan,\nNiscaya hidup rukun dalam kedamaian."
-  },
-  {
-    "id": 272,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nSelembar kain kafan tak bersaku harta.\nGunakan hartamu menolong mereka yang papa,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 273,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nKembalilah pada-Nya dengan salam.\nBersimpuhlah hamba yang merindu,\nCinta kasih-Nya akan mendekapmu."
-  },
-  {
-    "id": 274,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nIngatlah janji Allah yang pasti menanti.\nUsap dadamu dan sebut asma Tuhan-mu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 275,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nHanya kata yang baik yang pantas diberi.\nHindari fitnah yang membakar seisi bumi,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 276,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nJangan jauh dari sang Maha Rahman.\nSatu tahmid mendatangkan bahagia,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 277,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Tak perlu membandingkan rezeki setiap hari,\nNiscaya hidupmu terhindar dari rasa iri.\nHati yang ridha atas segala anugerah,\nAkan mengundang limpahan rahmat dan berkah."
-  },
-  {
-    "id": 278,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nKembalilah pada-Nya dengan salam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 279,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nHanya kata yang baik yang pantas diberi.\nHindari fitnah yang membakar seisi bumi,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 280,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nSenyum mereka adalah kunci keberkahan.\nPeluh ayah mencari nafkah setiap hari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 281,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nPasti hidup terasa lebih membahagiakan hati.\nJiwa yang mengerti arti bersusah payah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 282,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nPasti hidup terasa lebih membahagiakan hati.\nLisan yang selalu mengucap alhamdulillah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 283,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nHanya kata yang baik yang pantas diberi.\nUbah umpatan dengan dzikir yang hakiki,\nNiscaya keselamatan menyertai setiap hari."
-  },
-  {
-    "id": 284,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nKejujuran menuntun kita pada surgawi.\nUbah umpatan dengan dzikir yang hakiki,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 285,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nKetahuilah rahmat-Nya takkan pernah henti.\nAngkat kedua tanganmu dalam syahdu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 286,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tahmid mendatangkan bahagia,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 287,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nKarena mukmin itu ibarat satu raga.\nGenggam tangannya eratkan persahabatan,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 288,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nKematian pasti datang membawa cerita.\nGunakan hartamu menolong mereka yang papa,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 289,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nKarena mukmin itu ibarat satu raga.\nPilih kata yang lembut dalam ucapan,\nNiscaya hidup rukun dalam kedamaian."
-  },
-  {
-    "id": 290,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nKarena mukmin itu ibarat satu raga.\nHindari prasangka tanpa sebuah pembuktian,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 291,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nRahmat-Nya merangkul di siang dan malam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 292,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nPasti hidup terasa lebih membahagiakan hati.\nJiwa yang mengerti arti bersusah payah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 293,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Kejarlah akhirat yang abadi nyata,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 294,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nBantu sesama, Allah bantu kau di dunia.\nTurunkan ego saat terjadi perselisihan,\nKarena surga dihuni hati yang penuh kasih sayang."
-  },
-  {
-    "id": 295,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nSenyum mereka adalah kunci keberkahan.\nBelaian ibu lebih hangat dari mentari,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 296,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nKarena satu dusta menuntut dusta lagi.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 297,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nJangan sekalipun kau tinggikan ucapan.\nDoa mereka penembus langit yang tak terperi,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 298,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tahlil memperkuat iman di dada,\nMengingatkan bahwa dunia hanya sementara."
-  },
-  {
-    "id": 299,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nKarena mukmin itu ibarat satu raga.\nGenggam tangannya eratkan persahabatan,\nNiscaya hidup rukun dalam kedamaian."
-  },
-  {
-    "id": 300,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nRahmat-Nya merangkul di siang dan malam.\nBasahi wajahmu dengan air wudhu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 301,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nSelembar kain kafan tak bersaku harta.\nBangun akhirat sebelum nafas terhenti sirna,\nMaka kau akan tersenyum di hari penghisaban kelak sana."
-  },
-  {
-    "id": 302,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nJangan biarkan shalat luput dari waktumu.\nMembuat lisan ini senantiasa bersyukur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 303,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nBawa keluh kesahmu dalam doa-doamu.\nMembersihkan niat dari sifat yang takabbur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 304,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nTurunkan ego saat terjadi perselisihan,\nPertahankan persaudaraan di atas segala perbedaan."
-  },
-  {
-    "id": 305,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nPasrahkan hati dalam rengkuhan keimanan.\nJadikan kepasrahan sebagai bekal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 306,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Bila ingin hidup penuh dengan kemudahan,\nJangan sekalipun kau tinggikan ucapan.\nKasih sayang mereka takkan pernah bisa dicari,\nBaktimu adalah harta yang kekal abadi."
-  },
-  {
-    "id": 307,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nRahmat-Nya merangkul di siang dan malam.\nTeteskan air mata taubat yang syahdu,\nDia akan membasuh bersih nodamu."
-  },
-  {
-    "id": 308,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Jika berharap rezeki yang berlimpahan,\nSenyum mereka adalah kunci keberkahan.\nPeluh ayah mencari nafkah setiap hari,\nCium tangannya, peluklah dengan sepenuh sanubari."
-  },
-  {
-    "id": 309,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nJangan biarkan shalat luput dari waktumu.\nMencegah diri dari perbuatan yang hancur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 310,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nKalimat suci adalah penawar bagi perasaan.\nSatu tahmid mendatangkan bahagia,\nMenyiram hati bagai embun di pagi buta."
-  },
-  {
-    "id": 311,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nWaktu terus berputar tak pernah tertunda.\nBangun akhirat sebelum nafas terhenti sirna,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 312,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Meskipun lelah membebat ragamu,\nBawa keluh kesahmu dalam doa-doamu.\nShalat adalah pelita di gelapnya kubur,\nKarena ia tiang kokoh yang takkan luntur."
-  },
-  {
-    "id": 313,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Bila hati terasa sesak tak keruan,\nKalimat suci adalah penawar bagi perasaan.\nSatu tahlil memperkuat iman di dada,\nMenyiram hati bagai embun di pagi buta."
-  },
-  {
-    "id": 314,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nDiam adalah emas bila ragu bicara hati.\nUbah umpatan dengan dzikir yang hakiki,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 315,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nKarena mukmin itu ibarat satu raga.\nPilih kata yang lembut dalam ucapan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 316,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nSerahkan semua hasilnya pada Tuhan.\nBukan tugas kita merisaukan hal yang kekal,\nTenanglah, rahmat-Nya senantiasa takkan tanggal."
-  },
-  {
-    "id": 317,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Saat kau mencari pintu sebuah kebahagiaan,\nJangan sekalipun kau tinggikan ucapan.\nPeluh ayah mencari nafkah setiap hari,\nCintailah mereka sebelum ajal menghampiri."
-  },
-  {
-    "id": 318,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nKematian pasti datang membawa cerita.\nSisihkan waktumu memetik hikmah berganda,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 319,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nJanganlah engkau pernah bersedih hati.\nAngkat kedua tanganmu dalam syahdu,\nPahala tanpa hisab akan jadi milikmu."
-  },
-  {
-    "id": 320,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nKematian pasti datang membawa cerita.\nJadikan dunia tempat menanam pahala surga,\nMenikmati nikmat yang tiada tara putusnya."
-  },
-  {
-    "id": 321,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Setelah lelah kau berikhtiar mencari jalan,\nSerahkan semua hasilnya pada Tuhan.\nTak akan kecewa hati yang bertawakkal,\nHidup ini hanya tempat kita singgah dan tertinggal."
-  },
-  {
-    "id": 322,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nKarena Allah membagi dengan sangat teliti.\nJiwa yang mengerti arti bersusah payah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 323,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Mari merajut kasih bersama saudara,\nSenyummu pada sesama adalah sedekah bermakna.\nPilih kata yang lembut dalam ucapan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 324,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nKalimat suci adalah penawar bagi perasaan.\nSatu tasbih mengikis debu di jiwa,\nMenyiram hati bagai embun di pagi buta."
-  },
-  {
-    "id": 325,
-    "title": "Berbakti kepada Orang Tua",
-    "quranSource": "QS. Luqman: 14",
-    "arabic": "وَوَصَّيْنَا الْإِنْسَانَ بِوَالِدَيْهِ",
-    "explanation": "Di kala kau memohon sebuah perlindungan,\nMuliakanlah ayah bumdamu penuh penghormatan.\nDoa mereka penembus langit yang tak terperi,\nKelak surga berada di bawah telapak kaki."
-  },
-  {
-    "id": 326,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nJangan biarkan hatimu terus muram tenggelam.\nAngkat tanganmu dan sebut asma Rabb-mu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 327,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Saling memaafkan adalah jalan utama,\nMenyambung silaturahmi perpanjang usia.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 328,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nHanya kata yang baik yang pantas diberi.\nTinggalkan ghibah yang merusak nilai diri,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 329,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nDiam adalah emas bila ragu bicara hati.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 330,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Di kala pikiran pusing mencari pelarian,\nPerbanyaklah berdzikir menyebut nama Tuhan.\nSatu tahmid mendatangkan bahagia,\nHingga ketenangan hakiki kau rasakan nyata."
-  },
-  {
-    "id": 331,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Jangan dustai diri berulangkali,\nKejujuran menuntun kita pada surgawi.\nTinggalkan ghibah yang merusak nilai diri,\nSebuah ketenangan jiwa jadi milik sejati."
-  },
-  {
-    "id": 332,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nBawa keluh kesahmu dalam doa-doamu.\nMencegah diri dari perbuatan yang hancur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 333,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Walau beban hidup terasa berat di hati,\nJanganlah engkau pernah bersedih hati.\nPasrahkan dirimu hanya kepada Rabb-mu,\nNiscaya tenang akan menyelimuti jiwamu."
-  },
-  {
-    "id": 334,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Ketika semua daya telah kau kerahkan,\nPasrahkan hati dalam rengkuhan keimanan.\nTak akan kecewa hati yang bertawakkal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 335,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nDiam adalah emas bila ragu bicara hati.\nTinggalkan ghibah yang merusak nilai diri,\nHati terhindar dari rasa pedih dan sepi."
-  },
-  {
-    "id": 336,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nJangan biarkan hatimu terus muram tenggelam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 337,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nNiscaya hidupmu terhindar dari rasa iri.\nHati yang ridha atas segala anugerah,\nMembuat hidup berubah menjadi lebih indah."
-  },
-  {
-    "id": 338,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nDiam adalah emas bila ragu bicara hati.\nSampaikan kebenaran dengan lembut di nurani,\nTimbangan amal kelak memberat tak terperi."
-  },
-  {
-    "id": 339,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Gemerlap dunia sungguh menipu mata,\nSelembar kain kafan tak bersaku harta.\nGunakan hartamu menolong mereka yang papa,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 340,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nMembuat lisan ini senantiasa bersyukur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 341,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Seberapa pun besar dosa di masa silam,\nKembalilah pada-Nya dengan salam.\nBersimpuhlah hamba yang merindu,\nAllah rindu mendengar lirih doamu."
-  },
-  {
-    "id": 342,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Setiap ucapan pasti diamati,\nDiam adalah emas bila ragu bicara hati.\nHindari fitnah yang membakar seisi bumi,\nNiscaya keselamatan menyertai setiap hari."
-  },
-  {
-    "id": 343,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Jangan biarkan benci tumbuh di dada,\nBantu sesama, Allah bantu kau di dunia.\nHindari prasangka tanpa sebuah pembuktian,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 344,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Saat jalan terasa buntu dan sepi,\nJanganlah engkau pernah bersedih hati.\nJadikan shalat sebagai tempat mengadu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 345,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nNiscaya hidupmu terhindar dari rasa iri.\nRaga yang tunduk dalam ruku' dan berserah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 346,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nJangan biarkan shalat luput dari waktumu.\nShalat adalah pelita di gelapnya kubur,\nMembawamu ke surga dengan langkah yang makmur."
-  },
-  {
-    "id": 347,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nJanganlah engkau pernah bersedih hati.\nAngkat kedua tanganmu dalam syahdu,\nKelak surga bersiap menyambutmu."
-  },
-  {
-    "id": 348,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nNiscaya hidupmu terhindar dari rasa iri.\nRaga yang tunduk dalam ruku' dan berserah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 349,
-    "title": "Menjernihkan Hati (Dzikir)",
-    "quranSource": "QS. Ar-Ra'd: 28",
-    "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
-    "explanation": "Jika sepi menyelimuti sebuah kesendirian,\nMengingat-Nya adalah sebuah perlindungan.\nSatu tasbih mengikis debu di jiwa,\nBersama Allah, segalanya akan baik-baik saja."
-  },
-  {
-    "id": 350,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Sesibuk apapun urusan duniamu,\nJangan biarkan shalat luput dari waktumu.\nShalat adalah pelita di gelapnya kubur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 351,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Lihatlah ke bawah untuk urusan duniawi,\nCukupkanlah dirimu dengan yang kau miliki.\nHati yang ridha atas segala anugerah,\nKarena syukur adalah rahasia jiwa yang pasrah."
-  },
-  {
-    "id": 352,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nSerahkan semua hasilnya pada Tuhan.\nBukan tugas kita merisaukan hal yang kekal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 353,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Meski kau pernah tenggelam dalam kelam,\nPintu ampunan terbuka bagi setiap alam.\nBersimpuhlah hamba yang merindu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 354,
-    "title": "Hubungan Antar Sesama (Ukhuwah)",
-    "hadithSource": "HR. Bukhari",
-    "arabic": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "explanation": "Hapus dendam yang membara tak terduga,\nSenyummu pada sesama adalah sedekah bermakna.\nGenggam tangannya eratkan persahabatan,\nMalaikat pun turun membawa keberkahan."
-  },
-  {
-    "id": 355,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nSelembar kain kafan tak bersaku harta.\nBangun akhirat sebelum nafas terhenti sirna,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 356,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Jangan terpana pada fana dunia,\nSelembar kain kafan tak bersaku harta.\nGunakan hartamu menolong mereka yang papa,\nBertemu Rasulullah di telaga yang mempesona."
-  },
-  {
-    "id": 357,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Berapapun rezeki yang kau dapati,\nCukupkanlah dirimu dengan yang kau miliki.\nLisan yang selalu mengucap alhamdulillah,\nMenjadikan setiap langkah tak kehilangan arah."
-  },
-  {
-    "id": 358,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nSelembar kain kafan tak bersaku harta.\nJadikan dunia tempat menanam pahala surga,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 359,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Saat ujian datang menghempas jiwamu,\nJangan biarkan shalat luput dari waktumu.\nMembersihkan niat dari sifat yang takabbur,\nNiscaya hidupmu akan tenang dan teratur."
-  },
-  {
-    "id": 360,
-    "title": "Sabar dalam Ujian",
-    "quranSource": "QS. Al-Baqarah: 153",
-    "arabic": "يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",
-    "explanation": "Meski ujian datang silih berganti,\nSabar adalah lentera yang abadi.\nUsap dadamu dan sebut asma Tuhan-mu,\nBersama kesulitan pasti ada langkah majumu."
-  },
-  {
-    "id": 361,
-    "title": "Shalat Tiang Agama",
-    "hadithSource": "HR. Abu Daud",
-    "arabic": "إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ مِنْ عَمَلِهِ صَلاتُهُ",
-    "explanation": "Di saat senang maupun sedih hatimu,\nSujudlah, rebahkan sejenak beban di pundakmu.\nMencegah diri dari perbuatan yang hancur,\nMenjadikan amalan lain mudah untuk diukur."
-  },
-  {
-    "id": 362,
-    "title": "Tawakkal",
-    "quranSource": "QS. At-Talaq: 3",
-    "arabic": "وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",
-    "explanation": "Jika ikhtiar telah maksimal kau lakukan,\nPasrahkan hati dalam rengkuhan keimanan.\nTak akan kecewa hati yang bertawakkal,\nKarena rencana-Nya pasti takkan gagal."
-  },
-  {
-    "id": 363,
-    "title": "Rasa Syukur",
-    "quranSource": "QS. Ibrahim: 7",
-    "arabic": "لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",
-    "explanation": "Syukurilah nikmat dari Sang Ilahi,\nCukupkanlah dirimu dengan yang kau miliki.\nRaga yang tunduk dalam ruku' dan berserah,\nAkan mengundang limpahan rahmat dan berkah."
-  },
-  {
-    "id": 364,
-    "title": "Taubat dan Ampunan",
-    "quranSource": "QS. Az-Zumar: 53",
-    "arabic": "لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",
-    "explanation": "Saat dada sesak dan terasa muram,\nPintu ampunan terbuka bagi setiap alam.\nTeteskan air mata taubat yang syahdu,\nAmpunan-Nya selalu seluas samudera untukmu."
-  },
-  {
-    "id": 365,
-    "title": "Dunia Hanya Sementara",
-    "quranSource": "QS. Al-Hadid: 20",
-    "arabic": "وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا مَتَاعُ الْغُرُورِ",
-    "explanation": "Harta dan tahta hanya titipan semata,\nHanya amal shalih bekal kita ke sana.\nSisihkan waktumu memetik hikmah berganda,\nBahagia selamanya terhindar dari duka merana."
-  },
-  {
-    "id": 366,
-    "title": "Kejujuran dan Lisan",
-    "hadithSource": "HR. Muslim",
-    "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "explanation": "Berkata jujur meski terasa pahit sekali,\nHanya kata yang baik yang pantas diberi.\nSampaikan kebenaran dengan lembut di nurani,\nHati terhindar dari rasa pedih dan sepi."
+    "arabic": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ، وَأَنْ يُنْسَأَ لَهُ فِي أَثَرِهِ، فَلْيَصِلْ رَحِمَهُ",
+    "explanation": "Bila rezeki terasa seret dan tak menentu,\nCobalah ketuk pintu kerabat yang telah lama jauh darimu.\nSilaturahmi itu merekatkan hati yang beku,\nMemanjangkan umur dan meluaskan rezekimu.",
+    "id": 364
+  },
+  {
+    "title": "Mengingat Kematian",
+    "quranSource": "QS. Ali 'Imran: 185",
+    "arabic": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+    "explanation": "Setiap jiwa pasti akan mereguk kepulangan,\nMenuju keabadian dan meninggalkan kefanaan.\nPersiapkanlah amal sebelum datangnya panggilan,\nKarena dunia ini hanyalah tempat persinggahan.",
+    "id": 365
+  },
+  {
+    "title": "Sedekah Melapangkan Rezeki",
+    "quranSource": "QS. Saba: 39",
+    "arabic": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فَهُوَ يُخْلِفُهُ",
+    "explanation": "Jangan takut miskin karena memberi,\nAllah yang Maha Kaya yang akan mengganti.\nSepercik sedekah yang kau beri saat ini,\nKelak meneduhkanmu di hari akhir nanti.",
+    "id": 366
   }
 ];
 
