@@ -3,8 +3,8 @@ const file = 'vite.config.ts';
 let code = fs.readFileSync(file, 'utf8');
 
 code = code.replace(
-  "devOptions: {\n          enabled: false\n        },",
-  "devOptions: {\n          enabled: true,\n          type: 'module',\n          navigateFallback: 'index.html'\n        },"
+  "devOptions: {\n          enabled: true,\n          type: 'module',\n          navigateFallback: 'index.html'\n        },",
+  "devOptions: {\n          enabled: false\n        },"
 );
 
 fs.writeFileSync(file, code);
