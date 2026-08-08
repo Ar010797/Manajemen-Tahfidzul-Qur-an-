@@ -155,7 +155,7 @@ export default function ExamHafalan() {
       setDaysProgress(active.days_progress);
       setNote(active.note);
       setTarget(active.target || '');
-      setSemester(active.semester || 'Ganjil');
+      setSemester(active.semester === 'Genap' ? 'Genap' : 'Ganjil');
     } else {
       setActiveExamId(null);
       setActiveExamStatus('ongoing');

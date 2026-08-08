@@ -30,7 +30,7 @@ export default function InstitutionProfile() {
     coordinator_signature_size: 80,
     principal_signature_size_mts: 80,
     coordinator_signature_size_mts: 80,
-    theme_color: 'emerald' as const,
+    theme_color: 'emerald' as 'emerald' | 'blue' | 'amber' | 'indigo' | 'purple' | 'rose' | 'slate',
     reminder_enabled: false,
     reminder_time: '15:00'
   });
@@ -39,11 +39,27 @@ export default function InstitutionProfile() {
     const fetchProfile = () => {
       const data = storage.getInstitution();
       if (data) setProfile({
-        ...data,
+        name: data.name || '',
+        address: data.address || '',
+        name_mts: data.name_mts || '',
+        address_mts: data.address_mts || '',
+        logo_mts: data.logo_mts || '',
+        principal_name: data.principal_name || '',
+        principal_name_mts: data.principal_name_mts || '',
+        coordinator_name: data.coordinator_name || '',
+        halaqoh_teacher_name: (data as any).halaqoh_teacher_name || '',
+        academic_year: (data as any).academic_year || '',
+        report_date: (data as any).report_date || '',
+        logo: data.logo || '',
+        watermark: data.watermark || '',
         principal_signature: data.principal_signature || '',
         coordinator_signature: data.coordinator_signature || '',
         principal_signature_mts: data.principal_signature_mts || '',
         coordinator_signature_mts: data.coordinator_signature_mts || '',
+        principal_signature_size: data.principal_signature_size || 80,
+        coordinator_signature_size: data.coordinator_signature_size || 80,
+        principal_signature_size_mts: data.principal_signature_size_mts || 80,
+        coordinator_signature_size_mts: data.coordinator_signature_size_mts || 80,
         theme_color: data.theme_color || 'emerald',
         reminder_enabled: data.reminder_enabled ?? false,
         reminder_time: data.reminder_time || '15:00'
