@@ -57,33 +57,35 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
     
     Object.keys(globalData).forEach(guru => {
       const d = globalData[guru];
+      if (!d) return;
       const students = d.students || [];
       const deposits = d.daily_deposits || [];
       const halaqohs = d.halaqoh || [];
 
       students.forEach((student: any) => {
+         if (!student) return;
          const ummiDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'ummi');
-         ummiDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
+         ummiDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
          const latestUmmi = ummiDeposits[0];
 
          const tilawahDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'tilawah');
-         tilawahDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
+         tilawahDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
          const latestTilawah = tilawahDeposits[0];
 
          let currentLevelStr = 'Belum Ada Data';
          let category = 'Belum Ada Data'; // For charting
          let levelScore = 0;
          
-         if (latestTilawah && (!latestUmmi || latestTilawah.date >= latestUmmi.date)) {
+         if (latestTilawah && (!latestUmmi || (latestTilawah.date || '') >= (latestUmmi.date || ''))) {
              currentLevelStr = 'Al-Qur\'an';
              category = 'Al-Qur\'an';
-             levelScore = 10;
+             levelScore = 7;
          } else if (latestUmmi) {
              const lvl = latestUmmi.details?.level;
              if (lvl === 'Al-Quran' || lvl === 7 || lvl === '7') {
                  currentLevelStr = 'Al-Qur\'an';
                  category = 'Al-Qur\'an';
-                 levelScore = 10;
+                 levelScore = 7;
              } else if (lvl) {
                  currentLevelStr = `Jilid ${lvl}`;
                  category = `Jilid ${lvl}`;
@@ -92,19 +94,19 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          }
          
          const hafalanDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'hafalan');
-         hafalanDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
+         hafalanDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
          const latestHafalan = hafalanDeposits[0];
          let currentHafalanStr = 'Belum Ada Data';
          let normalizedHafalan = '';
          if (latestHafalan) {
             currentHafalanStr = `Surah ${latestHafalan.details?.surah || '-'}`;
-            normalizedHafalan = (latestHafalan.details?.surah || '').toLowerCase().replace(/[^a-z]/g, '');
+            normalizedHafalan = (latestHafalan.details?.surah || '').toLowerCase().replace(/[^a-z]/g, '').replace(/^(surah|surat|qs)/, '');
          }
 
          studentsList.push({
             name: student.name,
             guru: guru,
-            halaqoh: student.halaqoh_name || halaqohs.find((h: any) => h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh',
+            halaqoh: student.halaqoh_name || halaqohs.find((h: any) => h && h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh',
             level: currentLevelStr,
             levelScore,
             category: category,
@@ -148,23 +150,117 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
 
     // Progression sequence from Juz 30 -> Juz 29 -> Juz 28
     const SURAH_PROGRESSION = [
-      "annaba", "annaziat", "abasa", "attakwir", "alinfitar", "almutaffifin", "alinsyiqaq", // Kls 1
-      "alburuj", "attariq", "alala", "algasyiyah", "alfajr", "albalad", "asysyams", "allail", 
-      "adduha", "asysyarh", "attin", "alalaq", // Kls 2
-      "alqadr", "albayyinah", "azzalzalah", "aladiyat", "alqariah", "attakasur", "alasr", "alhumazah", 
-      "alfil", "quraisy", "almaun", "alkausar", "alkafirun", "annasr", "allahab", "alikhlas", "alfalaq", "annas",
-      "almulk", "alqalam", "alhaqqah", // Kls 3
-      "almaarij", "nuh", "aljinn", // Kls 4
-      "almuzzammil", "almuddassir", "alqiyamah", "alinsan", "almursalat", // Kls 5 & 6
-      "almujadilah", "alhasyr", "almumtahanah", "ashshaff", // Kls 7
-      "aljumuah", "almunafiqun", "attagabun", "attalaq", "attahrim" // Kls 8 & 9
+      "", // 0
+      "annaba", "annaziat", "abasa", // 1-3
+      "attakwir", "alinfitar", "almuthaffifin", "alinsyiqaq", // 4-7
+      "alburuj", "atthariq", "alala", "alghasyiyah", "alfajr", // 8-12
+      "albalad", "asysyams", "allail", "addhuha", "asysyarh", "attin", "alalaq", // 13-19
+      "alqadr", "albayyinah", "azzalzalah", "aladiyat", "alqariah", "attakatsur", "alasr", "alhumazah", "alfil", "quraisy", "almaun", "alkautsar", "alkafirun", "annasr", "almasad", "alikhlas", "alfalaq", "annas", // 20-37
+      "almulk", "alqalam", "alhaqqoh", "almaarij", "nuh", "aljin", "almuzammil", "almuddatsir", "alqiyamah", "alinsan", "almursalat", // 38-48
+      "attahrim", "atthalaq", "asshaff", "almumtahanah", "alhasyr", "almujadalah", "alhadid", "alwaqiah", "annajm", "adzdzariyat", "atthur", "qof", "alhujurat", "alfath" // 49-62
     ];
+
+    const SURAH_ALIASES: Record<string, number> = {
+      "attoriq": 9,
+      "algosyiyah": 11,
+      "alghosiyah": 11,
+      "alhaqqah": 40,
+      "alqolam": 39,
+      "albayinah": 21,
+      "alinfitor": 5,
+      "almuthoffifin": 6,
+      "almutaffifin": 6,
+      "almuzzammil": 44,
+      "almudasir": 45,
+      "ashshaff": 51,
+      "asshof": 51,
+      "attaqabun": 50,
+      "addzariyat": 58,
+      "attur": 59,
+      "qaf": 60,
+      "albaqoroh": 99,
+      "albaqarah": 99,
+      "almaidah": 99,
+      "aliimran": 99,
+      "annisa": 99,
+      "alanam": 99,
+      "alaraf": 99,
+      "alanfal": 99,
+      "attaubah": 99,
+      "yunus": 99,
+      "hud": 99,
+      "yusuf": 99,
+      "arrad": 99,
+      "ibrahim": 99,
+      "alhijr": 99,
+      "annahl": 99,
+      "alisra": 99,
+      "alkahfi": 99,
+      "maryam": 99,
+      "taha": 99,
+      "alanbiya": 99,
+      "alhaj": 99,
+      "almuminun": 99,
+      "annur": 99,
+      "alfurqan": 99,
+      "asysyuara": 99,
+      "annaml": 99,
+      "alqasas": 99,
+      "alankabut": 99,
+      "arrum": 99,
+      "luqman": 99,
+      "assajdah": 99,
+      "alazhab": 99,
+      "saba": 99,
+      "fatir": 99,
+      "yasin": 99,
+      "yasiin": 99,
+      "assaffat": 99,
+      "sad": 99,
+      "shod": 99,
+      "azzumar": 99,
+      "ghafir": 99,
+      "fussilat": 99,
+      "asysyura": 99,
+      "azzukhruf": 99,
+      "addukhan": 99,
+      "aljasiyah": 99
+    };
+    
+    function getHighestSurahIndex(rawText: string): number {
+      if (!rawText || typeof rawText !== 'string' || rawText === 'Belum Ada Data' || rawText === 'Belum Ada Data' || rawText === 'Surah -') return 0;
+      
+      const text = rawText.toLowerCase().replace(/[^a-z0-9\s-]/g, '');
+      const tokens = text.split(/[\s-]+/).filter((t: string) => t !== 'surah' && t !== 'surat' && t !== 'qs' && t !== 'sampai' && t !== 'dan' && t !== 'juz');
+      const fullJoined = tokens.join('');
+      
+      let maxIdx = 0;
+      
+      for (let i = 1; i < SURAH_PROGRESSION.length; i++) {
+         const p = SURAH_PROGRESSION[i];
+         if (fullJoined.includes(p)) {
+            if (i > maxIdx) maxIdx = i;
+         }
+      }
+      
+      for (const alias in SURAH_ALIASES) {
+         if (fullJoined.includes(alias)) {
+            if (SURAH_ALIASES[alias] > maxIdx) maxIdx = SURAH_ALIASES[alias];
+         }
+      }
+      
+      if (maxIdx === 0 && fullJoined.length > 3) {
+         if (fullJoined.includes("juz")) maxIdx = 99;
+      }
+      
+      return maxIdx;
+    }
     
     // Calculate achievement per Halaqoh
     const halaqohMap: Record<string, { total: number, achievedHafalan: number, achievedUmmi: number }> = {};
     
     studentsList.forEach(s => {
-       const h = s.halaqoh;
+       const h = String(s.halaqoh || 'Tanpa Halaqoh');
        if (!halaqohMap[h]) halaqohMap[h] = { total: 0, achievedHafalan: 0, achievedUmmi: 0 };
        halaqohMap[h].total++;
        
@@ -177,29 +273,21 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        
        if (grade > 0) {
            let targetSurahIndex = 0;
-           let targetLevel = 10; // Default to Al-Qur'an (Level 10)
+           let targetLevel = 7; // Default to Al-Qur'an (Level 7)
            
-           if (grade === 1) { targetSurahIndex = 6; targetLevel = 3; } // Al-Insyiqaq, Jilid 3
-           else if (grade === 2) { targetSurahIndex = 18; targetLevel = 6; } // Al-'Alaq, Jilid 6
-           else if (grade === 3) { targetSurahIndex = 39; targetLevel = 10; } // Al-Haqqah, Al-Quran
-           else if (grade === 4) { targetSurahIndex = 42; targetLevel = 10; } // Al-Jinn, Al-Quran
-           else if (grade === 5 || grade === 6) { targetSurahIndex = 47; targetLevel = 10; } // Al-Mursalat, Al-Quran
-           else if (grade === 7) { targetSurahIndex = 51; targetLevel = 10; } // Ash-Shaff, Al-Quran
-           else if (grade >= 8) { targetSurahIndex = 56; targetLevel = 10; } // At-Tahrim, Al-Quran
+           if (grade === 1) { targetSurahIndex = 3; targetLevel = 2; }
+           else if (grade === 2) { targetSurahIndex = 12; targetLevel = 5; }
+           else if (grade === 3) { targetSurahIndex = 37; targetLevel = 7; }
+           else if (grade === 4) { targetSurahIndex = 43; targetLevel = 7; }
+           else if (grade === 5) { targetSurahIndex = 48; targetLevel = 7; }
+           else if (grade >= 6) { targetSurahIndex = 1; targetLevel = 7; } 
            
-           let studentSurahIdx = SURAH_PROGRESSION.indexOf(s.normalizedHafalan);
-           
-           // If surah not found but has data, maybe it's higher juz or custom name
-           if (studentSurahIdx === -1 && s.normalizedHafalan.length > 3) {
-               // We will be strict: if it's not in our progression, we'll mark as achieved ONLY if grade >= 7 as fallback
-               if (grade >= 6) studentSurahIdx = 99; 
-           }
+           let studentSurahIdx = getHighestSurahIndex(s.hafalan);
            
            hafalanAchieved = studentSurahIdx >= targetSurahIndex;
            ummiAchieved = s.levelScore >= targetLevel;
        } else {
-           // No grade detected, just check if they have any data
-           if (s.normalizedHafalan) hafalanAchieved = true;
+           if (s.hafalan && s.hafalan !== 'Belum Ada Data') hafalanAchieved = true;
            if (s.levelScore > 0) ummiAchieved = true;
        }
        
@@ -231,10 +319,12 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        percentageUmmi: halaqohMap[k].total > 0 ? Math.round((halaqohMap[k].achievedUmmi / halaqohMap[k].total) * 100) : 0
        };
     }).sort((a,b) => {
-       const gradeA = a.name.match(/([1-9])/) ? parseInt(a.name.match(/([1-9])/)[1]) : 99;
-       const gradeB = b.name.match(/([1-9])/) ? parseInt(b.name.match(/([1-9])/)[1]) : 99;
+       const strA = String(a.name || '');
+       const gradeA = strA.match(/([1-9])/) ? parseInt(a.name.match(/([1-9])/)[1]) : 99;
+       const strB = String(b.name || '');
+       const gradeB = strB.match(/([1-9])/) ? parseInt(b.name.match(/([1-9])/)[1]) : 99;
        if (gradeA !== gradeB) return gradeA - gradeB;
-       return a.name.localeCompare(b.name);
+       return strA.localeCompare(strB);
     });
 
     const grandTotal = {

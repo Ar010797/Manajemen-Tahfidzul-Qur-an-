@@ -155,7 +155,7 @@ export default function ExamHafalan() {
       setDaysProgress(active.days_progress);
       setNote(active.note);
       setTarget(active.target || '');
-      setSemester(active.semester || 'Ganjil');
+      setSemester((active.semester as 'Ganjil' | 'Genap') || 'Ganjil');
     } else {
       setActiveExamId(null);
       setActiveExamStatus('ongoing');
@@ -278,7 +278,7 @@ export default function ExamHafalan() {
     setDaysProgress(exam.days_progress || {});
     setNote(exam.note || '');
     setTarget(exam.target || '');
-    setSemester(exam.semester || 'Ganjil');
+    setSemester((exam.semester as 'Ganjil' | 'Genap') || 'Ganjil');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
