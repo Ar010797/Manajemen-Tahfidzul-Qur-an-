@@ -14,13 +14,12 @@ export default function InstitutionProfile() {
     name_mts: '',
     address_mts: '',
     logo_mts: '',
-    watermark_mts: '',
     principal_name: '',
     principal_name_mts: '',
     coordinator_name: '',
     halaqoh_teacher_name: '',
-    academic_year: '2025/2026',
-    report_date: new Date().toISOString().split('T')[0],
+    academic_year: '',
+    report_date: '',
     logo: '',
     watermark: '',
     principal_signature: '',
@@ -39,15 +38,16 @@ export default function InstitutionProfile() {
   useEffect(() => {
     const fetchProfile = () => {
       const data = storage.getInstitution();
-      if (data) setProfile((prev: any) => ({ ...prev, ...data,
+      if (data) setProfile({
+        ...data,
         principal_signature: data.principal_signature || '',
         coordinator_signature: data.coordinator_signature || '',
         principal_signature_mts: data.principal_signature_mts || '',
         coordinator_signature_mts: data.coordinator_signature_mts || '',
-        theme_color: (data.theme_color as any) || 'emerald',
+        theme_color: data.theme_color || 'emerald',
         reminder_enabled: data.reminder_enabled ?? false,
         reminder_time: data.reminder_time || '15:00'
-      }));
+      });
     };
     fetchProfile();
   }, []);
@@ -215,7 +215,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.name || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, name: e.target.value  }))}
+                  onChange={e => setProfile({...profile, name: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -223,7 +223,7 @@ export default function InstitutionProfile() {
                 <textarea 
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 min-h-[100px]"
                   value={profile.address || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, address: e.target.value  }))}
+                  onChange={e => setProfile({...profile, address: e.target.value})}
                 />
               </div>
 
@@ -234,7 +234,7 @@ export default function InstitutionProfile() {
                     type="text"
                     className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                     value={profile.name_mts || ''}
-                    onChange={e => setProfile((prev: any) => ({ ...prev, name_mts: e.target.value  }))}
+                    onChange={e => setProfile({...profile, name_mts: e.target.value})}
                   />
                 </div>
                 <div className="space-y-1">
@@ -242,7 +242,7 @@ export default function InstitutionProfile() {
                   <textarea 
                     className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 min-h-[100px]"
                     value={profile.address_mts || ''}
-                    onChange={e => setProfile((prev: any) => ({ ...prev, address_mts: e.target.value  }))}
+                    onChange={e => setProfile({...profile, address_mts: e.target.value})}
                   />
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.principal_name || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, principal_name: e.target.value  }))}
+                  onChange={e => setProfile({...profile, principal_name: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -264,7 +264,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.principal_name_mts || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, principal_name_mts: e.target.value  }))}
+                  onChange={e => setProfile({...profile, principal_name_mts: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -273,7 +273,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.coordinator_name || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, coordinator_name: e.target.value  }))}
+                  onChange={e => setProfile({...profile, coordinator_name: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -282,7 +282,7 @@ export default function InstitutionProfile() {
                   type="text"
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   value={profile.halaqoh_teacher_name || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, halaqoh_teacher_name: e.target.value  }))}
+                  onChange={e => setProfile({...profile, halaqoh_teacher_name: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -292,7 +292,7 @@ export default function InstitutionProfile() {
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   placeholder="Contoh: 2025/2026"
                   value={profile.academic_year || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, academic_year: e.target.value  }))}
+                  onChange={e => setProfile({...profile, academic_year: e.target.value})}
                 />
               </div>
               <div className="space-y-1">
@@ -302,7 +302,7 @@ export default function InstitutionProfile() {
                   className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3"
                   placeholder="Contoh: Cikunir, 20 Juni 2025"
                   value={profile.report_date || ''}
-                  onChange={e => setProfile((prev: any) => ({ ...prev, report_date: e.target.value  }))}
+                  onChange={e => setProfile({...profile, report_date: e.target.value})}
                 />
                 <p className="text-[10px] text-stone-400 ml-1 italic">Jika dikosongkan, akan menggunakan tanggal hari ini otomatis.</p>
               </div>
@@ -319,7 +319,7 @@ export default function InstitutionProfile() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setProfile((prev: any) => ({ ...prev, reminder_enabled: !profile.reminder_enabled   }))}
+                  onClick={() => setProfile({ ...profile, reminder_enabled: !profile.reminder_enabled })}
                   className={cn(
                     "w-12 h-6 rounded-full transition-all relative",
                     profile.reminder_enabled ? theme.bg : "bg-stone-300"
@@ -340,7 +340,7 @@ export default function InstitutionProfile() {
                       type="time"
                       className="w-full bg-white border border-stone-200 rounded-xl px-4 py-2 text-sm"
                       value={profile.reminder_time || ''}
-                      onChange={e => setProfile((prev: any) => ({ ...prev, reminder_time: e.target.value  }))}
+                      onChange={e => setProfile({...profile, reminder_time: e.target.value})}
                     />
                   </div>
                   <div className="flex-[2] text-xs text-stone-500 italic pt-4">
@@ -358,7 +358,7 @@ export default function InstitutionProfile() {
                 <button
                   key={color.value}
                   type="button"
-                  onClick={() => setProfile((prev: any) => ({ ...prev, theme_color: color.value as any   }))}
+                  onClick={() => setProfile({ ...profile, theme_color: color.value as any })}
                   className={`flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all ${
                     profile.theme_color === color.value 
                       ? 'border-stone-900 bg-stone-50 scale-105' 
@@ -413,12 +413,12 @@ export default function InstitutionProfile() {
               <label className="text-xs font-bold text-stone-400 uppercase tracking-wider ml-1">Watermark Rapor</label>
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 bg-white border-2 border-dashed border-stone-200 rounded-2xl flex items-center justify-center overflow-hidden">
-                  {(profile as any).watermark ? <img src={(profile as any).watermark} alt="Watermark" className="w-full h-full object-contain opacity-50" /> : <Upload className="text-stone-300" />}
+                  {profile.watermark ? <img src={profile.watermark} alt="Watermark" className="w-full h-full object-contain opacity-50" /> : <Upload className="text-stone-300" />}
                 </div>
                 <input 
                   type="file"
                   accept="image/*"
-                  onChange={e => handleFileUpload(e, 'watermark' as any)}
+                  onChange={e => handleFileUpload(e, 'watermark')}
                   className={cn(
                     "text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold cursor-pointer",
                     `file:${theme.lightBg} file:${theme.lightText} hover:file:opacity-80`
@@ -451,7 +451,7 @@ export default function InstitutionProfile() {
                     <input 
                       type="range" min="40" max="300" step="10"
                       value={profile.principal_signature_size || 80}
-                      onChange={e => setProfile((prev: any) => ({ ...prev, principal_signature_size: parseInt(e.target.value)  }))}
+                      onChange={e => setProfile({...profile, principal_signature_size: parseInt(e.target.value)})}
                       className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -482,7 +482,7 @@ export default function InstitutionProfile() {
                     <input 
                       type="range" min="40" max="300" step="10"
                       value={profile.principal_signature_size_mts || 80}
-                      onChange={e => setProfile((prev: any) => ({ ...prev, principal_signature_size_mts: parseInt(e.target.value)  }))}
+                      onChange={e => setProfile({...profile, principal_signature_size_mts: parseInt(e.target.value)})}
                       className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -513,7 +513,7 @@ export default function InstitutionProfile() {
                     <input 
                       type="range" min="40" max="300" step="10"
                       value={profile.coordinator_signature_size || 80}
-                      onChange={e => setProfile((prev: any) => ({ ...prev, coordinator_signature_size: parseInt(e.target.value)  }))}
+                      onChange={e => setProfile({...profile, coordinator_signature_size: parseInt(e.target.value)})}
                       className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -544,7 +544,7 @@ export default function InstitutionProfile() {
                     <input 
                       type="range" min="40" max="300" step="10"
                       value={profile.coordinator_signature_size_mts || 80}
-                      onChange={e => setProfile((prev: any) => ({ ...prev, coordinator_signature_size_mts: parseInt(e.target.value)  }))}
+                      onChange={e => setProfile({...profile, coordinator_signature_size_mts: parseInt(e.target.value)})}
                       className="w-full accent-emerald-600 h-1 bg-stone-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>

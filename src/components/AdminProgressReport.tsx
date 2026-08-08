@@ -57,26 +57,24 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
     
     Object.keys(globalData).forEach(guru => {
       const d = globalData[guru];
-      if (!d) return;
       const students = d.students || [];
       const deposits = d.daily_deposits || [];
       const halaqohs = d.halaqoh || [];
 
       students.forEach((student: any) => {
-         if (!student) return;
          const ummiDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'ummi');
-         ummiDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
+         ummiDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
          const latestUmmi = ummiDeposits[0];
 
          const tilawahDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'tilawah');
-         tilawahDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
+         tilawahDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
          const latestTilawah = tilawahDeposits[0];
 
          let currentLevelStr = 'Belum Ada Data';
          let category = 'Belum Ada Data'; // For charting
          let levelScore = 0;
          
-         if (latestTilawah && (!latestUmmi || (latestTilawah.date || '') >= (latestUmmi.date || ''))) {
+         if (latestTilawah && (!latestUmmi || latestTilawah.date >= latestUmmi.date)) {
              currentLevelStr = 'Al-Qur\'an';
              category = 'Al-Qur\'an';
              levelScore = 7;
@@ -93,26 +91,88 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
              }
          }
          
+         
          const hafalanDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'hafalan');
-         hafalanDeposits.sort((a: any, b: any) => (b.date || '').localeCompare(a.date || ''));
+         hafalanDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
          const latestHafalan = hafalanDeposits[0];
+         const firstHafalan = hafalanDeposits[hafalanDeposits.length - 1];
+
          let currentHafalanStr = 'Belum Ada Data';
          let normalizedHafalan = '';
          if (latestHafalan) {
             currentHafalanStr = `Surah ${latestHafalan.details?.surah || '-'}`;
             normalizedHafalan = (latestHafalan.details?.surah || '').toLowerCase().replace(/[^a-z]/g, '').replace(/^(surah|surat|qs)/, '');
          }
+         
+         let hafalanStatus = 'Belum Ada Data';
+         let ummiStatus = 'Belum Ada Data';
+         let hafalanAchieved = false;
+         let ummiAchieved = false;
+         
+         const halaqohName = student.halaqoh_name || halaqohs.find((h: any) => h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh';
+         let grade = 0;
+         const match = halaqohName.match(/([1-9])/);
+         if (match) grade = parseInt(match[1]);
+         
+         let studentSurahIdx = getHighestSurahIndex(currentHafalanStr);
+         let firstSurahIdx = firstHafalan ? getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`) : 0;
+         
+         if (grade > 0) {
+           let targetSurahIndex = 0;
+           let targetLevel = 7; 
+           
+           if (grade === 1) { targetSurahIndex = 3; targetLevel = 2; }
+           else if (grade === 2) { targetSurahIndex = 12; targetLevel = 5; }
+           else if (grade === 3) { targetSurahIndex = 37; targetLevel = 7; }
+           else if (grade === 4) { targetSurahIndex = 43; targetLevel = 7; }
+           else if (grade === 5) { targetSurahIndex = 54; targetLevel = 7; }
+           else if (grade === 6) { 
+               // Based on exam mutqin logic if possible, else fallback to 37 (Juz 30 complete)
+               const examsHafalan = globalData[guru]?.exams_hafalan || [];
+               const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
+               if (hasMutqin) studentSurahIdx = 999;
+               targetSurahIndex = 37; targetLevel = 7;
+           }
+           else if (grade === 7 || grade === 8) {
+               targetSurahIndex = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37; 
+               targetLevel = 7;
+           }
+           else if (grade === 9) {
+               const examsHafalan = globalData[guru]?.exams_hafalan || [];
+               const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
+               if (hasMutqin) studentSurahIdx = 999;
+               targetSurahIndex = 57; targetLevel = 7; 
+           }
+           
+           hafalanAchieved = studentSurahIdx >= targetSurahIndex;
+           ummiAchieved = levelScore >= targetLevel;
+           
+           if (latestHafalan) {
+               hafalanStatus = hafalanAchieved ? 'Tercapai' : 'Belum Tercapai';
+           }
+           if (latestUmmi || latestTilawah) {
+               ummiStatus = ummiAchieved ? 'Tercapai' : 'Belum Tercapai';
+           }
+         } else {
+           if (latestHafalan) hafalanAchieved = true;
+           if (levelScore > 0) ummiAchieved = true;
+         }
 
          studentsList.push({
             name: student.name,
             guru: guru,
-            halaqoh: student.halaqoh_name || halaqohs.find((h: any) => h && h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh',
+            halaqoh: halaqohName,
             level: currentLevelStr,
             levelScore,
             category: category,
             hafalan: currentHafalanStr,
             normalizedHafalan,
+            hafalanStatus,
+            ummiStatus,
+            hafalanAchieved,
+            ummiAchieved
          });
+
       });
     });
 
@@ -151,13 +211,20 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
     // Progression sequence from Juz 30 -> Juz 29 -> Juz 28
     const SURAH_PROGRESSION = [
       "", // 0
-      "annaba", "annaziat", "abasa", // 1-3
-      "attakwir", "alinfitar", "almuthaffifin", "alinsyiqaq", // 4-7
-      "alburuj", "atthariq", "alala", "alghasyiyah", "alfajr", // 8-12
-      "albalad", "asysyams", "allail", "addhuha", "asysyarh", "attin", "alalaq", // 13-19
-      "alqadr", "albayyinah", "azzalzalah", "aladiyat", "alqariah", "attakatsur", "alasr", "alhumazah", "alfil", "quraisy", "almaun", "alkautsar", "alkafirun", "annasr", "almasad", "alikhlas", "alfalaq", "annas", // 20-37
-      "almulk", "alqalam", "alhaqqoh", "almaarij", "nuh", "aljin", "almuzammil", "almuddatsir", "alqiyamah", "alinsan", "almursalat", // 38-48
-      "attahrim", "atthalaq", "asshaff", "almumtahanah", "alhasyr", "almujadalah", "alhadid", "alwaqiah", "annajm", "adzdzariyat", "atthur", "qof", "alhujurat", "alfath" // 49-62
+      // Juz 30 (1-37)
+      "annaba", "annaziat", "abasa", "attakwir", "alinfitar", "almuthaffifin", "alinsyiqaq", // 1-7
+      "alburuj", "atthariq", "alala", "alghasyiyah", "alfajr", "albalad", "asysyams", "allail", // 8-15
+      "addhuha", "asysyarh", "attin", "alalaq", "alqadr", "albayyinah", "azzalzalah", "aladiyat", // 16-23
+      "alqariah", "attakatsur", "alasr", "alhumazah", "alfil", "quraisy", "almaun", "alkautsar", // 24-31
+      "alkafirun", "annasr", "almasad", "alikhlas", "alfalaq", "annas", // 32-37
+      // Juz 29 (38-48)
+      "almulk", "alqalam", "alhaqqoh", "almaarij", "nuh", "aljin", "almuzammil", "almuddatsir", // 38-45
+      "alqiyamah", "alinsan", "almursalat", // 46-48
+      // Juz 28 (49-57)
+      "almujadalah", "alhasyr", "almumtahanah", "asshaff", "aljumuah", "almunafiqun", "attaghabun", // 49-55
+      "atthalaq", "attahrim", // 56-57
+      // Juz 27 (58-64)
+      "adzdzariyat", "atthur", "annajm", "alqamar", "arrahman", "alwaqiah", "alhadid" // 58-64
     ];
 
     const SURAH_ALIASES: Record<string, number> = {
@@ -227,8 +294,16 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
       "aljasiyah": 99
     };
     
+    
+    function getNextJuzBoundary(idx) {
+        if (idx <= 37) return 48; // move from Juz 30 to end of 29
+        if (idx <= 48) return 57; // move from Juz 29 to end of 28
+        if (idx <= 57) return 64; // move from Juz 28 to end of 27
+        return idx + 10; // rough fallback
+    }
+
     function getHighestSurahIndex(rawText: string): number {
-      if (!rawText || typeof rawText !== 'string' || rawText === 'Belum Ada Data' || rawText === 'Belum Ada Data' || rawText === 'Surah -') return 0;
+      if (!rawText || rawText === 'Belum Ada Data' || rawText === 'Surah -') return 0;
       
       const text = rawText.toLowerCase().replace(/[^a-z0-9\s-]/g, '');
       const tokens = text.split(/[\s-]+/).filter((t: string) => t !== 'surah' && t !== 'surat' && t !== 'qs' && t !== 'sampai' && t !== 'dan' && t !== 'juz');
@@ -257,43 +332,18 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
     }
     
     // Calculate achievement per Halaqoh
+    
     const halaqohMap: Record<string, { total: number, achievedHafalan: number, achievedUmmi: number }> = {};
     
     studentsList.forEach(s => {
-       const h = String(s.halaqoh || 'Tanpa Halaqoh');
+       const h = s.halaqoh;
        if (!halaqohMap[h]) halaqohMap[h] = { total: 0, achievedHafalan: 0, achievedUmmi: 0 };
        halaqohMap[h].total++;
        
-       let grade = 0;
-       const match = h.match(/([1-9])/);
-       if (match) grade = parseInt(match[1]);
-       
-       let hafalanAchieved = false;
-       let ummiAchieved = false;
-       
-       if (grade > 0) {
-           let targetSurahIndex = 0;
-           let targetLevel = 7; // Default to Al-Qur'an (Level 7)
-           
-           if (grade === 1) { targetSurahIndex = 3; targetLevel = 2; }
-           else if (grade === 2) { targetSurahIndex = 12; targetLevel = 5; }
-           else if (grade === 3) { targetSurahIndex = 37; targetLevel = 7; }
-           else if (grade === 4) { targetSurahIndex = 43; targetLevel = 7; }
-           else if (grade === 5) { targetSurahIndex = 48; targetLevel = 7; }
-           else if (grade >= 6) { targetSurahIndex = 1; targetLevel = 7; } 
-           
-           let studentSurahIdx = getHighestSurahIndex(s.hafalan);
-           
-           hafalanAchieved = studentSurahIdx >= targetSurahIndex;
-           ummiAchieved = s.levelScore >= targetLevel;
-       } else {
-           if (s.hafalan && s.hafalan !== 'Belum Ada Data') hafalanAchieved = true;
-           if (s.levelScore > 0) ummiAchieved = true;
-       }
-       
-       if (hafalanAchieved) halaqohMap[h].achievedHafalan++;
-       if (ummiAchieved) halaqohMap[h].achievedUmmi++;
+       if (s.hafalanAchieved) halaqohMap[h].achievedHafalan++;
+       if (s.ummiAchieved) halaqohMap[h].achievedUmmi++;
     });
+
     
     let totalAchievedHafalanAll = 0;
     let totalAchievedUmmiAll = 0;
@@ -319,12 +369,10 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        percentageUmmi: halaqohMap[k].total > 0 ? Math.round((halaqohMap[k].achievedUmmi / halaqohMap[k].total) * 100) : 0
        };
     }).sort((a,b) => {
-       const strA = String(a.name || '');
-       const gradeA = strA.match(/([1-9])/) ? parseInt(a.name.match(/([1-9])/)[1]) : 99;
-       const strB = String(b.name || '');
-       const gradeB = strB.match(/([1-9])/) ? parseInt(b.name.match(/([1-9])/)[1]) : 99;
+       const gradeA = a.name.match(/([1-9])/) ? parseInt(a.name.match(/([1-9])/)[1]) : 99;
+       const gradeB = b.name.match(/([1-9])/) ? parseInt(b.name.match(/([1-9])/)[1]) : 99;
        if (gradeA !== gradeB) return gradeA - gradeB;
-       return strA.localeCompare(strB);
+       return a.name.localeCompare(b.name);
     });
 
     const grandTotal = {
@@ -379,12 +427,14 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
            s.name, 
            s.guru, 
            s.level, 
-           s.hafalan || '-'
+           s.hafalan || '-',
+           s.ummiStatus,
+           s.hafalanStatus
         ]);
         
         autoTable(pdf, {
            startY: startY,
-           head: [['Nama Siswa', 'Guru', 'Progress Ummi/Quran', 'Hafalan Terakhir']],
+           head: [['Nama Siswa', 'Guru', 'Progress Ummi/Quran', 'Hafalan Terakhir', 'Status Ummi', 'Status Hafalan']],
            body: studentsBody,
            theme: 'striped',
            headStyles: { fillColor: [59, 130, 246] }, // Tailwind blue-500
@@ -602,6 +652,8 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Guru</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Progress Ummi/Quran</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Hafalan Terakhir</th>
+                     <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">Status Ummi</th>
+                     <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">Status Hafalan</th>
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-stone-100">
@@ -615,11 +667,21 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                            </span>
                         </td>
                         <td className="px-4 py-2 text-stone-600 font-medium">{s.hafalan}</td>
+                        <td className="px-4 py-2 text-center">
+                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.ummiStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.ummiStatus === 'Belum Tercapai' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
+                             {s.ummiStatus}
+                           </span>
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.hafalanStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.hafalanStatus === 'Belum Tercapai' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
+                             {s.hafalanStatus}
+                           </span>
+                        </td>
                       </tr>
                     ))}
                     {studentsProgress.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-stone-400">Belum ada data siswa.</td>
+                        <td colSpan={6} className="px-4 py-8 text-center text-stone-400">Belum ada data siswa.</td>
                       </tr>
                     )}
                  </tbody>

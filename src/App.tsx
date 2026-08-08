@@ -355,11 +355,11 @@ export default function App() {
                   !isSidebarOpen && "justify-center"
                 )}>
                   <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md", theme.bg, theme.shadow)}>
-                    {user.username ? user.username[0].toUpperCase() : 'U'}
+                    {user.username[0].toUpperCase()}
                   </div>
                   {isSidebarOpen && (
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-stone-900 truncate tracking-tight">{user.username || 'User'}</p>
+                      <p className="text-sm font-bold text-stone-900 truncate tracking-tight">{user.username}</p>
                       <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{user.role}</p>
                     </div>
                   )}
