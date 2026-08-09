@@ -134,14 +134,83 @@ const SURAH_ALIASES: Record<string, number> = {
   "asysyura": 99,
   "azzukhruf": 99,
   "addukhan": 99,
-  "aljasiyah": 99
+  "aljasiyah": 99,
+  "anaba": 1,
+  "naba": 1,
+  "naziat": 2,
+  "abasa": 3,
+  "takwir": 4,
+  "infitar": 5,
+  "muthaffifin": 6,
+  "insyiqaq": 7,
+  "buruj": 8,
+  "thariq": 9,
+  "ala": 10,
+  "ghasyiyah": 11,
+  "fajr": 12,
+  "balad": 13,
+  "syams": 14,
+  "asyams": 14,
+  "lail": 15,
+  "dhuha": 16,
+  "syarh": 17,
+  "insyirah": 17,
+  "tin": 18,
+  "alaq": 19,
+  "qadr": 20,
+  "bayyinah": 21,
+  "zalzalah": 22,
+  "adiyat": 23,
+  "qariah": 24,
+  "takatsur": 25,
+  "asr": 26,
+  "humazah": 27,
+  "fil": 28,
+  "quraisy": 29,
+  "maun": 30,
+  "kautsar": 31,
+  "kafirun": 32,
+  "nasr": 33,
+  "masad": 34,
+  "lahab": 34,
+  "ikhlas": 35,
+  "falaq": 36,
+  "nas": 37,
+  "mulk": 38,
+  "qalam": 39,
+  "haqqoh": 40,
+  "maarij": 41,
+  "nuh": 42,
+  "jin": 43,
+  "muzammil": 44,
+  "muddatsir": 45,
+  "qiyamah": 46,
+  "insan": 47,
+  "mursalat": 48,
+  "mujadalah": 49,
+  "hasyr": 50,
+  "mumtahanah": 51,
+  "shaff": 52,
+  "jumuah": 53,
+  "munafiqun": 54,
+  "taghabun": 55,
+  "thalaq": 56,
+  "tahrim": 57,
+  "dzariyat": 58,
+  "thur": 59,
+  "najm": 60,
+  "qamar": 61,
+  "rahman": 62,
+  "waqiah": 63,
+  "hadid": 64
 };
 
 function getNextJuzBoundary(idx: number): number {
-    if (idx <= 37) return 48; // move from Juz 30 to end of 29
-    if (idx <= 48) return 57; // move from Juz 29 to end of 28
-    if (idx <= 57) return 64; // move from Juz 28 to end of 27
-    return idx + 10; // rough fallback
+    if (idx < 37) return 37;
+    if (idx >= 37 && idx < 48) return 48;
+    if (idx >= 48 && idx < 57) return 57;
+    if (idx >= 57 && idx < 64) return 64;
+    return 64;
 }
 
 function getHighestSurahIndex(rawText: string): number {
@@ -166,8 +235,11 @@ function getHighestSurahIndex(rawText: string): number {
      }
   }
   
-  if (maxIdx === 0 && fullJoined.length > 3) {
-     if (fullJoined.includes("juz")) maxIdx = 99;
+  if (maxIdx === 0 && fullJoined.length > 0) {
+     if (fullJoined === "30" || fullJoined === "selesai30" || fullJoined === "30selesai") maxIdx = 37;
+     else if (fullJoined === "29" || fullJoined === "selesai29" || fullJoined === "29selesai") maxIdx = 48;
+     else if (fullJoined === "28" || fullJoined === "selesai28" || fullJoined === "28selesai") maxIdx = 57;
+     else if (fullJoined === "juz" || fullJoined === "selesai") maxIdx = 99;
   }
   
   return maxIdx;
@@ -236,49 +308,89 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          const match = halaqohName.match(/([1-9])/);
          if (match) grade = parseInt(match[1]);
          
-         let studentSurahIdx = getHighestSurahIndex(currentHafalanStr);
+         let studentSurahIdx = 0;
+         hafalanDeposits.forEach((d: any) => {
+            const idx = getHighestSurahIndex(d.details?.surah || '');
+            if (idx > studentSurahIdx) studentSurahIdx = idx;
+         });
+         
+         // Fallback if none found
+         if (studentSurahIdx === 0) {
+            studentSurahIdx = getHighestSurahIndex(currentHafalanStr);
+         }
          let firstSurahIdx = firstHafalan ? getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`) : 0;
          
          if (grade > 0) {
            let targetSurahIndex = 0;
-           let targetLevel = 7; 
-           
-           if (grade === 1) { targetSurahIndex = 3; targetLevel = 2; }
-           else if (grade === 2) { targetSurahIndex = 12; targetLevel = 5; }
-           else if (grade === 3) { targetSurahIndex = 37; targetLevel = 7; }
-           else if (grade === 4) { targetSurahIndex = 43; targetLevel = 7; }
-           else if (grade === 5) { targetSurahIndex = 54; targetLevel = 7; }
-           else if (grade === 6) { 
-               // Based on exam mutqin logic if possible, else fallback to 37 (Juz 30 complete)
-               const examsHafalan = globalData[guru]?.exams_hafalan || [];
-               const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
-               if (hasMutqin) studentSurahIdx = 999;
-               targetSurahIndex = 37; targetLevel = 7;
-           }
-           else if (grade === 7 || grade === 8) {
-               targetSurahIndex = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37; 
-               targetLevel = 7;
-           }
-           else if (grade === 9) {
-               const examsHafalan = globalData[guru]?.exams_hafalan || [];
-               const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
-               if (hasMutqin) studentSurahIdx = 999;
-               targetSurahIndex = 57; targetLevel = 7; 
-           }
-           
-           hafalanAchieved = studentSurahIdx >= targetSurahIndex;
-           ummiAchieved = levelScore >= targetLevel;
-           
-           if (latestHafalan) {
-               hafalanStatus = hafalanAchieved ? 'Tercapai' : 'Belum Tercapai';
-           }
-           if (latestUmmi || latestTilawah) {
-               ummiStatus = ummiAchieved ? 'Tercapai' : 'Belum Tercapai';
-           }
-         } else {
-           if (latestHafalan) hafalanAchieved = true;
-           if (levelScore > 0) ummiAchieved = true;
+         let targetLevel = 7; 
+         
+         if (grade === 1) { 
+            targetSurahIndex = 7; // Al-Insyiqoq
+            targetLevel = 3;      // Jilid 3
+         } 
+         else if (grade === 2) { 
+            targetSurahIndex = 19; // Al-'Alaq
+            targetLevel = 6;       // Jilid 6
+         } 
+         else if (grade === 3) { 
+            targetSurahIndex = 40; // Al-Haqqoh
+            targetLevel = 7;       // Al-Qur'an
+         } 
+         else if (grade === 4) { 
+            targetSurahIndex = 48; // Al-Mursalat
+            targetLevel = 7;       // Al-Qur'an
+         } 
+         else if (grade === 5) { 
+            targetSurahIndex = 54; // Al-Munafiqun
+            targetLevel = 7;       // Al-Qur'an
+         } 
+         else if (grade === 6) { 
+             targetSurahIndex = 37; targetLevel = 7; // Mutqin Juz 30 (An-Nas is 37)
+             const examsHafalan = globalData[guru]?.exams_hafalan || [];
+             const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
+             if (hasMutqin) studentSurahIdx = 999;
          }
+         else if (grade === 7 || grade === 8) {
+             // For MTs +1 juz per semester.
+             // We check their first hafalan record and target the next Juz boundary.
+             // Also support 'totalJuzAdded' if it exists.
+             if (student.totalJuzAdded && student.totalJuzAdded >= 1) {
+                 studentSurahIdx = 999; 
+                 targetSurahIndex = 1;
+             } else {
+                 targetSurahIndex = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37; 
+             }
+             targetLevel = 7;
+         }
+         else if (grade === 9) {
+             // 3 Juz total
+             if (student.totalAccumulatedJuz && student.totalAccumulatedJuz >= 3) {
+                 studentSurahIdx = 999;
+                 targetSurahIndex = 1;
+             } else {
+                 targetSurahIndex = 57; // Just a fallback if totalAccumulatedJuz is not present (Juz 28 end)
+                 const examsHafalan = globalData[guru]?.exams_hafalan || [];
+                 const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
+                 if (hasMutqin) studentSurahIdx = 999;
+             }
+             targetLevel = 7;
+         }
+         
+         hafalanAchieved = studentSurahIdx >= targetSurahIndex;
+         ummiAchieved = levelScore >= targetLevel;
+         
+         if (latestHafalan) {
+             if (studentSurahIdx >= targetSurahIndex) hafalanStatus = 'Tercapai';
+             else hafalanStatus = 'Belum Tercapai';
+         }
+         if (latestUmmi || latestTilawah) {
+             if (levelScore >= targetLevel) ummiStatus = 'Tercapai';
+             else ummiStatus = 'Belum Tercapai';
+         }
+       } else {
+         if (latestHafalan) hafalanAchieved = true;
+         if (levelScore > 0) ummiAchieved = true;
+       }
 
          studentsList.push({
             name: student.name,
@@ -339,8 +451,8 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
        if (!halaqohMap[h]) halaqohMap[h] = { total: 0, achievedHafalan: 0, achievedUmmi: 0 };
        halaqohMap[h].total++;
        
-       if (s.hafalanAchieved) halaqohMap[h].achievedHafalan++;
-       if (s.ummiAchieved) halaqohMap[h].achievedUmmi++;
+       if (s.hafalanStatus === 'Tercapai') halaqohMap[h].achievedHafalan++;
+       if (s.ummiStatus === 'Tercapai') halaqohMap[h].achievedUmmi++;
     });
 
     
