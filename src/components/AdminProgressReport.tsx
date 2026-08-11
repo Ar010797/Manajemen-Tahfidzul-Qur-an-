@@ -267,21 +267,26 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          let currentLevelStr = 'Belum Ada Data';
          let category = 'Belum Ada Data'; // For charting
          let levelScore = 0;
+         let ummiAbsoluteScore = 0;
          
          if (latestTilawah && (!latestUmmi || latestTilawah.date >= latestUmmi.date)) {
              currentLevelStr = 'Al-Qur\'an';
              category = 'Al-Qur\'an';
              levelScore = 7;
+             ummiAbsoluteScore = 7 * 40;
          } else if (latestUmmi) {
              const lvl = latestUmmi.details?.level;
+             const page = parseInt(latestUmmi.details?.page || '0') || 0;
              if (lvl === 'Al-Quran' || lvl === 7 || lvl === '7') {
                  currentLevelStr = 'Al-Qur\'an';
                  category = 'Al-Qur\'an';
                  levelScore = 7;
+                 ummiAbsoluteScore = 7 * 40;
              } else if (lvl) {
                  currentLevelStr = `Jilid ${lvl}`;
                  category = `Jilid ${lvl}`;
                  levelScore = parseInt(lvl.toString()) || 0;
+                 ummiAbsoluteScore = (levelScore - 1) * 40 + page;
              }
          }
          
@@ -293,87 +298,113 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
 
          let currentHafalanStr = 'Belum Ada Data';
          let normalizedHafalan = '';
+         
          if (latestHafalan) {
             currentHafalanStr = `Surah ${latestHafalan.details?.surah || '-'}`;
-            normalizedHafalan = (latestHafalan.details?.surah || '').toLowerCase().replace(/[^a-z]/g, '').replace(/^(surah|surat|qs)/, '');
+            if (latestHafalan.details?.ayah) {
+               currentHafalanStr += ` ayat ${latestHafalan.details.ayah}`;
+            }
+            normalizedHafalan = currentHafalanStr;
          }
          
-         let hafalanStatus = 'Belum Ada Data';
-         let ummiStatus = 'Belum Ada Data';
+         let hafalanStatus = '-';
+         let ummiStatus = '-';
          let hafalanAchieved = false;
          let ummiAchieved = false;
          
-         const halaqohName = student.halaqoh_name || halaqohs.find((h: any) => h.id === student.halaqoh_id)?.name || 'Tanpa Halaqoh';
-         let grade = 0;
-         const match = halaqohName.match(/([1-9])/);
-         if (match) grade = parseInt(match[1]);
-         
          let studentSurahIdx = 0;
-         hafalanDeposits.forEach((d: any) => {
-            const idx = getHighestSurahIndex(d.details?.surah || '');
-            if (idx > studentSurahIdx) studentSurahIdx = idx;
-         });
+         let firstSurahIdx = 0;
+         let hafalanPercentage = 0;
+         let ummiPercentage = 0;
+         let targetSurahIndex = 0;
+         let targetLevel = 7;
+         let targetUmmiAbsoluteScore = 7 * 40;
          
-         // Fallback if none found
-         if (studentSurahIdx === 0) {
+         if (latestHafalan) {
             studentSurahIdx = getHighestSurahIndex(currentHafalanStr);
          }
-         let firstSurahIdx = firstHafalan ? getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`) : 0;
+         if (firstHafalan) {
+            firstSurahIdx = getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`);
+         }
          
          if (grade > 0) {
-           let targetSurahIndex = 0;
-         let targetLevel = 7; 
          
          if (grade === 1) { 
             targetSurahIndex = 7; // Al-Insyiqoq
             targetLevel = 3;      // Jilid 3
+            targetUmmiAbsoluteScore = 3 * 40; // Jilid 3 Hal 40
          } 
          else if (grade === 2) { 
             targetSurahIndex = 19; // Al-'Alaq
             targetLevel = 6;       // Jilid 6
+            targetUmmiAbsoluteScore = 6 * 40; // Jilid 6 Hal 40
          } 
          else if (grade === 3) { 
             targetSurahIndex = 40; // Al-Haqqoh
             targetLevel = 7;       // Al-Qur'an
+            targetUmmiAbsoluteScore = 7 * 40;
          } 
          else if (grade === 4) { 
             targetSurahIndex = 48; // Al-Mursalat
             targetLevel = 7;       // Al-Qur'an
+            targetUmmiAbsoluteScore = 7 * 40;
          } 
          else if (grade === 5) { 
             targetSurahIndex = 54; // Al-Munafiqun
             targetLevel = 7;       // Al-Qur'an
+            targetUmmiAbsoluteScore = 7 * 40;
          } 
          else if (grade === 6) { 
              targetSurahIndex = 37; targetLevel = 7; // Mutqin Juz 30 (An-Nas is 37)
+             targetUmmiAbsoluteScore = 7 * 40;
              const examsHafalan = globalData[guru]?.exams_hafalan || [];
              const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
              if (hasMutqin) studentSurahIdx = 999;
          }
          else if (grade === 7 || grade === 8) {
-             // For MTs +1 juz per semester.
-             // We check their first hafalan record and target the next Juz boundary.
-             // Also support 'totalJuzAdded' if it exists.
-             if (student.totalJuzAdded && student.totalJuzAdded >= 1) {
+             let requiredJuz = grade === 8 ? 2 : 1;
+             if (student.totalJuzAdded && student.totalJuzAdded >= requiredJuz) {
                  studentSurahIdx = 999; 
                  targetSurahIndex = 1;
              } else {
-                 targetSurahIndex = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37; 
+                 let tIdx = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37;
+                 if (grade === 8) tIdx = getNextJuzBoundary(tIdx);
+                 targetSurahIndex = tIdx; 
              }
              targetLevel = 7;
+             targetUmmiAbsoluteScore = 7 * 40;
          }
          else if (grade === 9) {
-             // 3 Juz total
              if (student.totalAccumulatedJuz && student.totalAccumulatedJuz >= 3) {
                  studentSurahIdx = 999;
                  targetSurahIndex = 1;
              } else {
-                 targetSurahIndex = 57; // Just a fallback if totalAccumulatedJuz is not present (Juz 28 end)
+                 targetSurahIndex = 57; 
                  const examsHafalan = globalData[guru]?.exams_hafalan || [];
                  const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
                  if (hasMutqin) studentSurahIdx = 999;
              }
              targetLevel = 7;
+             targetUmmiAbsoluteScore = 7 * 40;
+         }
+         
+         // Calculate percentages
+         ummiPercentage = Math.min(100, Math.round((ummiAbsoluteScore / targetUmmiAbsoluteScore) * 100)) || 0;
+         
+         if (grade === 6 || grade === 9) {
+             if (studentSurahIdx === 999) hafalanPercentage = 100;
+             else hafalanPercentage = Math.min(100, Math.round((studentSurahIdx / targetSurahIndex) * 100)) || 0;
+         } else if (grade === 7 || grade === 8) {
+             if (studentSurahIdx === 999) hafalanPercentage = 100;
+             else {
+                 let surahsNeeded = targetSurahIndex - firstSurahIdx;
+                 let surahsDone = studentSurahIdx - firstSurahIdx;
+                 if (surahsNeeded <= 0) hafalanPercentage = 100;
+                 else if (surahsDone <= 0) hafalanPercentage = 0;
+                 else hafalanPercentage = Math.min(100, Math.round((surahsDone / surahsNeeded) * 100));
+             }
+         } else {
+             hafalanPercentage = Math.min(100, Math.round((studentSurahIdx / targetSurahIndex) * 100)) || 0;
          }
          
          hafalanAchieved = studentSurahIdx >= targetSurahIndex;
@@ -381,11 +412,11 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          
          if (latestHafalan) {
              if (studentSurahIdx >= targetSurahIndex) hafalanStatus = 'Tercapai';
-             else hafalanStatus = 'Belum Tercapai';
+             else hafalanStatus = 'Belum Mencapai Target';
          }
          if (latestUmmi || latestTilawah) {
              if (levelScore >= targetLevel) ummiStatus = 'Tercapai';
-             else ummiStatus = 'Belum Tercapai';
+             else ummiStatus = 'Belum Mencapai Target';
          }
        } else {
          if (latestHafalan) hafalanAchieved = true;
@@ -404,7 +435,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
             hafalanStatus,
             ummiStatus,
             hafalanAchieved,
-            ummiAchieved
+            ummiAchieved,
+            hafalanPercentage,
+            ummiPercentage
          });
 
       });
@@ -539,13 +572,15 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
            s.guru, 
            s.level, 
            s.hafalan || '-',
+           s.ummiPercentage.toString() + '%',
            s.ummiStatus,
+           s.hafalanPercentage.toString() + '%',
            s.hafalanStatus
         ]);
         
         autoTable(pdf, {
            startY: startY,
-           head: [['Nama Siswa', 'Guru', 'Progress Ummi/Quran', 'Hafalan Terakhir', 'Status Ummi', 'Status Hafalan']],
+           head: [['Nama Siswa', 'Guru', 'Progress Ummi/Quran', 'Hafalan Terakhir', '% Ummi', 'Status Ummi', '% Hafalan', 'Status Hafalan']],
            body: studentsBody,
            theme: 'striped',
            headStyles: { fillColor: [59, 130, 246] }, // Tailwind blue-500
@@ -624,14 +659,12 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
         // TARGET_KURIKULUM is defined globally in the file
         TARGET_KURIKULUM.forEach((t) => {
            if (t.full_text) {
-              kurikulumBody.push([{ content: t.full_text, colSpan: 5, styles: { fontStyle: 'italic', halign: 'center' } }]);
+              kurikulumBody.push([t.grade, { content: t.full_text, colSpan: 2, styles: { fontStyle: 'italic', halign: 'center' } }]);
            } else {
               kurikulumBody.push([
                  t.grade,
-                 t.s1_hafalan,
-                 t.s1_ummi,
-                 t.s2_hafalan,
-                 t.s2_ummi
+                 t.hafalan,
+                 t.ummi
               ]);
            }
         });
@@ -639,7 +672,7 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
         autoTable(pdf, {
            startY: startY,
            head: [
-              ['Kelas', 'Smt Ganjil: Hafalan', 'Smt Ganjil: Ummi', 'Smt Genap: Hafalan', 'Smt Genap: Ummi']
+              ['Kelas', 'Target Hafalan Tahunan', 'Target Ummi/Tilawah Tahunan']
            ],
            body: kurikulumBody,
            theme: 'striped',
@@ -763,7 +796,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Guru</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Progress Ummi/Quran</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900">Hafalan Terakhir</th>
+                     <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">% Ummi</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">Status Ummi</th>
+                     <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">% Hafalan</th>
                      <th className="px-4 py-3 font-bold border-b text-stone-900 text-center">Status Hafalan</th>
                    </tr>
                  </thead>
@@ -778,13 +813,19 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                            </span>
                         </td>
                         <td className="px-4 py-2 text-stone-600 font-medium">{s.hafalan}</td>
+                        <td className="px-4 py-2 text-center font-bold text-stone-700">
+                           {s.ummiPercentage}%
+                        </td>
                         <td className="px-4 py-2 text-center">
-                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.ummiStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.ummiStatus === 'Belum Tercapai' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
+                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.ummiStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.ummiStatus === 'Belum Mencapai Target' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
                              {s.ummiStatus}
                            </span>
                         </td>
+                        <td className="px-4 py-2 text-center font-bold text-stone-700">
+                           {s.hafalanPercentage}%
+                        </td>
                         <td className="px-4 py-2 text-center">
-                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.hafalanStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.hafalanStatus === 'Belum Tercapai' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
+                           <span className={`px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider ${s.hafalanStatus === 'Tercapai' ? 'bg-emerald-100 text-emerald-700' : s.hafalanStatus === 'Belum Mencapai Target' ? 'bg-rose-100 text-rose-700' : 'bg-stone-100 text-stone-500'}`}>
                              {s.hafalanStatus}
                            </span>
                         </td>
@@ -905,15 +946,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                <table className="w-full text-left">
                  <thead className="bg-stone-100 text-stone-900 border-b border-stone-200">
                    <tr>
-                     <th className="px-4 py-3 font-bold border-r border-stone-200 w-[15%]" rowSpan={2}>Kelas</th>
-                     <th className="px-4 py-2 font-bold border-b border-r border-stone-200 text-center" colSpan={2}>Semester Ganjil</th>
-                     <th className="px-4 py-2 font-bold border-b border-stone-200 text-center" colSpan={2}>Semester Genap</th>
-                   </tr>
-                   <tr>
-                     <th className="px-4 py-2 font-bold bg-white border-r border-stone-200 text-center">Target Hafalan</th>
-                     <th className="px-4 py-2 font-bold bg-white border-r border-stone-200 text-center">Ummi/Tilawah</th>
-                     <th className="px-4 py-2 font-bold bg-white border-r border-stone-200 text-center">Target Hafalan</th>
-                     <th className="px-4 py-2 font-bold bg-white text-center">Ummi/Tilawah</th>
+                     <th className="px-4 py-3 font-bold border-r border-stone-200 w-[20%]">Kelas</th>
+                     <th className="px-4 py-3 font-bold border-r border-stone-200 text-center">Target Hafalan Tahunan</th>
+                     <th className="px-4 py-3 font-bold text-center">Target Ummi/Tilawah Tahunan</th>
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-stone-100 bg-white">
@@ -921,13 +956,11 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                       <tr key={i} className="hover:bg-stone-50 transition-colors">
                         <td className="px-4 py-3 font-bold text-stone-800 border-r border-stone-100">{item.grade}</td>
                         {item.full_text ? (
-                          <td className="px-4 py-3 text-center italic text-stone-600 bg-stone-50/50" colSpan={4}>{item.full_text}</td>
+                          <td className="px-4 py-3 text-center italic text-stone-600 bg-stone-50/50" colSpan={2}>{item.full_text}</td>
                         ) : (
                           <>
-                            <td className="px-4 py-3 border-r border-stone-100 bg-emerald-50/30 text-emerald-900 text-center">{item.s1_hafalan}</td>
-                            <td className="px-4 py-3 border-r border-stone-100 bg-blue-50/30 text-blue-900 text-center">{item.s1_ummi}</td>
-                            <td className="px-4 py-3 border-r border-stone-100 bg-emerald-50/30 text-emerald-900 text-center">{item.s2_hafalan}</td>
-                            <td className="px-4 py-3 bg-blue-50/30 text-blue-900 text-center">{item.s2_ummi}</td>
+                            <td className="px-4 py-3 border-r border-stone-100 bg-emerald-50/30 text-emerald-900 text-center font-semibold">{item.hafalan}</td>
+                            <td className="px-4 py-3 bg-blue-50/30 text-blue-900 text-center font-semibold">{item.ummi}</td>
                           </>
                         )}
                       </tr>
