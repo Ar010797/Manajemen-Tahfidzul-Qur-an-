@@ -5,50 +5,16 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as htmlToImage from 'html-to-image';
 
-const TARGET_KURIKULUM = [
-  {
-    grade: 'Kelas 1 (SD)',
-    s1_hafalan: 'An Naba - Abasa', s1_ummi: 'Jilid 1-2 hal 20',
-    s2_hafalan: 'At Takwir - Al Insyiqoq', s2_ummi: 'Jilid 2 hal 21 - Jilid 3 hal 40'
-  },
-  {
-    grade: 'Kelas 2 (SD)',
-    s1_hafalan: 'Al Buruj - Al Fajr', s1_ummi: 'Jilid 4-5 hal 20',
-    s2_hafalan: 'Al Balad - Al \'Alaq', s2_ummi: 'Jilid 5 hal 21 - 6 hal 40'
-  },
-  {
-    grade: 'Kelas 3 (SD)',
-    s1_hafalan: 'Al Qodar - An Nas', s1_ummi: 'Al Qur\'an',
-    s2_hafalan: 'Al Mulk - Al Haqqoh : 8', s2_ummi: 'Al Qur\'an'
-  },
-  {
-    grade: 'Kelas 4 (SD)',
-    s1_hafalan: 'Al Haqqoh : 9 - Al Jin : 28', s1_ummi: 'Al Qur\'an',
-    s2_hafalan: 'Al Muzammil - Al Mursalat : 19', s2_ummi: 'Al Qur\'an'
-  },
-  {
-    grade: 'Kelas 5 (SD)',
-    s1_hafalan: 'Al Mursalat : 20 - Al Munafiqun : 4', s1_ummi: 'Al Qur\'an',
-    s2_hafalan: 'Al Munafiqun', s2_ummi: 'Al Qur\'an'
-  },
-  {
-    grade: 'Kelas 6 (SD)',
-    full_text: 'Murojaah / setoran ulang hafalan yang didapat dan memutqinkan juz 30'
-  },
-  {
-    grade: 'Kelas 7 (MTS)',
-    s1_hafalan: "Muroja'ah hafalan", s1_ummi: '-',
-    s2_hafalan: 'Menambah hafalan 1 juz', s2_ummi: '-'
-  },
-  {
-    grade: 'Kelas 8 (MTS)',
-    s1_hafalan: 'Nambah 1 juz', s1_ummi: '-',
-    s2_hafalan: 'Nambah 1 juz', s2_ummi: '-'
-  },
-  {
-    grade: 'Kelas 9 (MTS)',
-    full_text: 'Memutqinkan hafalan yang didapat kelas 7 dan 8'
-  }
+const TARGET_KURIKULUM: any[] = [
+  { grade: 'Kelas 1 (SD)', hafalan: 'Al Insyiqoq', ummi: 'Jilid 3 Hal 40' },
+  { grade: 'Kelas 2 (SD)', hafalan: 'Al \'Alaq', ummi: 'Jilid 6 Hal 40' },
+  { grade: 'Kelas 3 (SD)', hafalan: 'Al Haqqoh', ummi: 'Lulus / Al Qur\'an' },
+  { grade: 'Kelas 4 (SD)', hafalan: 'Al Mursalat', ummi: 'Lulus / Al Qur\'an' },
+  { grade: 'Kelas 5 (SD)', hafalan: 'Al Munafiqun', ummi: 'Lulus / Al Qur\'an' },
+  { grade: 'Kelas 6 (SD)', full_text: 'Muroja\'ah (Setoran ulang hafalan yang didapat dan memutqinkan Juz 30)' },
+  { grade: 'Kelas 7 (MTS)', hafalan: 'Muroja\'ah + Menambah 1 Juz', ummi: 'Lulus / Al Qur\'an' },
+  { grade: 'Kelas 8 (MTS)', hafalan: 'Menambah 2 Juz', ummi: 'Lulus / Al Qur\'an' },
+  { grade: 'Kelas 9 (MTS)', full_text: 'Muroja\'ah (Memutqinkan hafalan yang didapat di kelas 7 dan 8)' }
 ];
 
 // Progression sequence from Juz 30 -> Juz 29 -> Juz 28
@@ -263,6 +229,10 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          const tilawahDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'tilawah');
          tilawahDeposits.sort((a: any, b: any) => b.date.localeCompare(a.date));
          const latestTilawah = tilawahDeposits[0];
+
+         const halaqohObj = halaqohs.find((h: any) => h.id === student.halaqoh_id);
+         const halaqohName = halaqohObj?.name || 'Tidak Ada Halaqoh';
+         const grade = parseInt(halaqohName.match(/([1-9])/)?.[1] || '0');
 
          let currentLevelStr = 'Belum Ada Data';
          let category = 'Belum Ada Data'; // For charting

@@ -6,12 +6,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import axios from "axios";
 import path from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const JWT_SECRET = process.env.JWT_SECRET || "tahfidz-secret-2026";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
