@@ -49,6 +49,21 @@ function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: 
   );
 }
 
+function getNextSurah(currentId: number) {
+  if (currentId >= 78 && currentId < 114) return SURAH_LIST.find(s => s.id === currentId + 1);
+  if (currentId === 114) return SURAH_LIST.find(s => s.id === 67); // to Juz 29
+  if (currentId >= 67 && currentId < 77) return SURAH_LIST.find(s => s.id === currentId + 1);
+  if (currentId === 77) return SURAH_LIST.find(s => s.id === 58); // to Juz 28
+  if (currentId >= 58 && currentId < 66) return SURAH_LIST.find(s => s.id === currentId + 1);
+  if (currentId === 66) return SURAH_LIST.find(s => s.id === 51); // to Juz 27
+  if (currentId >= 51 && currentId < 57) return SURAH_LIST.find(s => s.id === currentId + 1);
+  if (currentId === 57) return SURAH_LIST.find(s => s.id === 46); // to Juz 26
+  if (currentId >= 46 && currentId < 50) return SURAH_LIST.find(s => s.id === currentId + 1);
+  if (currentId === 50) return SURAH_LIST.find(s => s.id === 1); // to Juz 1
+  if (currentId >= 1 && currentId < 45) return SURAH_LIST.find(s => s.id === currentId + 1);
+  return null;
+}
+
 export default function DailyInput() {
   const [students, setStudents] = useState<any[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
@@ -76,30 +91,66 @@ export default function DailyInput() {
         const lastDetails = lastDeposit.details;
         if (type === 'hafalan') {
           const shouldAdvance = lastDetails.grade === 'L' || lastDetails.grade === 'CL';
-          const lastEnd = parseInt(lastDetails.verse_end) || parseInt(lastDetails.verse_start) || 0;
+          
+          const extractLastNum = (val) => {
+             if (!val) return 0;
+             const match = String(val).match(/(\d+)(?!.*\d)/);
+             return match ? parseInt(match[1]) : 0;
+          };
+          const lastEnd = extractLastNum(lastDetails.verse_end) || extractLastNum(lastDetails.verse_start) || 0;
+          
+          const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === lastDetails.surah?.toLowerCase());
           
           if (shouldAdvance) {
-            setDetails({
-              surah: lastDetails.surah,
-              verse_start: lastEnd ? lastEnd + 1 : '',
-              verse_end: lastEnd ? lastEnd + 1 : ''
-            });
+            if (lastDetails.is_ujian || lastDetails.status === 'Ujian') {
+               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
+               setDetails({
+                  surah: nextSurah ? nextSurah.name : '',
+                  verse_start: '1',
+                  verse_end: '',
+                  is_ujian: false,
+                  status: 'Progressing'
+               });
+            } else if (surahInfo && lastEnd >= surahInfo.total_ayat) {
+               setDetails({
+                  surah: surahInfo.name,
+                  verse_start: '1',
+                  verse_end: surahInfo.total_ayat.toString(),
+                  is_ujian: true,
+                  status: 'Ujian'
+               });
+            } else {
+               setDetails({
+                 surah: lastDetails.surah,
+                 verse_start: lastEnd ? (lastEnd + 1).toString() : '',
+                 verse_end: '',
+                 is_ujian: false,
+                 status: 'Progressing'
+               });
+            }
           } else {
             setDetails({
               surah: lastDetails.surah,
               verse_start: lastDetails.verse_start || '',
-              verse_end: lastDetails.verse_end || ''
+              verse_end: lastDetails.verse_end || '',
+              is_ujian: lastDetails.is_ujian || false,
+              status: (lastDetails.is_ujian || lastDetails.status === 'Ujian') ? 'Ujian' : 'Hafalan'
             });
           }
         } else if (type === 'ummi') {
           const shouldAdvance = lastDetails.grade === 'A' || lastDetails.grade === 'B';
-          const lastEnd = parseInt(lastDetails.page_end) || parseInt(lastDetails.page_start) || 0;
+          const extractLastNum = (val) => {
+             if (!val) return 0;
+             const match = String(val).match(/(\d+)(?!.*\d)/);
+             return match ? parseInt(match[1]) : 0;
+          };
+          const lastEnd = extractLastNum(lastDetails.page_end) || extractLastNum(lastDetails.page_start) || 0;
           
           if (shouldAdvance) {
             setDetails({
               level: lastDetails.level,
-              page_start: lastEnd ? lastEnd + 1 : '',
-              page_end: lastEnd ? lastEnd + 1 : ''
+              page_start: lastEnd ? (lastEnd + 1).toString() : '',
+              page_end: ''
             });
           } else {
             setDetails({
@@ -110,14 +161,19 @@ export default function DailyInput() {
           }
         } else if (type === 'tilawah') {
           const shouldAdvance = lastDetails.grade === 'A' || lastDetails.grade === 'B';
-          const lastEnd = parseInt(lastDetails.verse_end) || parseInt(lastDetails.verse_start) || 0;
+          const extractLastNum = (val) => {
+             if (!val) return 0;
+             const match = String(val).match(/(\d+)(?!.*\d)/);
+             return match ? parseInt(match[1]) : 0;
+          };
+          const lastEnd = extractLastNum(lastDetails.verse_end) || extractLastNum(lastDetails.verse_start) || 0;
           
           if (shouldAdvance) {
             setDetails({
               juz: lastDetails.juz,
               surah: lastDetails.surah,
-              verse_start: lastEnd ? lastEnd + 1 : '',
-              verse_end: lastEnd ? lastEnd + 1 : ''
+              verse_start: lastEnd ? (lastEnd + 1).toString() : '',
+              verse_end: ''
             });
           } else {
             setDetails({
@@ -189,17 +245,43 @@ export default function DailyInput() {
     if (hafalanData && hafalanData.details && hafalanData.details.grade) {
       const d = hafalanData.details;
       const isGoodGrade = ['L', 'CL'].includes(d.grade);
-      let homework = '';
-      if (isGoodGrade) {
-        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-        homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+      
+      let currentStatus = '';
+      if (d.status === 'Ujian' || d.is_ujian) {
+         currentStatus = '*Ujian*';
+      } else if (d.status === 'Progressing' || isGoodGrade) {
+         currentStatus = '*Progressing*';
       } else {
-        homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+         currentStatus = '*Hafalan*';
       }
-      reportSegments.push(`📚 *Hafalan Al-Qur'an*
-📖 Materi: Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}
-⭐ Nilai: *${d.grade}*
-📝 PR: ${homework}`);
+
+      let homework = '';
+      let materiTitle = `Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+      
+      const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === d.surah?.toLowerCase());
+      
+      if (d.status === 'Ujian' || d.is_ujian) {
+         materiTitle = `*UJIAN SURAH ${d.surah}*`;
+         if (isGoodGrade) {
+            const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
+            homework = nextSurah ? `Lulus Ujian! Lanjut ke Surah ${nextSurah.name}` : 'Lulus Ujian!';
+         } else {
+            homework = `Mengulang Ujian Surah ${d.surah}`;
+         }
+      } else {
+         if (isGoodGrade) {
+            const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 0;
+            if (surahInfo && lastEnd >= surahInfo.total_ayat) {
+               homework = `Selesai Surah! Besok Ujian Surah ${d.surah}`;
+            } else {
+               const nextVerse = lastEnd ? lastEnd + 1 : '';
+               homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+            }
+         } else {
+            homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+         }
+      }
+      reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: ${currentStatus}\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}`);
     }
 
     // Ummi Segment
@@ -275,14 +357,43 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         hasData = true;
         const d = hafalanData.details;
         const isGoodGrade = ['L', 'CL'].includes(d.grade);
-        let homework = '';
-        if (isGoodGrade) {
-          const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-          homework = `Lanjut ayat ${nextVerse}`;
+        
+        let currentStatus = '';
+        if (d.status === 'Ujian' || d.is_ujian) {
+           currentStatus = 'Ujian';
+        } else if (d.status === 'Progressing' || isGoodGrade) {
+           currentStatus = 'Progressing';
         } else {
-          homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+           currentStatus = 'Hafalan';
         }
-        depositNotes.push(`- Hafalan: ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}`);
+
+        let homework = '';
+        let materiDesc = `${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+        const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === d.surah?.toLowerCase());
+
+        if (d.status === 'Ujian' || d.is_ujian) {
+           materiDesc = `UJIAN ${d.surah}`;
+           if (isGoodGrade) {
+              const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
+              homework = nextSurah ? `Lulus! Lanjut ${nextSurah.name}` : 'Lulus!';
+           } else {
+              homework = `Mengulang Ujian ${d.surah}`;
+           }
+        } else {
+           if (isGoodGrade) {
+              const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 0;
+              if (surahInfo && lastEnd >= surahInfo.total_ayat) {
+                 homework = `Selesai! Besok Ujian ${d.surah}`;
+              } else {
+                 const nextVerse = lastEnd ? lastEnd + 1 : '';
+                 homework = `Lanjut ayat ${nextVerse}`;
+              }
+           } else {
+              homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+           }
+        }
+
+        depositNotes.push(`- [${currentStatus}] Hafalan: ${materiDesc} | Nilai: ${d.grade} | PR: ${homework}`);
       }
       
       if (ummiData && ummiData.details && ummiData.details.grade) {
@@ -669,6 +780,21 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                         value={details.surah || ''}
                         onChange={e => setDetails({...details, surah: e.target.value})}
                       />
+                      <div className="space-y-2.5 mt-4">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Status Hafalan</label>
+                        <select 
+                          className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold focus:outline-none focus:ring-4 ring-stone-900/5 transition-all appearance-none cursor-pointer"
+                          value={details.status || (details.is_ujian ? 'Ujian' : 'Progressing')}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setDetails({...details, status: val, is_ujian: val === 'Ujian'});
+                          }}
+                        >
+                          <option value="Progressing">Progressing (Ziyadah)</option>
+                          <option value="Hafalan">Hafalan (Muroja'ah)</option>
+                          <option value="Ujian">Ujian Surah</option>
+                        </select>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2.5">

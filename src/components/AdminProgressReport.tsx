@@ -217,6 +217,7 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
     
     Object.keys(globalData).forEach(guru => {
       const d = globalData[guru];
+      if (!d) return; // Protect against null/undefined
       const students = d.students || [];
       const deposits = d.daily_deposits || [];
       const halaqohs = d.halaqoh || [];

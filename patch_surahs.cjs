@@ -1,6 +1,7 @@
-// src/constants/surahs.ts
+const fs = require('fs');
+let code = fs.readFileSync('src/constants/surahs.ts', 'utf-8');
 
-export const SURAH_LIST = [
+const newData = `export const SURAH_LIST = [
   { id: 1, name: "Al-Fatihah", total_ayat: 7 },
   { id: 2, name: "Al-Baqarah", total_ayat: 286 },
   { id: 3, name: "Ali 'Imran", total_ayat: 200 },
@@ -116,4 +117,7 @@ export const SURAH_LIST = [
   { id: 113, name: "Al-Falaq", total_ayat: 5 },
   { id: 114, name: "An-Nas", total_ayat: 6 }
 ];
+`;
 
+code = code.replace(/export const SURAH_LIST = \[[\s\S]*?\];/, newData);
+fs.writeFileSync('src/constants/surahs.ts', code);
