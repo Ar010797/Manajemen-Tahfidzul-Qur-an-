@@ -275,10 +275,10 @@ export default function DailyInput() {
                homework = `Selesai Surah! Besok Ujian Surah ${d.surah}`;
             } else {
                const nextVerse = lastEnd ? lastEnd + 1 : '';
-               homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+               homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
             }
          } else {
-            homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+            homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
          }
       }
       reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: ${currentStatus}\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}`);
@@ -291,9 +291,9 @@ export default function DailyInput() {
       let homework = '';
       if (isGoodGrade) {
         const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
-        homework = `Lanjut halaman berikutnya (hlm ${nextPage})`;
+        homework = `Lanjut Jilid ${d.level} hlm ${nextPage}`;
       } else {
-        homework = `Mengulang halaman yang sama (hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''})`;
+        homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
       }
       reportSegments.push(`📚 *Metode Ummi*
 📖 Materi: Jilid ${d.level}, hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}
@@ -308,9 +308,9 @@ export default function DailyInput() {
       let homework = '';
       if (isGoodGrade) {
         const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-        homework = `Lanjut ayat berikutnya (ayat ${nextVerse})`;
+        homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
       } else {
-        homework = `Mengulang ayat yang sama (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
+        homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
       }
       reportSegments.push(`📚 *Tilawah/BTQ*
 📖 Materi: Juz ${d.juz}, Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}
@@ -386,10 +386,10 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                  homework = `Selesai! Besok Ujian ${d.surah}`;
               } else {
                  const nextVerse = lastEnd ? lastEnd + 1 : '';
-                 homework = `Lanjut ayat ${nextVerse}`;
+                 homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
               }
            } else {
-              homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+              homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
            }
         }
 
@@ -403,9 +403,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         let homework = '';
         if (isGoodGrade) {
           const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
-          homework = `Lanjut hlm ${nextPage}`;
+          homework = `Lanjut Jilid ${d.level} hlm ${nextPage}`;
         } else {
-          homework = `Mengulang hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
+          homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
         }
         depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} | Nilai: ${d.grade} | PR: ${homework}`);
       }
@@ -417,9 +417,9 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         let homework = '';
         if (isGoodGrade) {
           const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-          homework = `Lanjut ayat ${nextVerse}`;
+          homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
         } else {
-          homework = `Mengulang ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
+          homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
         }
         depositNotes.push(`- Tilawah: Juz ${d.juz} ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}`);
       }
