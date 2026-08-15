@@ -249,11 +249,11 @@ export default function DailyInput() {
       
       let currentStatus = '';
       if (d.status === 'Ujian' || d.is_ujian) {
-         currentStatus = '*Ujian*';
-      } else if (d.status === 'Progressing' || isGoodGrade) {
-         currentStatus = '*Progressing*';
+         currentStatus = '*Ujian Surah*';
+      } else if (d.status === 'Hafalan') {
+         currentStatus = '*Muroja\'ah (Mengulang)*';
       } else {
-         currentStatus = '*Hafalan*';
+         currentStatus = '*Ziyadah (Menambah)*';
       }
 
       let homework = '';
@@ -361,11 +361,11 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         
         let currentStatus = '';
         if (d.status === 'Ujian' || d.is_ujian) {
-           currentStatus = 'Ujian';
-        } else if (d.status === 'Progressing' || isGoodGrade) {
-           currentStatus = 'Progressing';
+           currentStatus = 'Ujian Surah';
+        } else if (d.status === 'Hafalan') {
+           currentStatus = 'Muroja\'ah';
         } else {
-           currentStatus = 'Hafalan';
+           currentStatus = 'Ziyadah';
         }
 
         let homework = '';
