@@ -112,12 +112,13 @@ export default function DailyInput() {
                   status: 'Progressing'
                });
             } else if (surahInfo && lastEnd >= surahInfo.total_ayat) {
+               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
                setDetails({
-                  surah: surahInfo.name,
+                  surah: nextSurah ? nextSurah.name : '',
                   verse_start: '1',
-                  verse_end: surahInfo.total_ayat.toString(),
-                  is_ujian: true,
-                  status: 'Ujian'
+                  verse_end: '',
+                  is_ujian: false,
+                  status: 'Progressing'
                });
             } else {
                setDetails({
@@ -133,8 +134,8 @@ export default function DailyInput() {
               surah: lastDetails.surah,
               verse_start: lastDetails.verse_start || '',
               verse_end: lastDetails.verse_end || '',
-              is_ujian: lastDetails.is_ujian || false,
-              status: (lastDetails.is_ujian || lastDetails.status === 'Ujian') ? 'Ujian' : 'Hafalan'
+              is_ujian: false,
+              status: 'Progressing'
             });
           }
         } else if (type === 'ummi') {
