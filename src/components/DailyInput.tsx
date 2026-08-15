@@ -264,7 +264,7 @@ export default function DailyInput() {
          materiTitle = `*UJIAN SURAH ${d.surah}*`;
          if (isGoodGrade) {
             const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-            homework = nextSurah ? `Lulus Ujian! Lanjut ke Surah ${nextSurah.name}` : 'Lulus Ujian!';
+            homework = nextSurah ? `Lulus Ujian! Lanjut ke Surah ${nextSurah.name} ayat 1` : 'Lulus Ujian!';
          } else {
             homework = `Mengulang Ujian Surah ${d.surah}`;
          }
@@ -375,7 +375,7 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
            materiDesc = `UJIAN ${d.surah}`;
            if (isGoodGrade) {
               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-              homework = nextSurah ? `Lulus! Lanjut ${nextSurah.name}` : 'Lulus!';
+              homework = nextSurah ? `Lulus! Lanjut ${nextSurah.name} ayat 1` : 'Lulus!';
            } else {
               homework = `Mengulang Ujian ${d.surah}`;
            }
