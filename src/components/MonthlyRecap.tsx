@@ -94,22 +94,22 @@ export default function MonthlyRecap() {
         // Exclude Muroja'ah (Hafalan) and Ujian from the monthly recap
         const isMurojaahOrUjian = details.status === 'Hafalan' || details.status === 'Ujian' || details.is_ujian;
         
-        if (!isMurojaahOrUjian) {
-          // Ensure the label clearly shows surah and verse range
-          const label = `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`.trim();
-          const displayLabel = label || '-';
-          
-          if (target.awl === '-') target.awl = displayLabel;
-          target.akh = displayLabel;
-          
-          if (!isExcluded) {
-            const start = parseInt(startStr);
-            const end = parseInt(endStr);
-            if (!isNaN(start) && start > 0) {
-              // Precise verse count: (End - Start + 1). If end is missing, count is 1.
-              const count = (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
-              target.jml += count;
-            }
+        // Ensure the label clearly shows surah and verse range
+        const label = `${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}`.trim();
+        const displayLabel = label || '-';
+        
+        // Muroja'ah and Ujian still update the AWL and AKH display
+        if (target.awl === '-') target.awl = displayLabel;
+        target.akh = displayLabel;
+        
+        // But only Ziyadah (not Muroja'ah and not Ujian) adds to the total (JML)
+        if (!isMurojaahOrUjian && !isExcluded) {
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
+          if (!isNaN(start) && start > 0) {
+            // Precise verse count: (End - Start + 1). If end is missing, count is 1.
+            const count = (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
+            target.jml += count;
           }
         }
       } else if (curr.type === 'ummi') {
