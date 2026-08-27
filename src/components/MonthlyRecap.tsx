@@ -420,7 +420,7 @@ export default function MonthlyRecap() {
       }
       
       const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = 0;
+      const yOffset = (pdfHeight - finalHeight) / 2;
       
       pdf.addImage(dataUrl, 'JPEG', xOffset, yOffset, finalWidth, finalHeight, undefined, 'FAST');
 
@@ -560,7 +560,7 @@ export default function MonthlyRecap() {
                             <Calendar size={14} className="text-indigo-600" />
                           </div>
                           <div>
-                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Awal</p>
+                            <p className="text-[11px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Awal</p>
                             <p className="text-base font-bold text-stone-900 leading-tight">{editingStudent.hafalan.awl || '-'}</p>
                           </div>
                         </div>
@@ -570,7 +570,7 @@ export default function MonthlyRecap() {
                             <FileText size={14} className="text-indigo-600" />
                           </div>
                           <div>
-                            <p className="text-[9px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Akhir</p>
+                            <p className="text-[11px] uppercase font-black text-stone-400 leading-tight mb-1">Ayat Akhir</p>
                             <p className="text-base font-bold text-stone-900 leading-tight">{editingStudent.hafalan.akh || '-'}</p>
                           </div>
                         </div>
@@ -660,7 +660,7 @@ export default function MonthlyRecap() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-2 sm:space-y-3">
-            <label className="text-[9px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Pilih Halaqoh</label>
+            <label className="text-[11px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Pilih Halaqoh</label>
             <div className="relative group">
                <select 
                 className={cn("w-full bg-stone-50 border border-stone-200/60 rounded-xl sm:rounded-2xl py-3.5 sm:py-4 px-6 focus:outline-none focus:ring-4 transition-all appearance-none font-bold text-stone-900 cursor-pointer text-sm", theme.ring)}
@@ -678,7 +678,7 @@ export default function MonthlyRecap() {
             </div>
           </div>
           <div className="space-y-2 sm:space-y-3">
-            <label className="text-[9px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Periode Bulan</label>
+            <label className="text-[11px] sm:text-[10px] font-display font-black text-stone-400 uppercase tracking-[0.25em] ml-2 font-black">Periode Bulan</label>
             <div className="relative group">
               <input 
                 type="month"
@@ -722,7 +722,7 @@ export default function MonthlyRecap() {
           <div className="space-y-12">
             <div className="overflow-x-auto -mx-4 sm:-mx-6 lg:mx-0 border border-stone-200/60 lg:rounded-[2rem] shadow-sm custom-scrollbar relative">
               <table className="w-full min-w-[1000px] text-[11px] text-left border-separate border-spacing-0">
-                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[9px] uppercase tracking-[0.2em] sticky top-0 z-30">
+                <thead className="bg-stone-50/50 text-stone-400 font-display font-black text-[11px] uppercase tracking-[0.2em] sticky top-0 z-30">
                   <tr className="border-b border-stone-200/60">
                     <th rowSpan={2} className="px-2 py-5 border-r border-b border-stone-200/60 text-center sticky left-0 z-40 bg-stone-50/80 backdrop-blur-md w-12 min-w-[48px] max-w-[48px]">No</th>
                     <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center sticky left-12 md:left-12 z-40 bg-stone-50/80 backdrop-blur-md min-w-[140px] md:min-w-[180px] shadow-[4px_0_10px_-4px_rgba(0,0,0,0.05)] border-l">Nama Siswa</th>
@@ -962,45 +962,18 @@ export default function MonthlyRecap() {
                   </div>
 
                   {/* Table with dynamic columns logic */}
-                  <table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>
-                    <colgroup>
-                      <col style={{ width: '25px' }} />
-                      <col style={{ width: '130px' }} />
-                      {hasHafalan && (
-                        <>
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '30px' }} />
-                        </>
-                      )}
-                      {hasTilawah && (
-                        <>
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '30px' }} />
-                        </>
-                      )}
-                      {hasUmmi && (
-                        <>
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '75px' }} />
-                          <col style={{ width: '30px' }} />
-                        </>
-                      )}
-                      <col style={{ width: '45px' }} />
-                      <col style={{ width: '100px' }} />
-                      <col style={{ width: 'auto' }} />
-                    </colgroup>
+                  <table className="w-full border-collapse border border-black text-[11px] leading-snug relative z-10 mb-auto" style={{ borderColor: '#000000' }}>
+                    
                     <thead>
                       <tr className="bg-white">
-                        <th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NO</th>
-                        <th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NAMA SISWA</th>
+                        <th rowSpan={2} className="border border-black p-2 text-center font-bold w-[3%]" style={{ borderColor: '#000000' }}>NO</th>
+                        <th rowSpan={2} className="border border-black p-2 text-center font-bold w-[18%]" style={{ borderColor: '#000000' }}>NAMA SISWA</th>
                         {hasHafalan && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HAFALAN AL-QUR'AN</th>}
                         {hasTilawah && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TILAWAH AL-QUR'AN</th>}
                         {hasUmmi && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>METODE UMMI</th>}
-                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold w-[8%]" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>
                         <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TOTAL</th>
-                        <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>CATATAN</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold w-[25%]" style={{ borderColor: '#000000' }}>CATATAN</th>
                       </tr>
                       <tr className="bg-white">
                         {hasHafalan && (
@@ -1030,31 +1003,31 @@ export default function MonthlyRecap() {
                       {recapData.map((s, i) => (
                         <tr key={`${s.id}-${i}`} className="text-stone-900 h-[40px]">
                           <td className="border border-black p-1 text-center" style={{ borderColor: '#000000' }}>{i + 1}</td>
-                          <td className="border border-black p-1 font-bold pl-3 truncate" style={{ borderColor: '#000000' }}>{s.name}</td>
+                          <td className="border border-black p-2 font-bold pl-3 break-words text-[11px]" style={{ borderColor: '#000000' }}>{s.name}</td>
                           {hasHafalan && (
                             <>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.hafalan.awl}</td>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.hafalan.akh}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.hafalan.awl}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.hafalan.akh}</td>
                               <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.hafalan.jml}</td>
                             </>
                           )}
                           {hasTilawah && (
                             <>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.tilawah.awl}</td>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.tilawah.akh}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.tilawah.awl}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.tilawah.akh}</td>
                               <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.tilawah.jml}</td>
                             </>
                           )}
                           {hasUmmi && (
                             <>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.ummi.awl}</td>
-                              <td className="border border-black p-1 text-center text-[8px]" style={{ borderColor: '#000000' }}>{s.ummi.akh}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.ummi.awl}</td>
+                              <td className="border border-black p-1 text-center text-[10px]" style={{ borderColor: '#000000' }}>{s.ummi.akh}</td>
                               <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.ummi.jml}</td>
                             </>
                           )}
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size} / {maxActiveDays}</td>
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : (parseAndCalculateTotalHafalan(s.hafalan.akh) || '-')}</td>
-                          <td className="border border-black p-1 px-2 italic text-[9px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black p-1 px-2 italic text-[11px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -1,48 +1,48 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/components/AdminProgressReport.tsx', 'utf-8');
+let code = fs.readFileSync('src/components/MonthlyRecap.tsx', 'utf-8');
 
-// Patch Students Table
-const regexStudentPdf = /const studentsBody = studentsProgress\.map\(\(s\) => \[\n           s\.name, \n           s\.guru, \n           s\.level, \n           s\.hafalan \|\| '-',\n           s\.ummiStatus,\n           s\.hafalanStatus\n        \]\);\n        \n        autoTable\(pdf, \{\n           startY: startY,\n           head: \[\['Nama Siswa', 'Guru', 'Progress Ummi\/Quran', 'Hafalan Terakhir', 'Status Ummi', 'Status Hafalan'\]\],/g;
-const replacementStudentPdf = `const studentsBody = studentsProgress.map((s) => [
-           s.name, 
-           s.guru, 
-           s.level, 
-           s.hafalan || '-',
-           s.ummiPercentage.toString() + '%',
-           s.ummiStatus,
-           s.hafalanPercentage.toString() + '%',
-           s.hafalanStatus
-        ]);
-        
-        autoTable(pdf, {
-           startY: startY,
-           head: [['Nama Siswa', 'Guru', 'Progress Ummi/Quran', 'Hafalan Terakhir', '% Ummi', 'Status Ummi', '% Hafalan', 'Status Hafalan']],`;
+// 1. Center vertically in PDF
+code = code.replace(
+  /const xOffset = \(pdfWidth - finalWidth\) \/ 2;\s*const yOffset = 0;/,
+  "const xOffset = (pdfWidth - finalWidth) / 2;\n      const yOffset = (pdfHeight - finalHeight) / 2;"
+);
 
-code = code.replace(regexStudentPdf, replacementStudentPdf);
+// 2. Modify Table styling and remove colgroup completely
+const oldTableStart = `<table className="w-full border-collapse border border-black text-[9px] leading-tight relative z-10 mb-auto" style={{ borderColor: '#000000', tableLayout: 'fixed' }}>`;
+const newTableStart = `<table className="w-full border-collapse border border-black text-[11px] leading-snug relative z-10 mb-auto" style={{ borderColor: '#000000' }}>`;
 
-// Patch Kurikulum Table
-const regexKurikulumPdf = /const kurikulumBody = \[\];\n        \/\/ TARGET_KURIKULUM is defined globally in the file\n        TARGET_KURIKULUM\.forEach\(\(t\) => \{\n           if \(t\.full_text\) \{\n              kurikulumBody\.push\(\[\{ content: t\.full_text, colSpan: 5, styles: \{ fontStyle: 'italic', halign: 'center' \} \}\]\);\n           \} else \{\n              kurikulumBody\.push\(\[\n                 t\.grade,\n                 t\.s1_hafalan,\n                 t\.s1_ummi,\n                 t\.s2_hafalan,\n                 t\.s2_ummi\n              \]\);\n           \}\n        \}\);\n        \n        autoTable\(pdf, \{\n           startY: startY,\n           head: \[\n              \['Kelas', 'Smt Ganjil: Hafalan', 'Smt Ganjil: Ummi', 'Smt Genap: Hafalan', 'Smt Genap: Ummi'\]\n           \],/g;
+const colgroupRegex = /<colgroup>[\s\S]*?<\/colgroup>/;
 
-const replacementKurikulumPdf = `const kurikulumBody = [];
-        // TARGET_KURIKULUM is defined globally in the file
-        TARGET_KURIKULUM.forEach((t) => {
-           if (t.full_text) {
-              kurikulumBody.push([{ content: t.full_text, colSpan: 3, styles: { fontStyle: 'italic', halign: 'center' } }]);
-           } else {
-              kurikulumBody.push([
-                 t.grade,
-                 t.hafalan,
-                 t.ummi
-              ]);
-           }
-        });
-        
-        autoTable(pdf, {
-           startY: startY,
-           head: [
-              ['Kelas', 'Target Hafalan Tahunan', 'Target Ummi/Tilawah Tahunan']
-           ],`;
+code = code.replace(oldTableStart, newTableStart);
+code = code.replace(colgroupRegex, '');
 
-code = code.replace(regexKurikulumPdf, replacementKurikulumPdf);
+// 3. Remove truncate from NAMA td and increase other td font sizes slightly
+code = code.replace(
+  /<td className="border border-black p-1 font-bold pl-3 truncate" style={{ borderColor: '#000000' }}>{s\.name}<\/td>/g,
+  `<td className="border border-black p-2 font-bold pl-3 break-words text-[11px]" style={{ borderColor: '#000000' }}>{s.name}</td>`
+);
 
-fs.writeFileSync('src/components/AdminProgressReport.tsx', code);
+// For the rest of the text-[8px] in the print table, upgrade them to text-[10px]
+code = code.replace(/text-\[8px\]/g, 'text-[10px]');
+code = code.replace(/text-\[9px\]/g, 'text-[11px]');
+
+// 4. Also update th sizes to add minimal width limits to keep columns neat
+const noThOld = `<th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NO</th>`;
+const noThNew = `<th rowSpan={2} className="border border-black p-2 text-center font-bold w-[3%]" style={{ borderColor: '#000000' }}>NO</th>`;
+code = code.replace(noThOld, noThNew);
+
+const namaThOld = `<th rowSpan={2} className="border border-black p-2 text-center font-bold" style={{ borderColor: '#000000' }}>NAMA SISWA</th>`;
+const namaThNew = `<th rowSpan={2} className="border border-black p-2 text-center font-bold w-[18%]" style={{ borderColor: '#000000' }}>NAMA SISWA</th>`;
+code = code.replace(namaThOld, namaThNew);
+
+const catatanThOld = `<th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>CATATAN</th>`;
+const catatanThNew = `<th rowSpan={2} className="border border-black p-1 text-center font-bold w-[25%]" style={{ borderColor: '#000000' }}>CATATAN</th>`;
+code = code.replace(catatanThOld, catatanThNew);
+
+// Hari aktif
+const aktifThOld = `<th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>`;
+const aktifThNew = `<th rowSpan={2} className="border border-black p-1 text-center font-bold w-[8%]" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>`;
+code = code.replace(aktifThOld, aktifThNew);
+
+fs.writeFileSync('src/components/MonthlyRecap.tsx', code);
+console.log('Patched print layout for PDF/Image!');
