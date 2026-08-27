@@ -86,7 +86,7 @@ export default function MonthlyRecap() {
       // CRITICAL: Exclude BL and C from ALL calculations as requested
       const isExcluded = grade === 'BL' || grade === 'C';
       
-    if (curr.type === 'hafalan') {
+      if (curr.type === 'hafalan') {
         const surah = details.surah || '';
         const startStr = details.verse_start || '';
         const endStr = details.verse_end || '';
@@ -141,6 +141,34 @@ export default function MonthlyRecap() {
             const minV = Math.min(start, endNum);
             const maxV = Math.max(start, endNum);
             for(let i=minV; i<=maxV; i++) {
+              target.set.add(`J${level}P${i}`);
+            }
+          } else if (level && isNaN(start)) {
+            // text page, ignore
+          } else if (level && !startStr) {
+            target.fallbackJml += 1;
+          }
+        }
+      } else if (curr.type === 'tilawah') {
+        const juz = details.juz || '';
+        const surah = details.surah || '';
+        const startStr = details.verse_start || '';
+        const endStr = details.verse_end || '';
+        const label = startStr 
+          ? `${juz ? `J${juz} ` : ''}${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}` 
+          : (surah || (juz ? `Juz ${juz}` : '-'));
+          
+        if (target.awl === '-') target.awl = label;
+        target.akh = label;
+        
+        if (!isExcluded) {
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
+          if (!isNaN(start) && start > 0) {
+            const endNum = (!isNaN(end)) ? end : start;
+            const minV = Math.min(start, endNum);
+            const maxV = Math.max(start, endNum);
+            for(let i=minV; i<=maxV; i++) {
               target.set.add(`J${juz}S${surah}V${i}`);
             }
           } else if (surah && isNaN(start)) {
@@ -153,6 +181,13 @@ export default function MonthlyRecap() {
       
       return acc;
     }, {});
+    
+    // Compute JML for all
+    Object.values(grouped).forEach((s: any) => {
+      s.hafalan.jml = s.hafalan.set.size + s.hafalan.fallbackJml;
+      s.ummi.jml = s.ummi.set.size + s.ummi.fallbackJml;
+      s.tilawah.jml = s.tilawah.set.size + s.tilawah.fallbackJml;
+    });
 
     const studentList = Object.values(grouped);
     
