@@ -67,9 +67,9 @@ export default function MonthlyRecap() {
         acc[curr.student_id] = {
           id: curr.student_id,
           name: curr.student_name,
-          hafalan: { awl: '-', akh: '-', jml: 0 },
-          ummi: { awl: '-', akh: '-', jml: 0 },
-          tilawah: { awl: '-', akh: '-', jml: 0 },
+          hafalan: { awl: '-', akh: '-', jml: 0, set: new Set(), fallbackJml: 0 },
+          ummi: { awl: '-', akh: '-', jml: 0, set: new Set(), fallbackJml: 0 },
+          tilawah: { awl: '-', akh: '-', jml: 0, set: new Set(), fallbackJml: 0 },
           activeDays: new Set()
         };
       }
@@ -107,9 +107,12 @@ export default function MonthlyRecap() {
           const start = parseInt(startStr);
           const end = parseInt(endStr);
           if (!isNaN(start) && start > 0) {
-            // Precise verse count: (End - Start + 1). If end is missing, count is 1.
-            const count = (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
-            target.jml += count;
+            const endNum = (!isNaN(end)) ? end : start;
+            const minV = Math.min(start, endNum);
+            const maxV = Math.max(start, endNum);
+            for(let i=minV; i<=maxV; i++) {
+              target.set.add(`${surah}-${i}`);
+            }
           }
         }
       } else if (curr.type === 'ummi') {
@@ -134,35 +137,16 @@ export default function MonthlyRecap() {
           const start = parseInt(startStr);
           const end = parseInt(endStr);
           if (!isNaN(start) && start > 0) {
-            target.jml += (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
-          } else if (level && isNaN(start)) {
-            // If level is provided but page is text (like Muroja'ah), don't count
-            // Only count if level is provided and page is empty or numeric
-          } else if (level && !startStr) {
-            target.jml += 1;
-          }
-        }
-      } else if (curr.type === 'tilawah') {
-        const juz = details.juz || '';
-        const surah = details.surah || '';
-        const startStr = details.verse_start || '';
-        const endStr = details.verse_end || '';
-        const label = startStr 
-          ? `${juz ? `J${juz} ` : ''}${surah} ${startStr}${endStr && endStr !== startStr ? `-${endStr}` : ''}` 
-          : (surah || (juz ? `Juz ${juz}` : '-'));
-          
-        if (target.awl === '-') target.awl = label;
-        target.akh = label;
-        
-        if (!isExcluded) {
-          const start = parseInt(startStr);
-          const end = parseInt(endStr);
-          if (!isNaN(start) && start > 0) {
-            target.jml += (!isNaN(end) && end >= start) ? (end - start + 1) : 1;
+            const endNum = (!isNaN(end)) ? end : start;
+            const minV = Math.min(start, endNum);
+            const maxV = Math.max(start, endNum);
+            for(let i=minV; i<=maxV; i++) {
+              target.set.add(`J${juz}S${surah}V${i}`);
+            }
           } else if (surah && isNaN(start)) {
-            // If surah is provided but verse is text, don't count
+            // text verse, ignore
           } else if (surah && !startStr) {
-            target.jml += 1;
+            target.fallbackJml += 1;
           }
         }
       }
