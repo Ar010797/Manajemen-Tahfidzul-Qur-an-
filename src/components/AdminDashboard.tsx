@@ -375,9 +375,9 @@ export const AdminDashboard: React.FC = () => {
               const success = storage.importData(JSON.stringify(d));
               if (success) {
                 localStorage.setItem('user', JSON.stringify({
-                  id: 'admin_impersonate',
+                  id: 'admin',
                   username: guru,
-                  role: 'guru'
+                  role: 'admin'
                 }));
                 window.location.reload();
               } else {
@@ -387,7 +387,7 @@ export const AdminDashboard: React.FC = () => {
           }
         }}
         title="Buka Data Guru"
-        message={`Masuk sebagai guru "${impersonateTarget}" untuk melihat dan mengunduh Rapot & Rekap (PDF/JPG)? Pastikan sebelum pindah, data admin sudah sinkron ke server.`}
+        message={`Buka data guru "${impersonateTarget}"? Anda dapat melihat dan mengunduh datanya tanpa merubah data asli di server, kecuali Anda sengaja menyimpan perubahan melalui tombol 'Kirim Data'.`}
         confirmText="Buka"
         cancelText="Batal"
         themeColor="indigo"

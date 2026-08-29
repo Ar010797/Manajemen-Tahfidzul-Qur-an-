@@ -214,9 +214,19 @@ export default function Maintenance() {
   };
 
   const handleSyncMyData = async () => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    const currentUsername = localStorage.getItem('current_username') || 'guru';
+
+    if (user?.role === 'admin' && currentUsername !== 'admin') {
+      if (!window.confirm(`PERINGATAN: Anda sedang mengakses data milik Guru "${currentUsername}".\n\nApakah Anda yakin ingin MENGUBAH / MENIMPA data guru tersebut di server dengan data yang ada di layar Anda saat ini?`)) {
+        return;
+      }
+    }
+
     setSyncStatus('syncing');
     try {
-      const username = localStorage.getItem('current_username') || 'guru';
+      const username = currentUsername;
       const myData = storage.exportData();
       
       const compressedData = LZString.compressToBase64(myData);
