@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, RefreshCw, Download, Users, FileText, CheckCircle, Trash2, Eye } from 'lucide-react';
+import { Shield, RefreshCw, Download, Users, FileText, CheckCircle, Trash2, Eye, Clock, AlertTriangle } from 'lucide-react';
 import { motion } from 'motion/react';
 import LZString from 'lz-string';
 import { safeJsonParse } from '../utils/jsonUtils';
@@ -11,6 +11,7 @@ import { AdminProgressReport } from './AdminProgressReport';
 
 export const AdminDashboard: React.FC = () => {
   const [globalData, setGlobalData] = useState<Record<string, any>>({});
+  const [syncMetadata, setSyncMetadata] = useState<Record<string, any>>({});
   const [docIds, setDocIds] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -23,6 +24,7 @@ export const AdminDashboard: React.FC = () => {
       const querySnapshot = await getDocs(collection(db, 'syncs'));
       const newData: Record<string, any> = {};
       const newDocIds: Record<string, string> = {};
+      const newMetadata: Record<string, any> = {};
       
       for (const document of querySnapshot.docs) {
         const data = document.data();
@@ -62,6 +64,7 @@ export const AdminDashboard: React.FC = () => {
              }
              if (rawJsonString) {
                newData[data.username] = safeJsonParse(rawJsonString);
+               newMetadata[data.username] = { updatedAt: data.updatedAt };
                newDocIds[data.username] = document.id;
              }
            } catch (err) {
@@ -71,6 +74,7 @@ export const AdminDashboard: React.FC = () => {
       }
       
       setGlobalData(newData);
+      setSyncMetadata(newMetadata);
       setDocIds(newDocIds);
     } catch (e: any) {
       console.error('Failed to fetch data', e);
@@ -206,6 +210,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const gurus = Object.keys(globalData);
+  const currentMonthStr = new Date().toISOString().substring(0, 7);
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
@@ -296,6 +301,27 @@ export const AdminDashboard: React.FC = () => {
             gurus.map(guru => {
               const d = globalData[guru];
               const studentCount = d.students?.length || 0;
+              const lastSync = syncMetadata[guru]?.updatedAt;
+              let isSyncedThisMonth = false;
+              let syncText = "Belum sinkron";
+              let statusColor = "bg-stone-100 text-stone-500 border-stone-200";
+              let SyncIcon = Clock;
+              
+              if (lastSync) {
+                const syncDate = new Date(lastSync);
+                isSyncedThisMonth = lastSync.substring(0, 7) === currentMonthStr;
+                syncText = syncDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                if (isSyncedThisMonth) {
+                  statusColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                  SyncIcon = CheckCircle;
+                } else {
+                  statusColor = "bg-amber-50 text-amber-700 border-amber-200";
+                  SyncIcon = AlertTriangle;
+                  syncText = "Bulan ini belum: " + syncText;
+                }
+              }
+
               const halaqohCount = d.halaqoh?.length || 0;
               
               return (
@@ -306,6 +332,10 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-stone-900 text-lg">{guru}</h3>
+                      <div className={`mt-1 mb-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-wider ${statusColor}`}>
+                        <SyncIcon className="w-3 h-3" />
+                        {syncText}
+                      </div>
                       <p className="text-sm text-stone-500 flex gap-4 mt-1">
                         <span><FileText className="w-3 h-3 inline mr-1" /> {halaqohCount} Halaqoh</span>
                         <span><Users className="w-3 h-3 inline mr-1" /> {studentCount} Santri</span>
