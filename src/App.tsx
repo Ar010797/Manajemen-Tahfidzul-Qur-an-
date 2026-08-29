@@ -28,6 +28,7 @@ import MonthlyRecap from './components/MonthlyRecap';
 import SettingsHub from './components/SettingsHub';
 import SplashScreen from './components/SplashScreen';
 import NotificationSystem from './components/NotificationSystem';
+import AdminSyncNotifications from './components/AdminSyncNotifications';
 
 import { AdminDashboard } from './components/AdminDashboard';
 import { db } from './services/firebase';
@@ -227,6 +228,7 @@ export default function App() {
   return (
     <>
       <NotificationSystem />
+      {user?.role === 'admin' && <AdminSyncNotifications />}
       
       <AnimatePresence>
         {isPullingData && (
