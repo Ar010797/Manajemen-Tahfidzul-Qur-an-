@@ -240,26 +240,45 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          let levelScore = 0;
          let ummiAbsoluteScore = 0;
          
-         if (latestTilawah && (!latestUmmi || latestTilawah.date >= latestUmmi.date)) {
-             currentLevelStr = 'Al-Qur\'an';
-             category = 'Al-Qur\'an';
-             levelScore = 7;
-             ummiAbsoluteScore = 7 * 40;
-         } else if (latestUmmi) {
-             const lvl = latestUmmi.details?.level;
-             const page = parseInt(latestUmmi.details?.page || '0') || 0;
+         
+         const allLevels: any[] = [];
+         tilawahDeposits.forEach((dep: any) => {
+             allLevels.push({
+                 score: 7 * 40,
+                 levelScore: 7,
+                 levelStr: "Al-Qur'an",
+                 category: "Al-Qur'an"
+             });
+         });
+         ummiDeposits.forEach((dep: any) => {
+             const lvl = dep.details?.level;
+             const page = parseInt(dep.details?.page || '0') || 0;
              if (lvl === 'Al-Quran' || lvl === 7 || lvl === '7') {
-                 currentLevelStr = 'Al-Qur\'an';
-                 category = 'Al-Qur\'an';
-                 levelScore = 7;
-                 ummiAbsoluteScore = 7 * 40;
+                 allLevels.push({
+                     score: 7 * 40,
+                     levelScore: 7,
+                     levelStr: "Al-Qur'an",
+                     category: "Al-Qur'an"
+                 });
              } else if (lvl) {
-                 currentLevelStr = `Jilid ${lvl}`;
-                 category = `Jilid ${lvl}`;
-                 levelScore = parseInt(lvl.toString()) || 0;
-                 ummiAbsoluteScore = (levelScore - 1) * 40 + page;
+                 const l = parseInt(lvl.toString()) || 0;
+                 allLevels.push({
+                     score: (l - 1) * 40 + page,
+                     levelScore: l,
+                     levelStr: `Jilid ${lvl}`,
+                     category: `Jilid ${lvl}`
+                 });
              }
+         });
+
+         if (allLevels.length > 0) {
+             allLevels.sort((a, b) => b.score - a.score);
+             levelScore = allLevels[0].levelScore;
+             ummiAbsoluteScore = allLevels[0].score;
+             currentLevelStr = allLevels[0].levelStr;
+             category = allLevels[0].category;
          }
+
          
          
          const hafalanDeposits = deposits.filter((dep: any) => dep.student_id === student.id && dep.type === 'hafalan');
@@ -270,6 +289,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          let currentHafalanStr = 'Belum Ada Data';
          let normalizedHafalan = '';
          
+         let studentSurahIdx = 0;
+         let firstSurahIdx = 0;
+
          if (latestHafalan) {
             currentHafalanStr = `Surah ${latestHafalan.details?.surah || '-'}`;
             if (latestHafalan.details?.ayah) {
@@ -277,26 +299,54 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
             }
             normalizedHafalan = currentHafalanStr;
          }
+
+         hafalanDeposits.forEach((dep: any) => {
+             const str = `Surah ${dep.details?.surah || '-'}`;
+             const idx = getHighestSurahIndex(str);
+             if (idx > studentSurahIdx) {
+                 studentSurahIdx = idx;
+                 currentHafalanStr = str;
+                 if (dep.details?.ayah) currentHafalanStr += ` ayat ${dep.details.ayah}`;
+                 normalizedHafalan = currentHafalanStr;
+             }
+         });
+
+         const monthlyRecaps = d.monthly_recaps || [];
+         monthlyRecaps.forEach((r: any) => {
+             if (r.student_id === student.id && r.total_hafalan) {
+                 const idx = getHighestSurahIndex(r.total_hafalan);
+                 if (idx > studentSurahIdx) {
+                     studentSurahIdx = idx;
+                     currentHafalanStr = r.total_hafalan;
+                     normalizedHafalan = r.total_hafalan;
+                 }
+             }
+         });
+
+         const examsHafalan = d.exams_hafalan || [];
+         const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
+         if (hasMutqin && (grade === 6 || grade === 9 || grade === 7 || grade === 8)) {
+             studentSurahIdx = 999;
+             if (currentHafalanStr === 'Belum Ada Data') {
+                 currentHafalanStr = 'Lulus Mutqin';
+                 normalizedHafalan = 'Lulus Mutqin';
+             }
+         }
+
+         if (firstHafalan) {
+            firstSurahIdx = getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`);
+         }
          
          let hafalanStatus = '-';
          let ummiStatus = '-';
          let hafalanAchieved = false;
          let ummiAchieved = false;
          
-         let studentSurahIdx = 0;
-         let firstSurahIdx = 0;
          let hafalanPercentage = 0;
          let ummiPercentage = 0;
          let targetSurahIndex = 0;
          let targetLevel = 7;
          let targetUmmiAbsoluteScore = 7 * 40;
-         
-         if (latestHafalan) {
-            studentSurahIdx = getHighestSurahIndex(currentHafalanStr);
-         }
-         if (firstHafalan) {
-            firstSurahIdx = getHighestSurahIndex(`Surah ${firstHafalan.details?.surah || '-'}`);
-         }
          
          if (grade > 0) {
          
@@ -328,14 +378,10 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          else if (grade === 6) { 
              targetSurahIndex = 37; targetLevel = 7; // Mutqin Juz 30 (An-Nas is 37)
              targetUmmiAbsoluteScore = 7 * 40;
-             const examsHafalan = globalData[guru]?.exams_hafalan || [];
-             const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
-             if (hasMutqin) studentSurahIdx = 999;
          }
          else if (grade === 7 || grade === 8) {
              let requiredJuz = grade === 8 ? 2 : 1;
-             if (student.totalJuzAdded && student.totalJuzAdded >= requiredJuz) {
-                 studentSurahIdx = 999; 
+             if (studentSurahIdx === 999) {
                  targetSurahIndex = 1;
              } else {
                  let tIdx = firstSurahIdx > 0 ? getNextJuzBoundary(firstSurahIdx) : 37;
@@ -346,14 +392,10 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
              targetUmmiAbsoluteScore = 7 * 40;
          }
          else if (grade === 9) {
-             if (student.totalAccumulatedJuz && student.totalAccumulatedJuz >= 3) {
-                 studentSurahIdx = 999;
+             if (studentSurahIdx === 999) {
                  targetSurahIndex = 1;
              } else {
                  targetSurahIndex = 57; 
-                 const examsHafalan = globalData[guru]?.exams_hafalan || [];
-                 const hasMutqin = examsHafalan.some((e: any) => e.student_id === student.id && e.note?.toLowerCase().includes('mutqin'));
-                 if (hasMutqin) studentSurahIdx = 999;
              }
              targetLevel = 7;
              targetUmmiAbsoluteScore = 7 * 40;
@@ -381,16 +423,16 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          hafalanAchieved = studentSurahIdx >= targetSurahIndex;
          ummiAchieved = levelScore >= targetLevel;
          
-         if (latestHafalan) {
+         if (currentHafalanStr !== 'Belum Ada Data') {
              if (studentSurahIdx >= targetSurahIndex) hafalanStatus = 'Tercapai';
              else hafalanStatus = 'Belum Mencapai Target';
          }
-         if (latestUmmi || latestTilawah) {
+         if (currentLevelStr !== 'Belum Ada Data') {
              if (levelScore >= targetLevel) ummiStatus = 'Tercapai';
              else ummiStatus = 'Belum Mencapai Target';
          }
        } else {
-         if (latestHafalan) hafalanAchieved = true;
+         if (currentHafalanStr !== 'Belum Ada Data') hafalanAchieved = true;
          if (levelScore > 0) ummiAchieved = true;
        }
 
