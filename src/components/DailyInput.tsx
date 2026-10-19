@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight, MessageCircle } from 'lucide-react';
+import { ClipboardCheck, Save, Search, GripVertical, ChevronLeft, Trash2, ChevronRight, MessageCircle, FileText, Sparkles, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
@@ -49,11 +49,91 @@ function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: 
   );
 }
 
-function getNextSurah(currentId: number) {
+export function findSurahByName(query: string) {
+  if (!query) return null;
+  const clean = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const q = clean(query);
+  if (!q) return null;
+
+  // Direct exact or normalized match in SURAH_LIST
+  const direct = SURAH_LIST.find(s => clean(s.name) === q);
+  if (direct) return direct;
+
+  const aliases: Record<string, number> = {
+    "annaba": 78, "annaba'": 78, "naba": 78, "anaba": 78,
+    "annaziat": 79, "naziat": 79, "anaziat": 79,
+    "abasa": 80,
+    "attakwir": 81, "takwir": 81,
+    "alinfitar": 82, "alinfitor": 82, "infitar": 82,
+    "almutaffifin": 83, "almuthaffifin": 83, "almuthoffifin": 83, "muthaffifin": 83,
+    "alinsyiqaq": 84, "alinsyiqoq": 84, "insyiqaq": 84, "insyiqoq": 84,
+    "alburuj": 85, "buruj": 85,
+    "attariq": 86, "atthariq": 86, "attoriq": 86, "tariq": 86,
+    "alala": 87, "ala": 87,
+    "alghasyiyah": 88, "algosyiyah": 88, "alghosiyah": 88, "ghasyiyah": 88,
+    "alfajr": 89, "fajr": 89,
+    "albalad": 90, "balad": 90,
+    "asysyams": 91, "syams": 91, "ashsyams": 91,
+    "allail": 92, "lail": 92,
+    "adduha": 93, "addhuha": 93, "duha": 93,
+    "asysyarh": 94, "alamnasyrah": 94, "insyirah": 94, "syarh": 94,
+    "attin": 95, "tin": 95,
+    "alalaq": 96, "alaq": 96,
+    "alqadr": 97, "alqodar": 97, "qadr": 97,
+    "albayyinah": 98, "albayinah": 98, "bayyinah": 98,
+    "azzalzalah": 99, "zalzalah": 99,
+    "aladiyat": 100, "adiyat": 100,
+    "alqariah": 101, "qariah": 101,
+    "attakasur": 102, "attakatsur": 102, "takatsur": 102,
+    "alasr": 103, "asr": 103,
+    "alhumazah": 104, "humazah": 104,
+    "alfil": 105, "fil": 105,
+    "quraisy": 106, "quraish": 106,
+    "almaun": 107, "maun": 107,
+    "alkausar": 108, "alkautsar": 108, "kausar": 108,
+    "alkafirun": 109, "kafirun": 109,
+    "annasr": 110, "nasr": 110,
+    "allahab": 111, "almasad": 111, "lahab": 111, "masad": 111,
+    "alikhlas": 112, "ikhlas": 112,
+    "alfalaq": 113, "falaq": 113,
+    "annas": 114, "nas": 114,
+    // Juz 29
+    "almulk": 67, "mulk": 67,
+    "alqalam": 68, "alqolam": 68, "qalam": 68,
+    "alhaqqah": 69, "alhaqqoh": 69, "haqqah": 69,
+    "almaarij": 70, "maarij": 70,
+    "nuh": 71,
+    "aljinn": 72, "aljin": 72, "jinn": 72,
+    "almuzzammil": 73, "almuzammil": 73, "muzzammil": 73,
+    "almuddassir": 74, "almudasir": 74, "muddassir": 74,
+    "alqiyamah": 75, "qiyamah": 75,
+    "alinsan": 76, "insan": 76, "addahr": 76,
+    "almursalat": 77, "mursalat": 77,
+    // Juz 28
+    "almujadilah": 58, "almujadalah": 58,
+    "alhasyr": 59,
+    "almumtahanah": 60,
+    "assaff": 61, "asshaff": 61, "ashshaff": 61,
+    "aljumuah": 62, "jumuah": 62,
+    "almunafiqun": 63, "munafiqun": 63,
+    "attagabun": 64, "attaghabun": 64, "attaqabun": 64,
+    "attalaq": 65, "atthalaq": 65,
+    "attahrim": 66, "tahrim": 66
+  };
+
+  if (aliases[q]) {
+    const found = SURAH_LIST.find(s => s.id === aliases[q]);
+    if (found) return found;
+  }
+
+  return SURAH_LIST.find(s => clean(s.name).includes(q) || q.includes(clean(s.name))) || null;
+}
+
+export function getNextSurah(currentId: number) {
   if (currentId >= 78 && currentId < 114) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 114) return SURAH_LIST.find(s => s.id === 67); // to Juz 29
+  if (currentId === 114) return SURAH_LIST.find(s => s.id === 67); // from Juz 30 to Juz 29
   if (currentId >= 67 && currentId < 77) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 77) return SURAH_LIST.find(s => s.id === 58); // to Juz 28
+  if (currentId === 77) return SURAH_LIST.find(s => s.id === 58); // from Juz 29 to Juz 28
   if (currentId >= 58 && currentId < 66) return SURAH_LIST.find(s => s.id === currentId + 1);
   if (currentId === 66) return SURAH_LIST.find(s => s.id === 51); // to Juz 27
   if (currentId >= 51 && currentId < 57) return SURAH_LIST.find(s => s.id === currentId + 1);
@@ -99,7 +179,7 @@ export default function DailyInput() {
           };
           const lastEnd = extractLastNum(lastDetails.verse_end) || extractLastNum(lastDetails.verse_start) || 0;
           
-          const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === lastDetails.surah?.toLowerCase());
+          const surahInfo = findSurahByName(lastDetails.surah);
           
           if (shouldAdvance) {
             if (lastDetails.is_ujian || lastDetails.status === 'Ujian') {
@@ -109,7 +189,9 @@ export default function DailyInput() {
                   verse_start: '1',
                   verse_end: '',
                   is_ujian: false,
-                  status: 'Progressing'
+                  status: 'Progressing',
+                  grade: '',
+                  note: ''
                });
             } else if (surahInfo && lastEnd >= surahInfo.total_ayat) {
                const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
@@ -118,7 +200,9 @@ export default function DailyInput() {
                   verse_start: '1',
                   verse_end: '',
                   is_ujian: false,
-                  status: 'Progressing'
+                  status: 'Progressing',
+                  grade: '',
+                  note: ''
                });
             } else {
                setDetails({
@@ -126,7 +210,9 @@ export default function DailyInput() {
                  verse_start: lastEnd ? (lastEnd + 1).toString() : '',
                  verse_end: '',
                  is_ujian: false,
-                 status: 'Progressing'
+                 status: 'Progressing',
+                 grade: '',
+                 note: ''
                });
             }
           } else {
@@ -135,7 +221,9 @@ export default function DailyInput() {
               verse_start: lastDetails.verse_start || '',
               verse_end: lastDetails.verse_end || '',
               is_ujian: false,
-              status: 'Progressing'
+              status: 'Progressing',
+              grade: '',
+              note: ''
             });
           }
         } else if (type === 'ummi') {
@@ -259,15 +347,18 @@ export default function DailyInput() {
       let homework = '';
       let materiTitle = `Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
       
-      const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === d.surah?.toLowerCase());
+      const surahInfo = findSurahByName(d.surah);
+      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
       
       if (d.status === 'Ujian' || d.is_ujian) {
-         materiTitle = `*UJIAN SURAH ${d.surah}*`;
+         materiTitle = `*UJIAN SURAH ${d.surah?.toUpperCase() || ''}*`;
          if (isGoodGrade) {
             const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-            homework = nextSurah ? `Lulus Ujian! Lanjut ke Surah ${nextSurah.name} ayat 1` : 'Lulus Ujian!';
+            const nextSurahText = nextSurah ? `\n➡️ *Lanjut ke Surah ${nextSurah.name} (Ayat 1)*` : '';
+            reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: *Ujian Surah*\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (${d.grade === 'L' ? 'Lancar' : 'Cukup Lancar'})\n🎉 *Alhamdulillah, LULUS Ujian Surah ${d.surah}!*${nextSurahText}${noteText}`);
          } else {
             homework = `Mengulang Ujian Surah ${d.surah}`;
+            reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: *Ujian Surah*\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (Belum Lancar)\n📝 Tindak Lanjut: ${homework}${noteText}`);
          }
       } else {
          if (isGoodGrade) {
@@ -281,8 +372,8 @@ export default function DailyInput() {
          } else {
             homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
          }
+         reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: ${currentStatus}\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (${d.grade === 'L' ? 'Lancar' : d.grade === 'CL' ? 'Cukup Lancar' : 'Belum Lancar'})\n📝 PR: ${homework}${noteText}`);
       }
-      reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: ${currentStatus}\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}`);
     }
 
     // Ummi Segment
@@ -296,10 +387,8 @@ export default function DailyInput() {
       } else {
         homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
       }
-      reportSegments.push(`📚 *Metode Ummi*
-📖 Materi: Jilid ${d.level}, hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}
-⭐ Nilai: *${d.grade}*
-📝 PR: ${homework}`);
+      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
+      reportSegments.push(`📚 *Metode Ummi*\n📖 Materi: Jilid ${d.level}, hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}${noteText}`);
     }
 
     // Tilawah Segment
@@ -313,10 +402,8 @@ export default function DailyInput() {
       } else {
         homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
       }
-      reportSegments.push(`📚 *Tilawah/BTQ*
-📖 Materi: Juz ${d.juz}, Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}
-⭐ Nilai: *${d.grade}*
-📝 PR: ${homework}`);
+      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
+      reportSegments.push(`📚 *Tilawah/BTQ*\n📖 Materi: Juz ${d.juz}, Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}${noteText}`);
     }
 
     const message = `*LAPORAN SETORAN HARIAN*
@@ -370,13 +457,13 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
 
         let homework = '';
         let materiDesc = `${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
-        const surahInfo = SURAH_LIST.find(s => s.name.toLowerCase() === d.surah?.toLowerCase());
+        const surahInfo = findSurahByName(d.surah);
 
         if (d.status === 'Ujian' || d.is_ujian) {
            materiDesc = `UJIAN ${d.surah}`;
            if (isGoodGrade) {
               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-              homework = nextSurah ? `Lulus! Lanjut ${nextSurah.name} ayat 1` : 'Lulus!';
+              homework = nextSurah ? `🎉 Lulus! Lanjut ${nextSurah.name} ayat 1` : '🎉 Lulus!';
            } else {
               homework = `Mengulang Ujian ${d.surah}`;
            }
@@ -394,7 +481,8 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
            }
         }
 
-        depositNotes.push(`- [${currentStatus}] Hafalan: ${materiDesc} | Nilai: ${d.grade} | PR: ${homework}`);
+        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
+        depositNotes.push(`- [${currentStatus}] Hafalan: ${materiDesc} | Nilai: ${d.grade} | ${homework}${noteSnippet}`);
       }
       
       if (ummiData && ummiData.details && ummiData.details.grade) {
@@ -408,7 +496,8 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         } else {
           homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
         }
-        depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} | Nilai: ${d.grade} | PR: ${homework}`);
+        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
+        depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} | Nilai: ${d.grade} | PR: ${homework}${noteSnippet}`);
       }
       
       if (tilawahData && tilawahData.details && tilawahData.details.grade) {
@@ -422,7 +511,8 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
         } else {
           homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
         }
-        depositNotes.push(`- Tilawah: Juz ${d.juz} ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}`);
+        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
+        depositNotes.push(`- Tilawah: Juz ${d.juz} ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}${noteSnippet}`);
       }
       
       if (hasData) {
@@ -468,8 +558,25 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
     
     setIsSaving(true);
     try {
-      storage.saveDeposit(selectedStudent.id, type, date, details);
-      alert('Setoran berhasil disimpan!');
+      const detailsToSave = { ...details };
+      let customAlert = 'Setoran berhasil disimpan!';
+
+      if (type === 'hafalan') {
+        const isExam = details.status === 'Ujian' || details.is_ujian;
+        const isPassed = details.grade === 'L' || details.grade === 'CL';
+        if (isExam && isPassed && details.surah) {
+          const surahObj = findSurahByName(details.surah);
+          const nextSurahObj = surahObj ? getNextSurah(surahObj.id) : null;
+          if (nextSurahObj) {
+            detailsToSave.next_surah = nextSurahObj.name;
+            customAlert = `Alhamdulillah! Nilai ujian ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}) berhasil disimpan.\nSiswa LULUS Ujian Surah ${details.surah} dan otomatis lanjut ke Surah ${nextSurahObj.name}!`;
+          }
+        }
+      }
+
+      storage.saveDeposit(selectedStudent.id, type, date, detailsToSave);
+      setDetails(detailsToSave);
+      alert(customAlert);
     } catch (error) {
       console.error('Save error:', error);
       alert('Terjadi kesalahan saat menyimpan.');
@@ -772,12 +879,19 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
               <div className="bg-stone-50/30 p-6 lg:p-8 rounded-[2rem] border border-stone-200/40">
                   {type === 'hafalan' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    <datalist id="surah-datalist">
+                      {SURAH_LIST.map(s => (
+                        <option key={s.id} value={s.name} />
+                      ))}
+                    </datalist>
+
                     <div className="space-y-2.5">
                       <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nama Surat</label>
                       <input 
                         type="text"
+                        list="surah-datalist"
                         className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
-                        placeholder="Contoh: An-Naba"
+                        placeholder="Ketik atau pilih surat (contoh: An-Naba)"
                         value={details.surah || ''}
                         onChange={e => setDetails({...details, surah: e.target.value})}
                       />
@@ -817,8 +931,17 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                         />
                       </div>
                     </div>
-                    <div className="space-y-4 md:col-span-2 mt-4">
-                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Pencapaian Nilai</label>
+                    
+                    {/* Nilai Hafalan */}
+                    <div className="space-y-4 md:col-span-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Pencapaian Nilai</label>
+                        {(details.status === 'Ujian' || details.is_ujian) && (
+                          <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
+                            Mode Ujian Surah
+                          </span>
+                        )}
+                      </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                          {(['L', 'CL', 'BL'] as const).map(g => (
                            <button
@@ -828,16 +951,116 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                              className={cn(
                                "py-4 rounded-xl font-display font-bold border-2 transition-all flex flex-col items-center justify-center gap-1",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-lg scale-[1.02]" 
+                                ? (g === 'BL' ? "bg-rose-600 border-rose-600 text-white shadow-lg scale-[1.02]" : "bg-stone-950 border-stone-950 text-white shadow-lg scale-[1.02]")
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
                              <span className="text-xl">{g}</span>
-                             <span className="text-[8px] uppercase tracking-widest opacity-60">
+                             <span className="text-[8px] uppercase tracking-widest opacity-80">
                                {g === 'L' ? 'Lancar' : g === 'CL' ? 'Cukup Lancar' : 'Belum Lancar'}
                              </span>
                            </button>
                          ))}
+                      </div>
+                    </div>
+
+                    {/* Auto Next Surah Celebration Banner for Ujian */}
+                    {(() => {
+                      const isExam = details.status === 'Ujian' || details.is_ujian;
+                      const isPassed = details.grade === 'L' || details.grade === 'CL';
+                      if (!isExam || !isPassed) return null;
+                      const currentSurah = findSurahByName(details.surah);
+                      const nextSurah = currentSurah ? getNextSurah(currentSurah.id) : null;
+                      return (
+                        <div className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border-2 border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">🎉</span>
+                              <p className="text-xs font-black uppercase tracking-wider text-emerald-800">
+                                Alhamdulillah Siswa Lulus Ujian Surah {details.surah || ''}!
+                              </p>
+                            </div>
+                            <p className="text-sm font-bold text-stone-800">
+                              Surat Selanjutnya: <span className="text-emerald-700 underline font-black">{nextSurah ? nextSurah.name : 'Surat Berikutnya'}</span> (Ayat 1)
+                            </p>
+                            <p className="text-[11px] text-stone-500">
+                              Otomatis terisi di pesan WhatsApp dan setoran berikutnya.
+                            </p>
+                          </div>
+                          {nextSurah && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                // Save exam record first
+                                storage.saveDeposit(selectedStudent.id, 'hafalan', date, {
+                                  ...details,
+                                  next_surah: nextSurah.name
+                                });
+                                // Transition form directly to next surah
+                                setDetails({
+                                  surah: nextSurah.name,
+                                  verse_start: '1',
+                                  verse_end: '',
+                                  status: 'Progressing',
+                                  is_ujian: false,
+                                  grade: '',
+                                  note: ''
+                                });
+                                alert(`Ujian Surah ${details.surah} tersimpan lulus!\nForm otomatis beralih ke Surah ${nextSurah.name} ayat 1.`);
+                              }}
+                              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0 flex items-center gap-2"
+                            >
+                              <Sparkles size={14} />
+                              Lanjut Setor {nextSurah.name}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* Catatan Harian Hafalan - Placed directly below Nilai Hafalan */}
+                    <div className="space-y-2 md:col-span-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                          <FileText size={12} className="text-indigo-500" />
+                          Catatan Harian Hafalan <span className="text-stone-400 font-normal lowercase">(opsional / terkirim ke WA & rekap)</span>
+                        </label>
+                        {details.note && (
+                          <button 
+                            type="button"
+                            onClick={() => setDetails({...details, note: ''})}
+                            className="text-[10px] text-rose-500 hover:underline font-bold"
+                          >
+                            Kosongkan Catatan
+                          </button>
+                        )}
+                      </div>
+                      <textarea 
+                        rows={2}
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-3 text-sm font-medium placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all resize-none"
+                        placeholder="Contoh: Belum lancar di ayat 5-8 / Tajwid mad thabi'i perlu diperhatikan (bisa dikosongkan jika tidak ada catatan)"
+                        value={details.note || ''}
+                        onChange={e => setDetails({...details, note: e.target.value})}
+                      />
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {[
+                          details.grade === 'BL' ? 'Belum lancar, perlu dimaksimalkan muroja\'ah di rumah' : 'Alhamdulillah bacaan lancar dan makhraj tepat',
+                          'Perhatikan hukum tajwid (mad thabi\'i & dengung)',
+                          'Sering lupa di sambungan ayat, mohon didampingi',
+                          'Tingkatkan fokus dan ketelitian saat menyetor'
+                        ].map((chip, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setDetails({
+                              ...details, 
+                              note: details.note ? `${details.note}. ${chip}` : chip
+                            })}
+                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                          >
+                            + {chip}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -888,12 +1111,58 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                              className={cn(
                                "h-[60px] rounded-xl font-display font-bold border-2 transition-all flex items-center justify-center",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-lg" 
+                                ? (g === 'C' ? "bg-rose-600 border-rose-600 text-white shadow-lg" : "bg-stone-950 border-stone-950 text-white shadow-lg")
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
                              {g}
                            </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Catatan Harian Ummi - Placed directly below Nilai Ummi */}
+                    <div className="space-y-2 md:col-span-2 lg:col-span-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                          <FileText size={12} className="text-indigo-500" />
+                          Catatan Harian Ummi <span className="text-stone-400 font-normal lowercase">(opsional / terkirim ke WA & rekap)</span>
+                        </label>
+                        {details.note && (
+                          <button 
+                            type="button"
+                            onClick={() => setDetails({...details, note: ''})}
+                            className="text-[10px] text-rose-500 hover:underline font-bold"
+                          >
+                            Kosongkan Catatan
+                          </button>
+                        )}
+                      </div>
+                      <textarea 
+                        rows={2}
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-3 text-sm font-medium placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all resize-none"
+                        placeholder="Contoh: Makhraj huruf 'Ain & Ha perlu diperjelas / Panjang pendek 2 harakat (bisa dikosongkan jika tidak ada catatan)"
+                        value={details.note || ''}
+                        onChange={e => setDetails({...details, note: e.target.value})}
+                      />
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {[
+                          details.grade === 'C' ? 'Perlu banyak latihan membaca di rumah agar lebih lancar' : 'Lancar, makharijul huruf sangat baik',
+                          'Perhatikan panjang pendek (mad thabi\'i 2 harakat)',
+                          'Tanda waqaf dan jeda nafas perlu dilatih',
+                          'Perjelas bunyi harakat dhommah dan kasrah'
+                        ].map((chip, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setDetails({
+                              ...details, 
+                              note: details.note ? `${details.note}. ${chip}` : chip
+                            })}
+                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                          >
+                            + {chip}
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -919,6 +1188,7 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                       <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Nama Surat</label>
                       <input 
                         type="text"
+                        list="surah-datalist"
                         className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-4 text-base font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all"
                         placeholder="Contoh: Al-Baqarah"
                         value={details.surah || ''}
@@ -956,12 +1226,58 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                              className={cn(
                                "h-[60px] rounded-xl font-display font-bold border-2 transition-all flex items-center justify-center",
                                details.grade === g 
-                                ? "bg-stone-950 border-stone-950 text-white shadow-lg" 
+                                ? (g === 'C' ? "bg-rose-600 border-rose-600 text-white shadow-lg" : "bg-stone-950 border-stone-950 text-white shadow-lg")
                                 : "bg-white border-stone-100 text-stone-400 hover:border-stone-300 hover:text-stone-950"
                              )}
                            >
                              {g}
                            </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Catatan Harian Tilawah - Placed directly below Nilai Tilawah */}
+                    <div className="space-y-2 md:col-span-12">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                          <FileText size={12} className="text-indigo-500" />
+                          Catatan Harian Tilawah <span className="text-stone-400 font-normal lowercase">(opsional / terkirim ke WA & rekap)</span>
+                        </label>
+                        {details.note && (
+                          <button 
+                            type="button"
+                            onClick={() => setDetails({...details, note: ''})}
+                            className="text-[10px] text-rose-500 hover:underline font-bold"
+                          >
+                            Kosongkan Catatan
+                          </button>
+                        )}
+                      </div>
+                      <textarea 
+                        rows={2}
+                        className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-3 text-sm font-medium placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all resize-none"
+                        placeholder="Contoh: Perhatikan waqaf dan ibtida / Tartil dan intonasi tilawah (bisa dikosongkan jika tidak ada catatan)"
+                        value={details.note || ''}
+                        onChange={e => setDetails({...details, note: e.target.value})}
+                      />
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {[
+                          details.grade === 'C' ? 'Kelancaran tilawah perlu ditingkatkan di rumah' : 'Tilawah tartil dan fasih',
+                          'Perhatikan tanda waqaf & washol',
+                          'Jaga ketukan nada dan kejelasan makhraj huruf',
+                          'Latih pernafasan saat membaca ayat panjang'
+                        ].map((chip, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setDetails({
+                              ...details, 
+                              note: details.note ? `${details.note}. ${chip}` : chip
+                            })}
+                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                          >
+                            + {chip}
+                          </button>
                         ))}
                       </div>
                     </div>

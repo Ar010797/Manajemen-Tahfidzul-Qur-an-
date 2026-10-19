@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Search, Calendar, FileText, Save, Settings, X, ChevronRight } from 'lucide-react';
+import { Download, Search, Calendar, FileText, Save, Settings, X, ChevronRight, Sparkles, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
@@ -10,6 +10,44 @@ import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
 
 import { parseAndCalculateTotalHafalan } from '../lib/quranUtils';
+
+export function summarizeDailyNotesForStudent(studentId: string, deposits: any[]) {
+  const studentDeposits = deposits.filter(d => d.student_id === studentId);
+  if (!studentDeposits.length) return '';
+
+  const notesList: { type: string; date: string; note: string; context: string }[] = [];
+
+  studentDeposits.forEach(d => {
+    const details = d.details || {};
+    const note = (details.note || '').trim();
+    if (note) {
+      let context = '';
+      if (d.type === 'hafalan') {
+        const isUjian = details.status === 'Ujian' || details.is_ujian;
+        context = isUjian ? `Ujian ${details.surah || ''}` : `${details.surah || 'Hafalan'}`;
+      } else if (d.type === 'ummi') {
+        context = `Ummi Jilid ${details.level || ''}`;
+      } else if (d.type === 'tilawah') {
+        context = `Tilawah ${details.surah || ''}`;
+      }
+      notesList.push({ type: d.type, date: d.date, note, context });
+    }
+  });
+
+  if (notesList.length === 0) return '';
+
+  // Group unique notes per type
+  const hafalanNotes = Array.from(new Set(notesList.filter(n => n.type === 'hafalan').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
+  const ummiNotes = Array.from(new Set(notesList.filter(n => n.type === 'ummi').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
+  const tilawahNotes = Array.from(new Set(notesList.filter(n => n.type === 'tilawah').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
+
+  const parts: string[] = [];
+  if (hafalanNotes.length) parts.push(`Hafalan: ${hafalanNotes.join('; ')}`);
+  if (ummiNotes.length) parts.push(`Ummi: ${ummiNotes.join('; ')}`);
+  if (tilawahNotes.length) parts.push(`Tilawah: ${tilawahNotes.join('; ')}`);
+
+  return parts.join(' | ');
+}
 
 export default function MonthlyRecap() {
   const [halaqohs, setHalaqohs] = useState<any[]>([]);
@@ -204,10 +242,19 @@ export default function MonthlyRecap() {
 
     setRecapData(sortedStudentList);
 
-    // Fetch settings for each student
+    // Fetch settings for each student, auto-converting daily notes if monthly note is empty
     const settings: Record<string, any> = {};
     for (const student of studentList as any[]) {
-      settings[student.id] = storage.getRecapSettings(student.id, selectedMonth);
+      const existing = storage.getRecapSettings(student.id, selectedMonth);
+      if (!existing.notes || existing.notes.trim() === '') {
+        const autoNote = summarizeDailyNotesForStudent(student.id, data);
+        if (autoNote) {
+          existing.notes = autoNote;
+          // Automatically save so exports and subsequent reloads retain it
+          storage.saveRecapSettings(student.id, selectedMonth, existing.total_hafalan || '', autoNote);
+        }
+      }
+      settings[student.id] = existing;
     }
     setRecapSettings(settings);
     setLoading(false);
@@ -599,17 +646,50 @@ export default function MonthlyRecap() {
                       </div>
                     </div>
                     
-                    <div className="group">
-                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1 mb-2">Catatan Perkembangan Guru</label>
+                    <div className="group space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1">Catatan Perkembangan Guru</label>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const rawData = storage.getMonthlyRecapData(selectedMonth, selectedHalaqoh);
+                              const autoText = summarizeDailyNotesForStudent(editingStudent.id, rawData);
+                              if (autoText) {
+                                updateSettings(editingStudent.id, 'notes', autoText);
+                              } else {
+                                alert('Belum ada catatan harian tersimpan untuk siswa ini di bulan ' + selectedMonth);
+                              }
+                            }}
+                            className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all border border-indigo-100/60"
+                            title="Konversi otomatis dari seluruh catatan harian siswa bulan ini"
+                          >
+                            <Sparkles size={12} />
+                            Konversi dari Harian
+                          </button>
+                          {recapSettings[editingStudent.id]?.notes && (
+                            <button
+                              type="button"
+                              onClick={() => updateSettings(editingStudent.id, 'notes', '')}
+                              className="text-[10px] text-rose-500 hover:underline font-bold"
+                            >
+                              Kosongkan
+                            </button>
+                          )}
+                        </div>
+                      </div>
                       <textarea 
                         className={cn(
-                          "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-4 transition-all min-h-[120px] placeholder:text-stone-300",
+                          "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-4 transition-all min-h-[110px] placeholder:text-stone-300 resize-none",
                           theme.ring
                         )}
-                        placeholder="Tuliskan catatan kemajuan siswa bulan ini..."
+                        placeholder="Tuliskan catatan kemajuan siswa bulan ini atau klik 'Konversi dari Harian' (bisa dikosongkan jika tidak ada catatan)..."
                         value={recapSettings[editingStudent.id]?.notes || ''}
                         onChange={(e) => updateSettings(editingStudent.id, 'notes', e.target.value)}
                       />
+                      <p className="text-[10px] text-stone-400 italic">
+                        * Catatan ini terisi otomatis dari catatan harian siswa dan dapat dikosongkan atau diedit bebas.
+                      </p>
                     </div>
                   </div>
 
