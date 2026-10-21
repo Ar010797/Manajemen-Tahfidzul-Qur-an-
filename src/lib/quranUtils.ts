@@ -1,4 +1,4 @@
-// Auto-generated
+import { SURAH_LIST } from '../constants/surahs';
 
 export const juzData: Record<number, {name: string, start: number, end: number}[]> = {
   "1": [
@@ -740,202 +740,326 @@ export const juzData: Record<number, {name: string, start: number, end: number}[
 
 export const CURRICULUM_ORDER = [30, 29, 28, 27, 26, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 
-export function calculateTotalHafalanFromNameAndAyah(inputSurahStr: string, inputAyah: number, isUjian: boolean = false): { juz: number, surah: number, ayah: number } | null {
-  if (!inputSurahStr) return null;
-  const normalize = (s: string) => s.toLowerCase()
-    .replace(/qolam/g, 'qalam')
-    .replace(/takatsur/g, 'takaathur')
-    .replace(/muthoffifin/g, 'mutaffifin')
-    .replace(/muthaffifin/g, 'mutaffifin')
-    .replace(/ghosiyah/g, 'ghaashiya')
-    .replace(/ghoshiyah/g, 'ghaashiya')
-    .replace(/waqiah/g, 'waaqia')
-    .replace(/imron/g, 'imraan')
-    .replace(/maidah/g, 'maaida')
-    .replace(/baqoroh/g, 'baqara')
-    .replace(/syuro/g, 'shura')
-    .replace(/duha/g, 'dhuhaa')
-    .replace(/thoha/g, 'taahaa')
-    .replace(/jin/g, 'jinn')
-    .replace(/ashr/g, 'asr')
-    .replace(/kautsar/g, 'kawthar')
-    .replace(/lahab/g, 'masad')
-    .replace(/haqqoh/g, 'haaqqa')
-    .replace(/[^a-z]/g, '')
-    .replace(/ee/g, 'i')
-    .replace(/oo/g, 'u')
-    .replace(/o/g, 'a')
-    .replace(/ah$/g, 'a')
-    .replace(/thth/g, 'ts')
-    .replace(/sh/g, 'sy')
-    .replace(/dh/g, 'dz')
-    .replace(/th/g, 't')
-    .replace(/kh/g, 'k')
-    .replace(/gh/g, 'g')
-    .replace(/q/g, 'k')
-    .replace(/c/g, 'k')
-    .replace(/([a-z])\1+/g, '$1') // remove double letters
-    .replace(/aw/g, 'au'); 
+// Map of canonical aliases to Surah ID
+export const SURAH_ALIAS_TO_ID: Record<string, number> = {
+  // Juz 30 (IDs 78 to 114)
+  "anaba": 78, "annaba": 78, "naba": 78,
+  "naziat": 79, "annaziat": 79, "annazi'at": 79,
+  "abasa": 80,
+  "attakwir": 81, "takwir": 81,
+  "alinfitar": 82, "alinfitor": 82, "infitar": 82, "infitor": 82,
+  "almutaffifin": 83, "almuthaffifin": 83, "almuthoffifin": 83, "mutaffifin": 83, "muthaffifin": 83, "muthoffifin": 83,
+  "alinsyiqaq": 84, "alinsyiqoq": 84, "insyiqaq": 84, "insyiqoq": 84, "alinshiqaaq": 84,
+  "alburuj": 85, "buruj": 85, "alburooj": 85,
+  "attariq": 86, "atthariq": 86, "attoriq": 86, "tariq": 86, "thariq": 86,
+  "alala": 87, "al-ala": 87, "al'ala": 87, "ala": 87, "alalaa": 87,
+  "alghasyiyah": 88, "algosyiyah": 88, "alghosiyah": 88, "ghasyiyah": 88, "ghosiyah": 88, "alghaashiya": 88,
+  "alfajr": 89, "fajr": 89,
+  "albalad": 90, "balad": 90,
+  "asysyams": 91, "ashsyams": 91, "syams": 91,
+  "allail": 92, "lail": 92,
+  "adduha": 93, "addhuha": 93, "duha": 93, "dhuha": 93,
+  "asysyarh": 94, "alamnasyrah": 94, "insyirah": 94, "syarh": 94,
+  "attin": 95, "tin": 95,
+  "alalaq": 96, "alaq": 96,
+  "alqadr": 97, "alqodar": 97, "qadr": 97,
+  "albayyinah": 98, "albayinah": 98, "bayyinah": 98,
+  "azzalzalah": 99, "zalzalah": 99,
+  "aladiyat": 100, "al'adiyat": 100, "adiyat": 100,
+  "alqariah": 101, "al-qariah": 101, "qariah": 101,
+  "attakasur": 102, "attakatsur": 102, "takasur": 102, "takatsur": 102,
+  "alasr": 103, "al-asr": 103, "asr": 103, "ashr": 103,
+  "alhumazah": 104, "humazah": 104,
+  "alfil": 105, "fil": 105,
+  "quraisy": 106, "quraish": 106,
+  "almaun": 107, "al-maun": 107, "maun": 107,
+  "alkausar": 108, "alkautsar": 108, "kausar": 108, "kautsar": 108,
+  "alkafirun": 109, "kafirun": 109,
+  "annasr": 110, "nasr": 110,
+  "allahab": 111, "almasad": 111, "lahab": 111, "masad": 111,
+  "alikhlas": 112, "ikhlas": 112,
+  "alfalaq": 113, "falaq": 113,
+  "annas": 114, "nas": 114,
+  // Juz 29 (IDs 67 to 77)
+  "almulk": 67, "mulk": 67,
+  "alqalam": 68, "alqolam": 68, "qalam": 68, "qolam": 68,
+  "alhaqqah": 69, "alhaqqoh": 69, "haqqah": 69, "haqqoh": 69,
+  "almaarij": 70, "maarij": 70,
+  "nuh": 71,
+  "aljinn": 72, "aljin": 72, "jinn": 72, "jin": 72,
+  "almuzzammil": 73, "almuzammil": 73, "muzzammil": 73,
+  "almuddassir": 74, "almudasir": 74, "muddassir": 74,
+  "alqiyamah": 75, "qiyamah": 75,
+  "alinsan": 76, "insan": 76, "addahr": 76,
+  "almursalat": 77, "mursalat": 77,
+  // Juz 28 (IDs 58 to 66)
+  "almujadilah": 58, "almujadalah": 58, "mujadilah": 58, "mujadalah": 58,
+  "alhasyr": 59, "hasyr": 59,
+  "almumtahanah": 60, "mumtahanah": 60,
+  "assaff": 61, "asshaff": 61, "ashshaff": 61, "shaff": 61,
+  "aljumuah": 62, "jumuah": 62,
+  "almunafiqun": 63, "munafiqun": 63,
+  "attagabun": 64, "attaghabun": 64, "attaqabun": 64, "tagabun": 64,
+  "attalaq": 65, "atthalaq": 65, "talaq": 65, "thalaq": 65,
+  "attahrim": 66, "tahrim": 66,
+  // Juz 27 (IDs 51 to 57)
+  "azzariyat": 51, "adzdzariyat": 51, "zariyat": 51,
+  "attur": 52, "tur": 52,
+  "annajm": 53, "najm": 53,
+  "alqamar": 54, "qamar": 54,
+  "arrahman": 55, "rahman": 55,
+  "alwaqiah": 56, "waqiah": 56,
+  "alhadid": 57, "hadid": 57,
+  // Juz 26
+  "al-ahqaf": 46, "alahqaf": 46, "ahqaf": 46,
+  "muhammad": 47,
+  "alfath": 48, "fath": 48,
+  "alhujurat": 49, "hujurat": 49,
+  "qaf": 50,
+  // Common long surahs
+  "alfatihah": 1, "fatihah": 1,
+  "albaqarah": 2, "albaqoroh": 2, "baqarah": 2, "baqoroh": 2,
+  "aliimran": 3, "alimran": 3, "imran": 3, "imron": 3,
+  "annisa": 4, "nisa": 4,
+  "almaidah": 5, "maidah": 5,
+  "yasin": 36, "yasiin": 36
+};
 
-
-  const normalizedInput = normalize(inputSurahStr);
-  
-  // Find which Juz this surah and ayah belong to
-  let foundJuz = -1;
-  let surahListInJuz: any[] = [];
-  let foundSurahIndexInJuz = -1;
-  
-  // Pass 1: Exact match
-  for (let j = 1; j <= 30; j++) {
-    const sList = juzData[j];
-    for (let i = 0; i < sList.length; i++) {
-       const s = sList[i];
-       const n = normalize(s.name);
-       if (n === normalizedInput) {
-          if (isNaN(inputAyah) || (inputAyah >= s.start && inputAyah <= s.end)) {
-             foundJuz = j;
-             surahListInJuz = sList;
-             foundSurahIndexInJuz = i;
-             break;
-          }
-       }
-    }
-    if (foundJuz !== -1) break;
-  }
-
-  // Pass 2: Substring match (if exact match not found)
-  if (foundJuz === -1) {
-    let bestMatchScore = 0;
-    for (let j = 1; j <= 30; j++) {
-      const sList = juzData[j];
-      for (let i = 0; i < sList.length; i++) {
-         const s = sList[i];
-         const n = normalize(s.name);
-         if (n.includes(normalizedInput) || normalizedInput.includes(n)) {
-            if (isNaN(inputAyah) || (inputAyah >= s.start && inputAyah <= s.end)) {
-               // Prefer longer matches to avoid 'atur' matching 'takatur'
-               const score = Math.max(n.length, normalizedInput.length);
-               if (score > bestMatchScore) {
-                   bestMatchScore = score;
-                   foundJuz = j;
-                   surahListInJuz = sList;
-                   foundSurahIndexInJuz = i;
-               }
-            }
-         }
-      }
-    }
-  }
-  
-  // Pass 3: Fallback without ayah bounds checking
-  if (foundJuz === -1) {
-    let bestMatchScore = 0;
-    for (let j = 1; j <= 30; j++) {
-      const sList = juzData[j];
-      for (let i = 0; i < sList.length; i++) {
-         const s = sList[i];
-         const n = normalize(s.name);
-         if (n === normalizedInput || n.includes(normalizedInput) || normalizedInput.includes(n)) {
-            const score = (n === normalizedInput) ? 100 : Math.max(n.length, normalizedInput.length);
-            if (score > bestMatchScore) {
-                bestMatchScore = score;
-                foundJuz = j;
-                surahListInJuz = sList;
-                foundSurahIndexInJuz = i;
-            }
-         }
-      }
-    }
-  }
-
-  if (foundJuz === -1) return null;
-
-  // Calculate completed full Juz
-  const currIdx = CURRICULUM_ORDER.indexOf(foundJuz);
-  if (currIdx === -1) return null; // shouldn't happen
-  let completedJuzCount = currIdx;
-
-  // Calculate completed full surahs IN THIS JUZ
-  // According to prompt: "Pada Juz yang sedang berjalan, hitung jumlah Surat Penuh yang sudah diselesaikan sebelum surat yang sedang dihafal."
-  let completedSurahsInJuzCount = foundSurahIndexInJuz;
-
-  // Ayahs memorized in current surah in this juz
-  let ayahsMemorized = isNaN(inputAyah) ? 0 : (inputAyah - surahListInJuz[foundSurahIndexInJuz].start + 1);
-
-  if (isUjian) {
-      completedSurahsInJuzCount += 1;
-      ayahsMemorized = 0;
-      if (completedSurahsInJuzCount >= surahListInJuz.length) {
-          completedJuzCount += 1;
-          completedSurahsInJuzCount = 0;
-      }
-  }
-
-  return {
-    juz: completedJuzCount,
-    surah: completedSurahsInJuzCount,
-    ayah: ayahsMemorized > 0 ? ayahsMemorized : 0
-  };
+export function cleanSurahKey(s: string): string {
+  return (s || '').toLowerCase()
+    .replace(/^qs\.?\s*/i, '')
+    .replace(/^surah?\s*/i, '')
+    .replace(/[^a-z0-9]/g, '');
 }
 
-export function calculateTotalHafalanFromJuzOnly(juzNumber: number): { juz: number, surah: number, ayah: number } | null {
-  const currIdx = CURRICULUM_ORDER.indexOf(juzNumber);
-  if (currIdx === -1) return null;
-  // If they just say 'Juz 3', we assume they finished the previous juzes and are currently in this juz (0 surah, 0 ayah)
-  // Or maybe they just finished it? Usually "Juz 3" means they are ON juz 3. Let's just say completed Juz is currIdx
+export function findSurahObj(input: string): { id: number; name: string; total_ayat: number } | null {
+  if (!input) return null;
+  const key = cleanSurahKey(input);
+  if (!key) return null;
+
+  if (SURAH_ALIAS_TO_ID[key]) {
+    const s = SURAH_LIST.find(x => x.id === SURAH_ALIAS_TO_ID[key]);
+    if (s) return s;
+  }
+
+  // Exact match on canonical list
+  const exact = SURAH_LIST.find(s => cleanSurahKey(s.name) === key);
+  if (exact) return exact;
+
+  // Substring match
+  const match = SURAH_LIST.find(s => {
+    const sk = cleanSurahKey(s.name);
+    return sk.includes(key) || key.includes(sk);
+  });
+  return match || null;
+}
+
+/**
+ * Returns curriculum index (1-based progression):
+ * - 1 to 37: Juz 30 (1 = An-Naba, 7 = Al-Insyiqaq, 19 = Al-'Alaq, 37 = An-Nas)
+ * - 38 to 48: Juz 29 (38 = Al-Mulk, 40 = Al-Haqqah, 48 = Al-Mursalat)
+ * - 49 to 57: Juz 28 (49 = Al-Mujadilah, 54 = Al-Munafiqun, 57 = At-Tahrim)
+ * - 58 to 64: Juz 27 (58 = Az-Zariyat, 64 = Al-Hadid)
+ * - 65+: Higher Juzes / Juz 1-26
+ * - 999: Mutqin / Lulus Ujian
+ */
+export function getCurriculumSurahIndex(rawText: string): number {
+  if (!rawText || rawText === 'Belum Ada Data' || rawText === 'Surah -' || rawText === '-') return 0;
+  
+  const text = rawText.toLowerCase().trim();
+  
+  if (/mutqin|lulus mutqin/i.test(text)) return 999;
+  
+  // Explicit Juz completed mentions
+  if (/\b(?:4|empat)\s*juz\b/i.test(text) || /selesai\s*(?:juz\s*)?27/i.test(text)) return 64;
+  if (/\b(?:3|tiga)\s*juz\b/i.test(text) || /selesai\s*(?:juz\s*)?28/i.test(text)) return 57;
+  if (/\b(?:2|dua)\s*juz\b/i.test(text) || /selesai\s*(?:juz\s*)?29/i.test(text)) return 48;
+  if (/\b(?:1|satu)\s*juz\b/i.test(text) || /selesai\s*(?:juz\s*)?30/i.test(text)) return 37;
+
+  // Pattern "X surat" (e.g. "7 surat", "1 Juz 3 surat")
+  const juzSuratMatch = text.match(/(\d+)\s*juz\s*(\d+)\s*surat/i);
+  if (juzSuratMatch) {
+    const j = parseInt(juzSuratMatch[1]);
+    const s = parseInt(juzSuratMatch[2]);
+    if (j === 1) return Math.min(48, 37 + s);
+    if (j === 2) return Math.min(57, 48 + s);
+    if (j === 3) return Math.min(64, 57 + s);
+  }
+  
+  const justSuratMatch = text.match(/^(\d+)\s*surat/i);
+  if (justSuratMatch) {
+    const s = parseInt(justSuratMatch[1]);
+    if (s > 0 && s <= 37) return s;
+  }
+
+  // Extract surah and try matching
+  let cleanText = text
+    .replace(/^j(?:uz)?\s*\d+\s+/i, '')
+    .replace(/^surah?\s*/i, '')
+    .replace(/ayat\s*\d+(?:-\d+)?/i, '')
+    .replace(/\d+(?:-\d+)?$/, '')
+    .trim();
+
+  const surahObj = findSurahObj(cleanText);
+  if (!surahObj) {
+    // If text mentions just Juz
+    if (/juz\s*30/i.test(text)) return 37;
+    if (/juz\s*29/i.test(text)) return 48;
+    if (/juz\s*28/i.test(text)) return 57;
+    if (/juz\s*27/i.test(text)) return 64;
+    return 0;
+  }
+
+  const id = surahObj.id;
+  if (id >= 78 && id <= 114) {
+    return (id - 78) + 1; // 1 to 37
+  }
+  if (id >= 67 && id <= 77) {
+    return 37 + (id - 67) + 1; // 38 to 48
+  }
+  if (id >= 58 && id <= 66) {
+    return 48 + (id - 58) + 1; // 49 to 57
+  }
+  if (id >= 51 && id <= 57) {
+    return 57 + (id - 51) + 1; // 58 to 64
+  }
+  if (id >= 46 && id <= 50) {
+    return 64 + (id - 46) + 1; // 65 to 69
+  }
+  if (id >= 1 && id <= 45) {
+    return 69 + id; // 70+
+  }
+
+  return 0;
+}
+
+export function calculateTotalHafalanFromNameAndAyah(
+  inputSurahStr: string,
+  inputAyah: number,
+  isUjian: boolean = false
+): { juz: number; surah: number; ayah: number } | null {
+  if (!inputSurahStr) return null;
+
+  const surahObj = findSurahObj(inputSurahStr);
+  if (!surahObj) return null;
+
+  const id = surahObj.id;
+  const isFull = isUjian || isNaN(inputAyah) || inputAyah >= surahObj.total_ayat;
+
+  // Juz 30: Surah 78 (An-Naba) to 114 (An-Nas)
+  if (id >= 78 && id <= 114) {
+    const priorCompleted = id - 78;
+    if (isFull) {
+      const completed = priorCompleted + 1;
+      if (completed >= 37) {
+        return { juz: 1, surah: 0, ayah: 0 };
+      }
+      return { juz: 0, surah: completed, ayah: 0 };
+    }
+    return { juz: 0, surah: priorCompleted, ayah: inputAyah > 0 ? inputAyah : 0 };
+  }
+
+  // Juz 29: Surah 67 (Al-Mulk) to 77 (Al-Mursalat)
+  if (id >= 67 && id <= 77) {
+    const priorCompleted = id - 67;
+    if (isFull) {
+      const completed = priorCompleted + 1;
+      if (completed >= 11) {
+        return { juz: 2, surah: 0, ayah: 0 };
+      }
+      return { juz: 1, surah: completed, ayah: 0 };
+    }
+    return { juz: 1, surah: priorCompleted, ayah: inputAyah > 0 ? inputAyah : 0 };
+  }
+
+  // Juz 28: Surah 58 (Al-Mujadilah) to 66 (At-Tahrim)
+  if (id >= 58 && id <= 66) {
+    const priorCompleted = id - 58;
+    if (isFull) {
+      const completed = priorCompleted + 1;
+      if (completed >= 9) {
+        return { juz: 3, surah: 0, ayah: 0 };
+      }
+      return { juz: 2, surah: completed, ayah: 0 };
+    }
+    return { juz: 2, surah: priorCompleted, ayah: inputAyah > 0 ? inputAyah : 0 };
+  }
+
+  // Juz 27: Surah 51 (Az-Zariyat) to 57 (Al-Hadid)
+  if (id >= 51 && id <= 57) {
+    const priorCompleted = id - 51;
+    if (isFull) {
+      const completed = priorCompleted + 1;
+      if (completed >= 7) {
+        return { juz: 4, surah: 0, ayah: 0 };
+      }
+      return { juz: 3, surah: completed, ayah: 0 };
+    }
+    return { juz: 3, surah: priorCompleted, ayah: inputAyah > 0 ? inputAyah : 0 };
+  }
+
+  // Juz 26: Surah 46 to 50
+  if (id >= 46 && id <= 50) {
+    const priorCompleted = id - 46;
+    if (isFull) {
+      const completed = priorCompleted + 1;
+      if (completed >= 5) {
+        return { juz: 5, surah: 0, ayah: 0 };
+      }
+      return { juz: 4, surah: completed, ayah: 0 };
+    }
+    return { juz: 4, surah: priorCompleted, ayah: inputAyah > 0 ? inputAyah : 0 };
+  }
+
+  // Long surahs from Juz 1-25 (Al-Baqarah, Ali 'Imran, etc.)
   return {
-    juz: currIdx,
-    surah: 0,
-    ayah: 0
+    juz: 5,
+    surah: id,
+    ayah: isNaN(inputAyah) ? 0 : inputAyah
   };
 }
 
 export function parseAndCalculateTotalHafalan(hafalanAkhStr: string): string {
-    if (!hafalanAkhStr || hafalanAkhStr === '-') return '';
-    // Expected format e.g. "Al-Mulk 5-6" or "Al Mulk 5"
-    // Extract surah and final ayah. If range, get the end.
-    let surahStr = hafalanAkhStr;
-    let ayah = NaN;
-    
-    let isUjian = false;
-    if (/ujian/i.test(surahStr)) {
-        isUjian = true;
-        surahStr = surahStr.replace(/ujian/ig, '').trim();
-    }
-    
-    // Check if it's explicitly JUST a juz
-    let juzOnlyMatch = surahStr.trim().match(/^(?:j|juz)\s*(\d+)$/i);
-    let result = null;
+  if (!hafalanAkhStr || hafalanAkhStr === '-' || hafalanAkhStr === 'Belum Ada Data') return '';
+  const text = hafalanAkhStr.trim();
 
-    if (juzOnlyMatch) {
-       result = calculateTotalHafalanFromJuzOnly(parseInt(juzOnlyMatch[1]));
-       if (result && isUjian) {
-           result.juz += 1; // Finished this juz
-       }
-    } else {
-       let ayahMatch = surahStr.match(/(?:^|\s)(\d+)(?:-(\d+))?$/);
-       if (ayahMatch && !surahStr.toLowerCase().startsWith('juz ' + ayahMatch[1])) {
-          ayah = parseInt(ayahMatch[2] || ayahMatch[1]);
-          surahStr = surahStr.substring(0, ayahMatch.index).trim();
-       }
-       
-       // clean up surahStr if it has JUZ part "J29 Al-Mulk"
-       surahStr = surahStr.replace(/^J\d+\s+/, '').trim();
-       surahStr = surahStr.replace(/^Juz \d+\s+/, '').trim();
+  // If already clean and structured (e.g. "1 Juz", "2 Juz", "7 surat", "1 Juz 3 surat")
+  if (/^\d+\s*juz$/i.test(text)) return text;
+  if (/^\d+\s*juz\s+\d+\s*surat$/i.test(text)) return text;
+  if (/^\d+\s*surat$/i.test(text)) return text;
 
-       result = calculateTotalHafalanFromNameAndAyah(surahStr, ayah, isUjian);
-    }
+  // Handle explicit Juz mentions
+  if (/^juz\s*30(?:\s*selesai)?$/i.test(text) || /^selesai\s*(?:juz\s*)?30$/i.test(text)) return '1 Juz';
+  if (/^juz\s*29(?:\s*selesai)?$/i.test(text) || /^selesai\s*(?:juz\s*)?29$/i.test(text)) return '2 Juz';
+  if (/^juz\s*28(?:\s*selesai)?$/i.test(text) || /^selesai\s*(?:juz\s*)?28$/i.test(text)) return '3 Juz';
+  if (/^juz\s*27(?:\s*selesai)?$/i.test(text) || /^selesai\s*(?:juz\s*)?27$/i.test(text)) return '4 Juz';
 
-    if (!result) return hafalanAkhStr; // Return original string instead of empty so it's never suspiciously blank
-    
-    let parts = [];
-    if (result.juz > 0) parts.push(`${result.juz} Juz`);
-    if (result.surah > 0) parts.push(`${result.surah} surat`);
-    if (result.ayah > 0) parts.push(`${result.ayah} ayat`);
-    
-    if (parts.length === 0) {
-       // if all 0, e.g. An-Naba, we can say "0 Juz" or the original text
-       return result.juz === 0 && result.surah === 0 && result.ayah === 0 ? hafalanAkhStr : '0 Juz';
-    }
-    return parts.join(' ');
+  let surahStr = text;
+  let isUjian = /ujian/i.test(surahStr);
+  surahStr = surahStr.replace(/ujian/ig, '').trim();
+
+  // Strip Juz prefixes like "J30 ", "Juz 30 ", "J29 ", "Juz 29 "
+  surahStr = surahStr.replace(/^J\d+\s+/i, '').replace(/^Juz\s*\d+\s+/i, '').trim();
+
+  // Extract ayah from end e.g. "Al-Insyiqaq 1-25" or "An-Naba 40"
+  let ayah = NaN;
+  const ayahMatch = surahStr.match(/(?:ayat\s*|\s|^)(\d+)(?:\s*-\s*(\d+))?$/i);
+  if (ayahMatch) {
+    ayah = parseInt(ayahMatch[2] || ayahMatch[1]);
+    surahStr = surahStr.substring(0, ayahMatch.index).trim();
+  }
+
+  const result = calculateTotalHafalanFromNameAndAyah(surahStr, ayah, isUjian);
+  if (!result) return hafalanAkhStr;
+
+  const parts: string[] = [];
+  if (result.juz > 0) parts.push(`${result.juz} Juz`);
+  if (result.surah > 0) parts.push(`${result.surah} surat`);
+  if (result.ayah > 0) parts.push(`${result.ayah} ayat`);
+
+  if (parts.length === 0) {
+    return result.juz === 0 && result.surah === 0 && result.ayah === 0 ? '0 Juz' : hafalanAkhStr;
+  }
+  return parts.join(' ');
 }
+

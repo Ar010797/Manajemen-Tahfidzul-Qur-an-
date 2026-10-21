@@ -144,6 +144,87 @@ export function getNextSurah(currentId: number) {
   return null;
 }
 
+// Level-specific note recommendations for Ummi method
+export const UMMI_LEVEL_NOTES: Record<string, { label: string; chips: string[]; remediation: string }> = {
+  '1': {
+    label: 'Jilid 1 (Mengenal Huruf Hijaiyah Tunggal & Fathah)',
+    remediation: 'Perlu bimbingan intensif pengenalan huruf hijaiyah di rumah',
+    chips: [
+      'Alhamdulillah lancar mengenal huruf hijaiyah',
+      'Bedakan huruf serupa (ba, ta, tsa)',
+      'Perjelas makhraj jim, ha, kho',
+      'Jaga ketukan stabil 1 harakat',
+      'Jangan dieja, baca langsung tegas'
+    ]
+  },
+  '2': {
+    label: 'Jilid 2 (Mad Thabi\'i & Harakat Kasrah/Dhommah)',
+    remediation: 'Sering keliru panjang pendek, perlu muroja\'ah mad di rumah',
+    chips: [
+      'Alhamdulillah mad thabi\'i 2 harakat stabil',
+      'Perhatikan panjang pendek (mad 2 harakat)',
+      'Perjelas bunyi kasrah (i) dan dhommah (u)',
+      'Jangan memanjangkan huruf berharakat pendek',
+      'Jaga ketukan tempo membaca tetap teratur'
+    ]
+  },
+  '3': {
+    label: 'Jilid 3 (Sukun, Qalqalah & Tasydid)',
+    remediation: 'Masih ragu huruf sukun/qalqalah, perlu latihan di rumah',
+    chips: [
+      'Sukun dan tasydid terbaca jelas & mantap',
+      'Qalqalah (baju di thoko) harus mantul tegas',
+      'Huruf sukun jangan terseret atau membal',
+      'Perjelas makhraj huruf bersukun (\'ain, ha, kho)',
+      'Tekan tasydid 1 ketukan dengan mantap'
+    ]
+  },
+  '4': {
+    label: 'Jilid 4 (Nun/Mim Sukun, Tanwin & Dengung)',
+    remediation: 'Dengung belum ditahan 2 harakat, perlu latihan di rumah',
+    chips: [
+      'Hukum nun sukun & dengung (ghunnah) sangat baik',
+      'Tahan dengung (ghunnah) sempurna 2 harakat',
+      'Perhatikan perbedaan ikhfa dan idgham',
+      'Mim sukun jangan terburu-buru dilepas',
+      'Latih kelancaran membaca sambungan kata'
+    ]
+  },
+  '5': {
+    label: 'Jilid 5 (Waqaf, Ibtida\' & Ayat Panjang)',
+    remediation: 'Nafas sering terputus di tengah ayat, perlu latihan di rumah',
+    chips: [
+      'Waqaf dan ibtida\' sudah tepat & tartil',
+      'Perhatikan tanda waqaf & washol',
+      'Atur jeda nafas, jangan berhenti di tengah kata',
+      'Mulai kembali bacaan dari kalimat yang tepat',
+      'Latih pernafasan pada kalimat panjang'
+    ]
+  },
+  '6': {
+    label: 'Jilid 6 (Mad Far\'i / Panjang 4-5 Harakat & Rasm Utsmani)',
+    remediation: 'Belum konsisten mad 4-5 harakat, perlu latihan di rumah',
+    chips: [
+      'Mad wajib & jaiz terbaca sempurna 4-5 harakat',
+      'Bedakan panjang 2 harakat dan 4-5 harakat',
+      'Kuasai fawatihussuwar (huruf potong awal surat)',
+      'Perhatikan tanda bendera/coret panjang',
+      'Fashohah dan makhraj semakin matang'
+    ]
+  },
+  'Al-Quran': {
+    label: 'Al-Qur\'an / Ghorib & Tajwid',
+    remediation: 'Perlu bimbingan khusus bacaan ghorib & tajwid di rumah',
+    chips: [
+      'Tilawah tartil, fasih, dan makhraj mutqin',
+      'Kuasai bacaan ghorib (saktah, imalah, tashil)',
+      'Terapkan seluruh kaidah hukum tajwid',
+      'Jaga ketukan irama tartil Al-Qur\'an',
+      'Perhatikan kesempurnaan sifatul huruf'
+    ]
+  }
+};
+
 export default function DailyInput() {
   const [students, setStudents] = useState<any[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
@@ -1042,25 +1123,66 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                         value={details.note || ''}
                         onChange={e => setDetails({...details, note: e.target.value})}
                       />
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {[
-                          details.grade === 'BL' ? 'Belum lancar, perlu dimaksimalkan muroja\'ah di rumah' : 'Alhamdulillah bacaan lancar dan makhraj tepat',
-                          'Perhatikan hukum tajwid (mad thabi\'i & dengung)',
-                          'Sering lupa di sambungan ayat, mohon didampingi',
-                          'Tingkatkan fokus dan ketelitian saat menyetor'
-                        ].map((chip, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setDetails({
-                              ...details, 
-                              note: details.note ? `${details.note}. ${chip}` : chip
-                            })}
-                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
-                          >
-                            + {chip}
-                          </button>
-                        ))}
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/60 inline-flex items-center gap-1">
+                            <Sparkles size={11} className="text-indigo-600" />
+                            {details.status === 'Ujian' || details.is_ujian 
+                              ? 'Pilihan Catatan Ujian Surat:' 
+                              : 'Pilihan Catatan Cepat Hafalan:'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(() => {
+                            const isExam = details.status === 'Ujian' || details.is_ujian;
+                            const chips: string[] = [];
+                            if (isExam) {
+                              if (details.grade === 'L' || details.grade === 'CL') {
+                                chips.push(
+                                  'Alhamdulillah lulus ujian surat dengan baik',
+                                  'Lulus ujian lancar, siap lanjut surat berikutnya',
+                                  'Tajwid dan makhraj saat ujian sangat baik'
+                                );
+                              } else if (details.grade === 'BL') {
+                                chips.push(
+                                  'Ujian belum tuntas, perlu muroja\'ah intensif di rumah',
+                                  'Sering terhenti di sambungan ayat saat ujian',
+                                  'Perlu bimbingan mandiri sebelum mengulang ujian'
+                                );
+                              } else {
+                                chips.push(
+                                  'Lulus ujian lancar, siap lanjut surat berikutnya',
+                                  'Ujian belum tuntas, perlu muroja\'ah di rumah'
+                                );
+                              }
+                            } else {
+                              if (details.grade === 'BL') {
+                                chips.push('Belum lancar, perlu dimaksimalkan muroja\'ah di rumah');
+                              } else {
+                                chips.push('Alhamdulillah bacaan lancar dan makhraj tepat');
+                              }
+                              chips.push(
+                                'Perhatikan sambungan ayat tengah ke akhir',
+                                'Perhatikan hukum tajwid (mad thabi\'i & dengung)',
+                                'Sering lupa sambung ayat, mohon didampingi',
+                                'Tingkatkan fokus dan ketelitian saat menyetor'
+                              );
+                            }
+                            return chips.map((chip, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setDetails({
+                                  ...details, 
+                                  note: details.note ? `${details.note}. ${chip}` : chip
+                                })}
+                                className="text-[10px] bg-stone-100 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                              >
+                                + {chip}
+                              </button>
+                            ));
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1125,7 +1247,7 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                     <div className="space-y-2 md:col-span-2 lg:col-span-3">
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                          <FileText size={12} className="text-indigo-500" />
+                          <FileText size={12} className="text-emerald-500" />
                           Catatan Harian Ummi <span className="text-stone-400 font-normal lowercase">(opsional / terkirim ke WA & rekap)</span>
                         </label>
                         {details.note && (
@@ -1141,29 +1263,57 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                       <textarea 
                         rows={2}
                         className="w-full bg-white border border-stone-200/60 rounded-xl px-5 py-3 text-sm font-medium placeholder:text-stone-300 focus:outline-none focus:ring-4 ring-stone-900/5 transition-all resize-none"
-                        placeholder="Contoh: Makhraj huruf 'Ain & Ha perlu diperjelas / Panjang pendek 2 harakat (bisa dikosongkan jika tidak ada catatan)"
+                        placeholder={details.level ? `Catatan harian untuk Ummi Jilid ${details.level} (klik pilihan cepat di bawah)...` : "Pilih Jilid di atas untuk menampilkan pilihan catatan sesuai tingkat jilid (opsional)"}
                         value={details.note || ''}
                         onChange={e => setDetails({...details, note: e.target.value})}
                       />
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {[
-                          details.grade === 'C' ? 'Perlu banyak latihan membaca di rumah agar lebih lancar' : 'Lancar, makharijul huruf sangat baik',
-                          'Perhatikan panjang pendek (mad thabi\'i 2 harakat)',
-                          'Tanda waqaf dan jeda nafas perlu dilatih',
-                          'Perjelas bunyi harakat dhommah dan kasrah'
-                        ].map((chip, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setDetails({
-                              ...details, 
-                              note: details.note ? `${details.note}. ${chip}` : chip
-                            })}
-                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
-                          >
-                            + {chip}
-                          </button>
-                        ))}
+                      
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100/60 inline-flex items-center gap-1">
+                            <Sparkles size={11} className="text-emerald-600" />
+                            {details.level && UMMI_LEVEL_NOTES[String(details.level)] 
+                              ? `Pilihan Catatan ${UMMI_LEVEL_NOTES[String(details.level)].label}`
+                              : 'Pilihan Catatan (Pilih Jilid di atas untuk rekomendasi sesuai tingkatan):'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(() => {
+                            const lvl = String(details.level || '');
+                            const config = UMMI_LEVEL_NOTES[lvl];
+                            const chips: string[] = [];
+                            if (config) {
+                              if (details.grade === 'C') {
+                                chips.push(config.remediation);
+                              }
+                              chips.push(...config.chips);
+                            } else {
+                              if (details.grade === 'C') {
+                                chips.push('Perlu banyak latihan membaca di rumah agar lebih lancar');
+                              } else {
+                                chips.push('Lancar, makharijul huruf sangat baik');
+                              }
+                              chips.push(
+                                'Perhatikan panjang pendek (mad thabi\'i 2 harakat)',
+                                'Tanda waqaf dan jeda nafas perlu dilatih',
+                                'Perjelas bunyi harakat dhommah dan kasrah'
+                              );
+                            }
+                            return chips.map((chip, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setDetails({
+                                  ...details, 
+                                  note: details.note ? `${details.note}. ${chip}` : chip
+                                })}
+                                className="text-[10px] bg-stone-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                              >
+                                + {chip}
+                              </button>
+                            ));
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1260,25 +1410,62 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                         value={details.note || ''}
                         onChange={e => setDetails({...details, note: e.target.value})}
                       />
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {[
-                          details.grade === 'C' ? 'Kelancaran tilawah perlu ditingkatkan di rumah' : 'Tilawah tartil dan fasih',
-                          'Perhatikan tanda waqaf & washol',
-                          'Jaga ketukan nada dan kejelasan makhraj huruf',
-                          'Latih pernafasan saat membaca ayat panjang'
-                        ].map((chip, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setDetails({
-                              ...details, 
-                              note: details.note ? `${details.note}. ${chip}` : chip
-                            })}
-                            className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
-                          >
-                            + {chip}
-                          </button>
-                        ))}
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100/60 inline-flex items-center gap-1">
+                            <Sparkles size={11} className="text-blue-600" />
+                            {details.juz ? `Pilihan Catatan Tilawah (Juz ${details.juz}):` : 'Pilihan Catatan Cepat Tilawah:'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(() => {
+                            const juzNum = parseInt(details.juz || '0', 10);
+                            const chips: string[] = [];
+                            if (details.grade === 'C') {
+                              chips.push('Kelancaran tilawah perlu ditingkatkan di rumah');
+                            } else {
+                              chips.push('Tilawah tartil, makhraj dan tajwid sangat baik');
+                            }
+                            if (juzNum >= 1 && juzNum <= 10) {
+                              chips.push(
+                                'Perhatikan tanda waqaf lazim dan jim',
+                                'Perjelas makhraj huruf tenggorokan (\'Ain, Ha, Ghain)',
+                                'Latih jeda nafas pada ayat panjang'
+                              );
+                            } else if (juzNum >= 11 && juzNum <= 20) {
+                              chips.push(
+                                'Tartil dan ketukan dengung terjaga dengan baik',
+                                'Perhatikan tanda waqaf mutlaq & washol',
+                                'Jaga irama tartil tetap konsisten'
+                              );
+                            } else if (juzNum >= 21 && juzNum <= 30) {
+                              chips.push(
+                                'Tilawah fasih dan mutqin',
+                                'Perhatikan hukum ro\' tafkhim & tarqiq',
+                                'Konsistenkan panjang mad 2 dan 4-5 harakat'
+                              );
+                            } else {
+                              chips.push(
+                                'Perhatikan tanda waqaf & washol',
+                                'Jaga ketukan nada dan kejelasan makhraj huruf',
+                                'Latih pernafasan saat membaca ayat panjang'
+                              );
+                            }
+                            return chips.map((chip, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setDetails({
+                                  ...details, 
+                                  note: details.note ? `${details.note}. ${chip}` : chip
+                                })}
+                                className="text-[10px] bg-stone-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-stone-600 px-2.5 py-1 rounded-lg transition-all border border-stone-200/50"
+                              >
+                                + {chip}
+                              </button>
+                            ));
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>

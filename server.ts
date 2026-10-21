@@ -9,6 +9,9 @@ import path from "path";
 
 dotenv.config();
 
+// HMR is disabled in AI Studio environment to prevent WebSocket closed errors in preview iframe
+process.env.DISABLE_HMR = 'true';
+
 const JWT_SECRET = process.env.JWT_SECRET || "tahfidz-secret-2026";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
@@ -138,7 +141,10 @@ async function startServer() {
   // Vite setup
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);

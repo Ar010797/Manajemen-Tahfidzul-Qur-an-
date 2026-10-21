@@ -11,42 +11,153 @@ import { storage } from '../services/storage';
 
 import { parseAndCalculateTotalHafalan } from '../lib/quranUtils';
 
-export function summarizeDailyNotesForStudent(studentId: string, deposits: any[]) {
+export function summarizeDailyNotesForStudent(studentId: string, deposits: any[]): string {
   const studentDeposits = deposits.filter(d => d.student_id === studentId);
   if (!studentDeposits.length) return '';
 
-  const notesList: { type: string; date: string; note: string; context: string }[] = [];
+  const hafalanNotes: { note: string; isExam: boolean; surah: string }[] = [];
+  const ummiNotes: { note: string; level: string }[] = [];
+  const tilawahNotes: { note: string }[] = [];
 
   studentDeposits.forEach(d => {
     const details = d.details || {};
     const note = (details.note || '').trim();
-    if (note) {
-      let context = '';
-      if (d.type === 'hafalan') {
-        const isUjian = details.status === 'Ujian' || details.is_ujian;
-        context = isUjian ? `Ujian ${details.surah || ''}` : `${details.surah || 'Hafalan'}`;
-      } else if (d.type === 'ummi') {
-        context = `Ummi Jilid ${details.level || ''}`;
-      } else if (d.type === 'tilawah') {
-        context = `Tilawah ${details.surah || ''}`;
-      }
-      notesList.push({ type: d.type, date: d.date, note, context });
+    if (!note) return;
+
+    if (d.type === 'hafalan') {
+      hafalanNotes.push({
+        note,
+        isExam: Boolean(details.status === 'Ujian' || details.is_ujian),
+        surah: details.surah || ''
+      });
+    } else if (d.type === 'ummi') {
+      ummiNotes.push({
+        note,
+        level: details.level ? String(details.level) : ''
+      });
+    } else if (d.type === 'tilawah') {
+      tilawahNotes.push({ note });
     }
   });
 
-  if (notesList.length === 0) return '';
-
-  // Group unique notes per type
-  const hafalanNotes = Array.from(new Set(notesList.filter(n => n.type === 'hafalan').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
-  const ummiNotes = Array.from(new Set(notesList.filter(n => n.type === 'ummi').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
-  const tilawahNotes = Array.from(new Set(notesList.filter(n => n.type === 'tilawah').map(n => n.context ? `${n.context}: ${n.note}` : n.note)));
+  if (!hafalanNotes.length && !ummiNotes.length && !tilawahNotes.length) return '';
 
   const parts: string[] = [];
-  if (hafalanNotes.length) parts.push(`Hafalan: ${hafalanNotes.join('; ')}`);
-  if (ummiNotes.length) parts.push(`Ummi: ${ummiNotes.join('; ')}`);
-  if (tilawahNotes.length) parts.push(`Tilawah: ${tilawahNotes.join('; ')}`);
 
-  return parts.join(' | ');
+  // 1. Hafalan compact summary (singkat agar kolom tabel tidak melebar)
+  if (hafalanNotes.length) {
+    const allNotesText = hafalanNotes.map(n => n.note).join(' ').toLowerCase();
+    const hasExam = hafalanNotes.some(n => n.isExam);
+    const lastExam = hafalanNotes.filter(n => n.isExam).slice(-1)[0];
+    const keyPoints: string[] = [];
+
+    if (hasExam && /lulus|selamat/.test(allNotesText)) {
+      keyPoints.push(lastExam?.surah ? `Lulus ${lastExam.surah}` : 'Lulus ujian');
+    }
+    if (/sambung|lupa|ragu/.test(allNotesText)) {
+      keyPoints.push('Kuatkan sambung ayat');
+    }
+    if (/tajwid|dengung|mad/.test(allNotesText) && !keyPoints.includes('Kuatkan sambung ayat')) {
+      keyPoints.push('Tertibkan tajwid');
+    }
+    if (/makhraj|fashohah/.test(allNotesText)) {
+      keyPoints.push('Perjelas makhraj');
+    }
+    if (/belum lancar|muroja.?ah di rumah/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Kuatkan muroja\'ah');
+    }
+    if (/lancar|mutqin|sangat baik/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Lancar mutqin');
+    }
+
+    let summary = keyPoints.slice(0, 2).join(', ');
+    if (!summary) {
+      const raw = hafalanNotes[hafalanNotes.length - 1].note;
+      summary = raw.length > 25 ? raw.slice(0, 25).trim() + '...' : raw;
+    }
+    parts.push(`Hafalan: ${summary}`);
+  }
+
+  // 2. Ummi compact summary
+  if (ummiNotes.length) {
+    const lastLevel = ummiNotes[ummiNotes.length - 1].level;
+    const prefix = lastLevel ? (lastLevel === 'Al-Quran' ? 'Al-Qur\'an' : `Ummi Jld ${lastLevel}`) : 'Ummi';
+    const allNotesText = ummiNotes.map(n => n.note).join(' ').toLowerCase();
+    const keyPoints: string[] = [];
+
+    if (/huruf serupa|hijaiyah|mirip/.test(allNotesText)) {
+      keyPoints.push('Bedakan huruf mirip');
+    }
+    if (/panjang pendek|mad 2 harakat|mad thabi/.test(allNotesText)) {
+      keyPoints.push('Tertibkan mad');
+    }
+    if (/kasrah|dhommah|bunyi harakat/.test(allNotesText)) {
+      keyPoints.push('Perjelas harakat');
+    }
+    if (/sukun|qalqalah|membal/.test(allNotesText)) {
+      keyPoints.push('Tegaskan qalqalah');
+    }
+    if (/tasydid/.test(allNotesText)) {
+      keyPoints.push('Tekan tasydid');
+    }
+    if (/dengung|ghunnah/.test(allNotesText)) {
+      keyPoints.push('Tahan dengung');
+    }
+    if (/waqaf|nafas|jeda/.test(allNotesText)) {
+      keyPoints.push('Atur waqaf');
+    }
+    if (/mad 4-5|bendera|panjang 4/.test(allNotesText)) {
+      keyPoints.push('Mad 4-5 harakat');
+    }
+    if (/ghorib|saktah|imalah/.test(allNotesText)) {
+      keyPoints.push('Kuasai ghorib');
+    }
+    if (/belum lancar|latihan di rumah/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Perlu latihan lancar');
+    }
+    if (/lancar|mutqin|sangat baik/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Lancar & tartil');
+    }
+
+    let summary = keyPoints.slice(0, 2).join(', ');
+    if (!summary) {
+      const raw = ummiNotes[ummiNotes.length - 1].note;
+      summary = raw.length > 25 ? raw.slice(0, 25).trim() + '...' : raw;
+    }
+    parts.push(`${prefix}: ${summary}`);
+  }
+
+  // 3. Tilawah compact summary
+  if (tilawahNotes.length) {
+    const allNotesText = tilawahNotes.map(n => n.note).join(' ').toLowerCase();
+    const keyPoints: string[] = [];
+
+    if (/waqaf|washol/.test(allNotesText)) {
+      keyPoints.push('Perhatikan waqaf');
+    }
+    if (/makhraj|tenggorokan/.test(allNotesText)) {
+      keyPoints.push('Perjelas makhraj');
+    }
+    if (/nafas|panjang/.test(allNotesText)) {
+      keyPoints.push('Atur nafas');
+    }
+    if (/tartil|fasih|mutqin/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Tartil & fasih');
+    }
+    if (/belum lancar|latihan/.test(allNotesText) && keyPoints.length === 0) {
+      keyPoints.push('Perlu latihan lancar');
+    }
+
+    let summary = keyPoints.slice(0, 2).join(', ');
+    if (!summary) {
+      const raw = tilawahNotes[tilawahNotes.length - 1].note;
+      summary = raw.length > 25 ? raw.slice(0, 25).trim() + '...' : raw;
+    }
+    parts.push(`Tilawah: ${summary}`);
+  }
+
+  // Gabungkan ringkas dengan pemisah titik tengah (bullet)
+  return parts.join(' • ');
 }
 
 export default function MonthlyRecap() {
@@ -242,17 +353,36 @@ export default function MonthlyRecap() {
 
     setRecapData(sortedStudentList);
 
-    // Fetch settings for each student, auto-converting daily notes if monthly note is empty
+    // Fetch settings for each student, auto-converting daily notes and calculating accurate total hafalan if empty
     const settings: Record<string, any> = {};
     for (const student of studentList as any[]) {
       const existing = storage.getRecapSettings(student.id, selectedMonth);
+      
+      let hafalanAkhForCalc = student.hafalan.akh;
+      if (!hafalanAkhForCalc || hafalanAkhForCalc === '-') {
+        const lastDep = storage.getLastDeposit(student.id, 'hafalan');
+        if (lastDep?.details?.surah) {
+          const s = lastDep.details.surah;
+          const st = lastDep.details.verse_start || '';
+          const en = lastDep.details.verse_end || '';
+          hafalanAkhForCalc = `${s} ${st}${en && en !== st ? `-${en}` : ''}`.trim();
+        }
+      }
+
+      const calculatedTotal = parseAndCalculateTotalHafalan(hafalanAkhForCalc);
+      if ((!existing.total_hafalan || existing.total_hafalan.trim() === '') && calculatedTotal) {
+        existing.total_hafalan = calculatedTotal;
+      }
+
       if (!existing.notes || existing.notes.trim() === '') {
         const autoNote = summarizeDailyNotesForStudent(student.id, data);
         if (autoNote) {
           existing.notes = autoNote;
-          // Automatically save so exports and subsequent reloads retain it
-          storage.saveRecapSettings(student.id, selectedMonth, existing.total_hafalan || '', autoNote);
         }
+      }
+
+      if (existing.total_hafalan || existing.notes) {
+        storage.saveRecapSettings(student.id, selectedMonth, existing.total_hafalan || '', existing.notes || '');
       }
       settings[student.id] = existing;
     }
@@ -281,6 +411,97 @@ export default function MonthlyRecap() {
       newSettings.total_hafalan,
       newSettings.notes
     );
+  };
+
+  const getEffectiveTotalHafalan = (student: any): string => {
+    const custom = recapSettings[student.id]?.total_hafalan;
+    if (custom !== undefined && custom !== null && custom.trim() !== '') {
+      return custom;
+    }
+    let hafalanAkh = student.hafalan?.akh;
+    if (!hafalanAkh || hafalanAkh === '-') {
+      const lastDep = storage.getLastDeposit(student.id, 'hafalan');
+      if (lastDep?.details?.surah) {
+        const s = lastDep.details.surah;
+        const st = lastDep.details.verse_start || '';
+        const en = lastDep.details.verse_end || '';
+        hafalanAkh = `${s} ${st}${en && en !== st ? `-${en}` : ''}`.trim();
+      }
+    }
+    return parseAndCalculateTotalHafalan(hafalanAkh) || '';
+  };
+
+  const handleAutoCalculateAllTotalHafalan = () => {
+    if (!selectedHalaqoh || recapData.length === 0) {
+      alert('Pilih Halaqoh terlebih dahulu.');
+      return;
+    }
+    const updated = { ...recapSettings };
+    let count = 0;
+    for (const student of recapData) {
+      let hafalanAkh = student.hafalan?.akh;
+      if (!hafalanAkh || hafalanAkh === '-') {
+        const lastDep = storage.getLastDeposit(student.id, 'hafalan');
+        if (lastDep?.details?.surah) {
+          const s = lastDep.details.surah;
+          const st = lastDep.details.verse_start || '';
+          const en = lastDep.details.verse_end || '';
+          hafalanAkh = `${s} ${st}${en && en !== st ? `-${en}` : ''}`.trim();
+        }
+      }
+      const calculated = parseAndCalculateTotalHafalan(hafalanAkh);
+      if (calculated) {
+        updated[student.id] = {
+          ...updated[student.id],
+          total_hafalan: calculated
+        };
+        storage.saveRecapSettings(
+          student.id,
+          selectedMonth,
+          calculated,
+          updated[student.id]?.notes || ''
+        );
+        count++;
+      }
+    }
+    setRecapSettings(updated);
+    if (count > 0) {
+      alert(`Alhamdulillah, total hafalan untuk ${count} siswa berhasil dihitung ulang dan disimpan secara akurat!`);
+    } else {
+      alert(`Belum ada data setoran hafalan yang dapat dihitung untuk halaqoh ini di bulan ${selectedMonth}.`);
+    }
+  };
+
+  const handleAutoSummarizeAllNotes = () => {
+    if (!selectedHalaqoh || recapData.length === 0) {
+      alert('Pilih Halaqoh terlebih dahulu.');
+      return;
+    }
+    const rawData = storage.getMonthlyRecapData(selectedMonth, selectedHalaqoh);
+    const updated = { ...recapSettings };
+    let count = 0;
+    for (const student of recapData) {
+      const shortSummary = summarizeDailyNotesForStudent(student.id, rawData);
+      if (shortSummary) {
+        updated[student.id] = {
+          ...updated[student.id],
+          notes: shortSummary
+        };
+        storage.saveRecapSettings(
+          student.id,
+          selectedMonth,
+          updated[student.id]?.total_hafalan || '',
+          shortSummary
+        );
+        count++;
+      }
+    }
+    setRecapSettings(updated);
+    if (count > 0) {
+      alert(`Berhasil merangkum ringkas catatan harian untuk ${count} siswa agar tabel tetap rapi dan tidak melebar.`);
+    } else {
+      alert(`Tidak ada catatan harian baru untuk halaqoh ini di bulan ${selectedMonth}.`);
+    }
   };
 
   const generateImage = async (format: 'jpg' | 'png') => {
@@ -627,7 +848,35 @@ export default function MonthlyRecap() {
 
                   <div className="space-y-4">
                     <div className="group">
-                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest ml-1 mb-2">Total Hafalan (Akumulasi)</label>
+                      <div className="flex items-center justify-between ml-1 mb-2">
+                        <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Total Hafalan (Akumulasi)</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            let hafalanAkhForCalc = editingStudent.hafalan.akh;
+                            if (!hafalanAkhForCalc || hafalanAkhForCalc === '-') {
+                              const lastDep = storage.getLastDeposit(editingStudent.id, 'hafalan');
+                              if (lastDep?.details?.surah) {
+                                const s = lastDep.details.surah;
+                                const st = lastDep.details.verse_start || '';
+                                const en = lastDep.details.verse_end || '';
+                                hafalanAkhForCalc = `${s} ${st}${en && en !== st ? `-${en}` : ''}`.trim();
+                              }
+                            }
+                            const calc = parseAndCalculateTotalHafalan(hafalanAkhForCalc);
+                            if (calc) {
+                              updateSettings(editingStudent.id, 'total_hafalan', calc);
+                            } else {
+                              alert('Belum ada data setoran hafalan untuk menghitung total otomatis.');
+                            }
+                          }}
+                          className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all border border-indigo-100/60"
+                          title="Hitung ulang total hafalan secara akurat dari setoran terbaru"
+                        >
+                          <RefreshCw size={11} />
+                          Hitung Otomatis
+                        </button>
+                      </div>
                       <div className="relative">
                         <input 
                           type="text"
@@ -662,10 +911,10 @@ export default function MonthlyRecap() {
                               }
                             }}
                             className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all border border-indigo-100/60"
-                            title="Konversi otomatis dari seluruh catatan harian siswa bulan ini"
+                            title="Rangkum singkat catatan harian siswa bulan ini agar tabel tetap rapi"
                           >
                             <Sparkles size={12} />
-                            Konversi dari Harian
+                            Rangkum Singkat dari Harian
                           </button>
                           {recapSettings[editingStudent.id]?.notes && (
                             <button
@@ -680,16 +929,23 @@ export default function MonthlyRecap() {
                       </div>
                       <textarea 
                         className={cn(
-                          "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-4 transition-all min-h-[110px] placeholder:text-stone-300 resize-none",
+                          "w-full bg-stone-50 border border-stone-200 rounded-2xl px-6 py-4 text-sm font-medium focus:outline-none focus:ring-4 transition-all min-h-[100px] placeholder:text-stone-300 resize-none",
                           theme.ring
                         )}
-                        placeholder="Tuliskan catatan kemajuan siswa bulan ini atau klik 'Konversi dari Harian' (bisa dikosongkan jika tidak ada catatan)..."
+                        placeholder="Catatan perkembangan singkat (ringkas agar tabel tidak melebar, atau klik 'Rangkum Singkat dari Harian')..."
                         value={recapSettings[editingStudent.id]?.notes || ''}
                         onChange={(e) => updateSettings(editingStudent.id, 'notes', e.target.value)}
                       />
-                      <p className="text-[10px] text-stone-400 italic">
-                        * Catatan ini terisi otomatis dari catatan harian siswa dan dapat dikosongkan atau diedit bebas.
-                      </p>
+                      <div className="flex items-center justify-between text-[10px] text-stone-400">
+                        <span className="italic">
+                          * Catatan dirangkum secara singkat & padat agar tampilan tabel tetap rapi dan tidak melebar.
+                        </span>
+                        {recapSettings[editingStudent.id]?.notes && (
+                          <span className="font-semibold text-stone-500 shrink-0 ml-2">
+                            {recapSettings[editingStudent.id]?.notes?.length || 0} karakter
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -771,24 +1027,40 @@ export default function MonthlyRecap() {
               </div>
             </div>
           </div>
-          <div className="flex items-end gap-3 pb-1 md:col-span-2 lg:col-span-2">
+          <div className="flex flex-wrap items-end gap-2.5 pb-1 md:col-span-2 lg:col-span-2">
             <button 
               onClick={() => setShowTilawah(!showTilawah)}
               className={cn(
-                "flex-1 py-4 px-4 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all transition-all",
+                "flex-1 min-w-[90px] py-3.5 px-3 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all",
                 showTilawah ? "bg-blue-50 border-blue-200 text-blue-600" : "bg-stone-50 border-stone-200 text-stone-400"
               )}
             >
-              {showTilawah ? '✓ Tilawah Aktif' : 'Tilawah Off'}
+              {showTilawah ? '✓ Tilawah' : 'Tilawah Off'}
             </button>
             <button 
               onClick={() => setShowUmmi(!showUmmi)}
               className={cn(
-                "flex-1 py-4 px-4 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all",
+                "flex-1 min-w-[90px] py-3.5 px-3 rounded-2xl border-2 font-display font-bold text-[10px] uppercase tracking-widest transition-all",
                 showUmmi ? "bg-emerald-50 border-emerald-200 text-emerald-600" : "bg-stone-50 border-stone-200 text-stone-400"
               )}
             >
-              {showUmmi ? '✓ Ummi Aktif' : 'Ummi Off'}
+              {showUmmi ? '✓ Ummi' : 'Ummi Off'}
+            </button>
+            <button
+              onClick={handleAutoCalculateAllTotalHafalan}
+              className="py-3.5 px-3.5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100 font-display font-bold text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-sm"
+              title="Hitung ulang total hafalan semua siswa secara otomatis dan akurat dari data setoran"
+            >
+              <RefreshCw size={13} className="text-emerald-600" />
+              <span>Hitung Total Hafalan</span>
+            </button>
+            <button
+              onClick={handleAutoSummarizeAllNotes}
+              className="py-3.5 px-3.5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/80 text-indigo-700 hover:bg-indigo-100 font-display font-bold text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-sm"
+              title="Rangkum ringkas catatan harian semua siswa agar tabel rapi dan tidak melebar"
+            >
+              <Sparkles size={13} className="text-indigo-600" />
+              <span>Rangkum Singkat Semua</span>
             </button>
           </div>
         </div>
@@ -810,8 +1082,8 @@ export default function MonthlyRecap() {
                     {hasTilawah && showTilawah && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-blue-50/30 text-blue-900/40">Tilawah Al-Qur'an</th>}
                     {hasUmmi && showUmmi && <th colSpan={3} className="px-4 py-3 border-r border-b border-stone-200/60 text-center bg-emerald-50/30 text-emerald-900/40">Metode Ummi</th>}
                     <th rowSpan={2} className="px-4 py-5 border-r border-b border-stone-200/60 text-center">Aktif Siswa / Bulan</th>
-                    <th rowSpan={2} className="px-5 py-5 border-b border-stone-200/60 text-center md:sticky right-[180px] z-40 bg-stone-50/80 backdrop-blur-md border-l">Total</th>
-                    <th rowSpan={2} className="px-6 py-5 border-b border-stone-200/60 text-center md:sticky right-0 z-40 bg-stone-50/80 backdrop-blur-md min-w-[180px] border-l">Catatan Guru</th>
+                    <th rowSpan={2} className="px-3 py-5 border-b border-stone-200/60 text-center md:sticky right-[190px] z-40 bg-stone-50/80 backdrop-blur-md border-l w-28 min-w-[100px] max-w-[120px]">Total</th>
+                    <th rowSpan={2} className="px-4 py-5 border-b border-stone-200/60 text-center md:sticky right-0 z-40 bg-stone-50/80 backdrop-blur-md w-48 min-w-[170px] max-w-[200px] border-l">Catatan Guru</th>
                   </tr>
                   <tr className="border-b border-stone-200/60">
                     {hasHafalan && (
@@ -875,36 +1147,37 @@ export default function MonthlyRecap() {
                       <td className={cn("px-4 py-4 border-r border-stone-100/60 text-center font-black tabular-nums whitespace-nowrap", theme.text)}>
                         {s.activeDays.size} / {maxActiveDays}
                       </td>
-                      <td className="px-4 py-4 border-stone-100/60 min-w-[180px] md:sticky right-[180px] z-20 bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-stone-50 border-x">
+                      <td className="px-2 py-4 border-stone-100/60 w-28 min-w-[100px] max-w-[120px] md:sticky right-[190px] z-20 bg-white/95 backdrop-blur-sm shadow-[-4px_0_10px_-4px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-stone-50 border-x">
                         <div className="hidden md:block">
                           <input 
                             type="text"
-                            placeholder="Isi total..."
-                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
-                            value={recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : parseAndCalculateTotalHafalan(s.hafalan.akh)}
+                            placeholder="Total..."
+                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-2 py-2 text-xs focus:outline-none focus:ring-4 ring-stone-900/5 transition-all text-center font-bold text-stone-900 placeholder:text-stone-300"
+                            value={recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : getEffectiveTotalHafalan(s)}
                             onChange={(e) => updateSettings(s.id, 'total_hafalan', e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
                         <div className="md:hidden flex flex-col items-center gap-1">
                           <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 truncate max-w-full">
-                            {recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : (parseAndCalculateTotalHafalan(s.hafalan.akh) || 'Total...')}
+                            {getEffectiveTotalHafalan(s) || 'Total...'}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 min-w-[180px] md:sticky right-0 z-20 bg-white/95 backdrop-blur-sm transition-colors group-hover:bg-stone-50">
+                      <td className="px-3 py-4 w-48 min-w-[170px] max-w-[200px] md:sticky right-0 z-20 bg-white/95 backdrop-blur-sm transition-colors group-hover:bg-stone-50">
                         <div className="hidden md:block text-right">
                           <input 
                             type="text"
                             placeholder="Catatan..."
-                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300"
+                            className="w-full bg-stone-50/50 border border-stone-200/40 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-4 ring-stone-900/5 transition-all font-medium text-stone-600 placeholder:text-stone-300 truncate"
                             value={recapSettings[s.id]?.notes || ''}
+                            title={recapSettings[s.id]?.notes || 'Klik untuk edit catatan'}
                             onChange={(e) => updateSettings(s.id, 'notes', e.target.value)}
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
                         <div className="md:hidden">
-                           <p className="text-[10px] text-stone-400 line-clamp-1 italic">
+                           <p className="text-[10px] text-stone-400 line-clamp-1 italic truncate">
                              {recapSettings[s.id]?.notes || 'Catatan...'}
                            </p>
                         </div>
@@ -1053,7 +1326,7 @@ export default function MonthlyRecap() {
                         {hasUmmi && <th colSpan={3} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>METODE UMMI</th>}
                         <th rowSpan={2} className="border border-black p-1 text-center font-bold w-[8%]" style={{ borderColor: '#000000' }}>HARI AKTIF SISWA / BULAN</th>
                         <th rowSpan={2} className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>TOTAL</th>
-                        <th rowSpan={2} className="border border-black p-1 text-center font-bold w-[25%]" style={{ borderColor: '#000000' }}>CATATAN</th>
+                        <th rowSpan={2} className="border border-black p-1 text-center font-bold w-[16%]" style={{ borderColor: '#000000' }}>CATATAN</th>
                       </tr>
                       <tr className="bg-white">
                         {hasHafalan && (
@@ -1106,8 +1379,12 @@ export default function MonthlyRecap() {
                             </>
                           )}
                           <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{s.activeDays.size} / {maxActiveDays}</td>
-                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.total_hafalan !== undefined && recapSettings[s.id]?.total_hafalan !== '' ? recapSettings[s.id].total_hafalan : (parseAndCalculateTotalHafalan(s.hafalan.akh) || '-')}</td>
-                          <td className="border border-black p-1 px-2 italic text-[11px] leading-tight" style={{ borderColor: '#000000' }}>{recapSettings[s.id]?.notes || '-'}</td>
+                          <td className="border border-black p-1 text-center font-bold" style={{ borderColor: '#000000' }}>{getEffectiveTotalHafalan(s) || '-'}</td>
+                          <td className="border border-black p-1 px-1.5 italic text-[9.5px] leading-tight" style={{ borderColor: '#000000' }}>
+                            <div className="line-clamp-2 max-h-[30px] overflow-hidden" title={recapSettings[s.id]?.notes || ''}>
+                              {recapSettings[s.id]?.notes || '-'}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

@@ -379,8 +379,10 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {!isLoading && gurus.length > 0 && (
-          <AdminProgressReport globalData={globalData} />
+      {!isLoading && (
+          <AdminProgressReport 
+            globalData={gurus.length > 0 ? globalData : { [localStorage.getItem('current_username') || 'Lokal']: safeJsonParse(storage.exportData()) }} 
+          />
       )}
 
       <ConfirmModal

@@ -8,6 +8,30 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [
+      {
+        name: 'disable-hmr-ws-errors',
+        enforce: 'pre',
+        transform(code, id) {
+          if (code.includes('WebSocket closed without opened.') || code.includes('[vite] failed to connect to websocket')) {
+            return code.replaceAll(
+              'reject(new Error("WebSocket closed without opened."));',
+              'resolve();'
+            ).replaceAll(
+              'console.error("[vite]", err)',
+              'console.debug("[vite]", err)'
+            ).replaceAll(
+              'console.error(`[vite] failed to connect to websocket',
+              'console.debug(`[vite] failed to connect to websocket'
+            ).replaceAll(
+              'console.error(\n                  `[vite] failed to connect to websocket',
+              'console.debug(\n                  `[vite] failed to connect to websocket'
+            ).replaceAll(
+              'throw e;',
+              '/* suppressed */'
+            );
+          }
+        }
+      },
       react(), 
       tailwindcss(),
       VitePWA({
