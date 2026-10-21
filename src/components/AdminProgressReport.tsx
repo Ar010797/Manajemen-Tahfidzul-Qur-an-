@@ -74,15 +74,19 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
          const halaqohName = halaqohObj?.name || student.halaqoh_name || student.group || 'Tidak Ada Halaqoh';
          const grade = parseGradeFromHalaqohName(student.grade || student.kelas || student.tingkat || halaqohName || student.name) || parseGradeFromHalaqohName(guru) || 1;
 
-         // Target kurikulum untuk kelas dan semester yang dipilih
+         // Target kurikulum resmi untuk kelas dan semester yang dipilih (Semester 1 / Semester 2)
+         // Mengikuti kurikulum semester aktif agar saat admin memilih Semester 2, target langsung berubah ke Semester 2
          let targetDetail = getCurriculumForGrade(grade, selectedSemester);
 
-         // Jika guru menset target hafalan khusus untuk santri ini
-         const explicitTarget = student.target || student.target_hafalan || (d.exams_hafalan || []).find((e: any) => e.student_id === student.id && e.target)?.target;
-         if (explicitTarget) {
-            const customTarget = parseTargetSpecification(explicitTarget, grade, selectedSemester);
-            if (customTarget && customTarget.targetSurahIndex > 0) {
-               targetDetail = customTarget;
+         // Cek jika santri memiliki target kustom khusus semester tertentu
+         const customSmtTarget = selectedSemester === 2 
+            ? (student.target_semester_2 || student.target_smt2 || student.target_genap)
+            : (student.target_semester_1 || student.target_smt1 || student.target_ganjil);
+
+         if (customSmtTarget) {
+            const parsedCustom = parseTargetSpecification(customSmtTarget, grade, selectedSemester);
+            if (parsedCustom && parsedCustom.targetSurahIndex > 0) {
+               targetDetail = parsedCustom;
             }
          }
 
@@ -814,7 +818,7 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                       <th className="px-4 py-3 text-center">% Capaian</th>
                       <th className="px-4 py-3 text-center">Status Target</th>
                       <th className="px-4 py-3">Progress Ummi</th>
-                      <th className="px-4 py-3">Target Ummi</th>
+                      <th className="px-4 py-3 bg-blue-50/50 text-blue-900">Target Ummi (Smt {selectedSemester})</th>
                       <th className="px-4 py-3 text-center">Status Ummi</th>
                     </tr>
                   </thead>
@@ -831,6 +835,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                          <td className="px-4 py-2.5 text-stone-500">{s.guru}</td>
                          <td className="px-4 py-2.5 bg-indigo-50/30">
                             <span className="font-bold text-indigo-950">{s.targetHafalan || '-'}</span>
+                            <div className="text-[10px] text-indigo-600 font-bold mt-0.5">
+                              Smt {selectedSemester} ({selectedSemester === 1 ? 'Ganjil' : 'Genap'})
+                            </div>
                          </td>
                          <td className="px-4 py-2.5">
                             <div className="font-semibold text-stone-900">{s.hafalan}</div>
@@ -860,8 +867,9 @@ export const AdminProgressReport = ({ globalData }: { globalData: Record<string,
                                {s.level}
                             </span>
                          </td>
-                         <td className="px-4 py-2.5 text-stone-600 text-[11px]">
-                            {s.targetUmmi}
+                         <td className="px-4 py-2.5 bg-blue-50/20 text-stone-700 text-[11px]">
+                            <span className="font-semibold text-stone-900">{s.targetUmmi}</span>
+                            <div className="text-[10px] text-blue-500 font-medium">Smt {selectedSemester}</div>
                          </td>
                          <td className="px-4 py-2.5 text-center">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider ${
