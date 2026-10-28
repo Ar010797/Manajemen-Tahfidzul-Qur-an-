@@ -1,4 +1,4 @@
-import { SURAH_LIST } from '../constants/surahs';
+import { SURAH_LIST, findSurahByName, getSurahJuz } from '../constants/surahs';
 
 export const juzData: Record<number, {name: string, start: number, end: number}[]> = {
   "1": [
@@ -834,6 +834,9 @@ export function cleanSurahKey(s: string): string {
 
 export function findSurahObj(input: string): { id: number; name: string; total_ayat: number } | null {
   if (!input) return null;
+  const canonical = findSurahByName(input);
+  if (canonical) return canonical;
+
   const key = cleanSurahKey(input);
   if (!key) return null;
 
@@ -1062,4 +1065,6 @@ export function parseAndCalculateTotalHafalan(hafalanAkhStr: string): string {
   }
   return parts.join(' ');
 }
+
+export { getSurahJuz };
 

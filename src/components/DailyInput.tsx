@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
-import { SURAH_LIST } from '../constants/surahs';
+import { SURAH_LIST, findSurahByName, getNextSurah, getSurahJuz, computeTomorrowTarget } from '../constants/surahs';
 import ConfirmModal from './ConfirmModal';
 
 function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: any) {
@@ -49,100 +49,8 @@ function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: 
   );
 }
 
-export function findSurahByName(query: string) {
-  if (!query) return null;
-  const clean = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const q = clean(query);
-  if (!q) return null;
+export { findSurahByName, getNextSurah, getSurahJuz, computeTomorrowTarget };
 
-  // Direct exact or normalized match in SURAH_LIST
-  const direct = SURAH_LIST.find(s => clean(s.name) === q);
-  if (direct) return direct;
-
-  const aliases: Record<string, number> = {
-    "annaba": 78, "annaba'": 78, "naba": 78, "anaba": 78,
-    "annaziat": 79, "naziat": 79, "anaziat": 79,
-    "abasa": 80,
-    "attakwir": 81, "takwir": 81,
-    "alinfitar": 82, "alinfitor": 82, "infitar": 82,
-    "almutaffifin": 83, "almuthaffifin": 83, "almuthoffifin": 83, "muthaffifin": 83,
-    "alinsyiqaq": 84, "alinsyiqoq": 84, "insyiqaq": 84, "insyiqoq": 84,
-    "alburuj": 85, "buruj": 85,
-    "attariq": 86, "atthariq": 86, "attoriq": 86, "tariq": 86,
-    "alala": 87, "ala": 87,
-    "alghasyiyah": 88, "algosyiyah": 88, "alghosiyah": 88, "ghasyiyah": 88,
-    "alfajr": 89, "fajr": 89,
-    "albalad": 90, "balad": 90,
-    "asysyams": 91, "syams": 91, "ashsyams": 91,
-    "allail": 92, "lail": 92,
-    "adduha": 93, "addhuha": 93, "duha": 93,
-    "asysyarh": 94, "alamnasyrah": 94, "insyirah": 94, "syarh": 94,
-    "attin": 95, "tin": 95,
-    "alalaq": 96, "alaq": 96,
-    "alqadr": 97, "alqodar": 97, "qadr": 97,
-    "albayyinah": 98, "albayinah": 98, "bayyinah": 98,
-    "azzalzalah": 99, "zalzalah": 99,
-    "aladiyat": 100, "adiyat": 100,
-    "alqariah": 101, "qariah": 101,
-    "attakasur": 102, "attakatsur": 102, "takatsur": 102,
-    "alasr": 103, "asr": 103,
-    "alhumazah": 104, "humazah": 104,
-    "alfil": 105, "fil": 105,
-    "quraisy": 106, "quraish": 106,
-    "almaun": 107, "maun": 107,
-    "alkausar": 108, "alkautsar": 108, "kausar": 108,
-    "alkafirun": 109, "kafirun": 109,
-    "annasr": 110, "nasr": 110,
-    "allahab": 111, "almasad": 111, "lahab": 111, "masad": 111,
-    "alikhlas": 112, "ikhlas": 112,
-    "alfalaq": 113, "falaq": 113,
-    "annas": 114, "nas": 114,
-    // Juz 29
-    "almulk": 67, "mulk": 67,
-    "alqalam": 68, "alqolam": 68, "qalam": 68,
-    "alhaqqah": 69, "alhaqqoh": 69, "haqqah": 69,
-    "almaarij": 70, "maarij": 70,
-    "nuh": 71,
-    "aljinn": 72, "aljin": 72, "jinn": 72,
-    "almuzzammil": 73, "almuzammil": 73, "muzzammil": 73,
-    "almuddassir": 74, "almudasir": 74, "muddassir": 74,
-    "alqiyamah": 75, "qiyamah": 75,
-    "alinsan": 76, "insan": 76, "addahr": 76,
-    "almursalat": 77, "mursalat": 77,
-    // Juz 28
-    "almujadilah": 58, "almujadalah": 58,
-    "alhasyr": 59,
-    "almumtahanah": 60,
-    "assaff": 61, "asshaff": 61, "ashshaff": 61,
-    "aljumuah": 62, "jumuah": 62,
-    "almunafiqun": 63, "munafiqun": 63,
-    "attagabun": 64, "attaghabun": 64, "attaqabun": 64,
-    "attalaq": 65, "atthalaq": 65,
-    "attahrim": 66, "tahrim": 66
-  };
-
-  if (aliases[q]) {
-    const found = SURAH_LIST.find(s => s.id === aliases[q]);
-    if (found) return found;
-  }
-
-  return SURAH_LIST.find(s => clean(s.name).includes(q) || q.includes(clean(s.name))) || null;
-}
-
-export function getNextSurah(currentId: number) {
-  if (currentId >= 78 && currentId < 114) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 114) return SURAH_LIST.find(s => s.id === 67); // from Juz 30 to Juz 29
-  if (currentId >= 67 && currentId < 77) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 77) return SURAH_LIST.find(s => s.id === 58); // from Juz 29 to Juz 28
-  if (currentId >= 58 && currentId < 66) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 66) return SURAH_LIST.find(s => s.id === 51); // to Juz 27
-  if (currentId >= 51 && currentId < 57) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 57) return SURAH_LIST.find(s => s.id === 46); // to Juz 26
-  if (currentId >= 46 && currentId < 50) return SURAH_LIST.find(s => s.id === currentId + 1);
-  if (currentId === 50) return SURAH_LIST.find(s => s.id === 1); // to Juz 1
-  if (currentId >= 1 && currentId < 45) return SURAH_LIST.find(s => s.id === currentId + 1);
-  return null;
-}
 
 // Level-specific note recommendations for Ummi method
 export const UMMI_LEVEL_NOTES: Record<string, { label: string; chips: string[]; remediation: string }> = {
@@ -251,56 +159,55 @@ export default function DailyInput() {
       if (lastDeposit && lastDeposit.details) {
         const lastDetails = lastDeposit.details;
         if (type === 'hafalan') {
-          const shouldAdvance = lastDetails.grade === 'L' || lastDetails.grade === 'CL';
-          
-          const extractLastNum = (val) => {
-             if (!val) return 0;
-             const match = String(val).match(/(\d+)(?!.*\d)/);
-             return match ? parseInt(match[1]) : 0;
-          };
-          const lastEnd = extractLastNum(lastDetails.verse_end) || extractLastNum(lastDetails.verse_start) || 0;
-          
-          const surahInfo = findSurahByName(lastDetails.surah);
-          
-          if (shouldAdvance) {
-            if (lastDetails.is_ujian || lastDetails.status === 'Ujian') {
-               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-               setDetails({
-                  surah: nextSurah ? nextSurah.name : '',
-                  verse_start: '1',
-                  verse_end: '',
-                  is_ujian: false,
-                  status: 'Progressing',
-                  grade: '',
-                  note: ''
-               });
-            } else if (surahInfo && lastEnd >= surahInfo.total_ayat) {
-               const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-               setDetails({
-                  surah: nextSurah ? nextSurah.name : '',
-                  verse_start: '1',
-                  verse_end: '',
-                  is_ujian: false,
-                  status: 'Progressing',
-                  grade: '',
-                  note: ''
-               });
-            } else {
-               setDetails({
-                 surah: lastDetails.surah,
-                 verse_start: lastEnd ? (lastEnd + 1).toString() : '',
-                 verse_end: '',
-                 is_ujian: false,
-                 status: 'Progressing',
-                 grade: '',
-                 note: ''
-               });
-            }
-          } else {
+          const decision = computeTomorrowTarget({
+            studentName: selectedStudent.name,
+            surah: lastDetails.surah,
+            verseStart: lastDetails.verse_start,
+            verseEnd: lastDetails.verse_end,
+            grade: lastDetails.grade,
+            isUjian: lastDetails.is_ujian,
+            status: lastDetails.status
+          });
+
+          const isExam = lastDetails.is_ujian || lastDetails.status === 'Ujian';
+
+          if (decision.action === 'ganti_surah') {
             setDetails({
-              surah: lastDetails.surah,
-              verse_start: lastDetails.verse_start || '',
-              verse_end: lastDetails.verse_end || '',
+              surah: decision.targetSurah,
+              verse_start: '1',
+              verse_end: '',
+              is_ujian: false,
+              status: 'Progressing',
+              grade: '',
+              note: ''
+            });
+          } else if (decision.action === 'ulang_surah') {
+            // Repeat same surah until passed L/CL
+            setDetails({
+              surah: decision.targetSurah,
+              verse_start: decision.targetVerseStart || '1',
+              verse_end: decision.targetVerseEnd || '',
+              is_ujian: isExam,
+              status: lastDetails.status || 'Progressing',
+              grade: '',
+              note: ''
+            });
+          } else if (decision.action === 'lanjut_ayat') {
+            setDetails({
+              surah: decision.targetSurah,
+              verse_start: decision.targetVerseStart,
+              verse_end: '',
+              is_ujian: false,
+              status: 'Progressing',
+              grade: '',
+              note: ''
+            });
+          } else {
+            // ulang_ayat
+            setDetails({
+              surah: decision.targetSurah,
+              verse_start: decision.targetVerseStart || '1',
+              verse_end: decision.targetVerseEnd || '',
               is_ujian: false,
               status: 'Progressing',
               grade: '',
@@ -404,202 +311,192 @@ export default function DailyInput() {
     const ummiData = storage.getDeposit(selectedStudent.id, 'ummi', date);
     const tilawahData = storage.getDeposit(selectedStudent.id, 'tilawah', date);
 
-    if (!hafalanData && !ummiData && !tilawahData) {
-      alert('Belum ada data setoran (Hafalan/Ummi/Tilawah) yang disimpan untuk tanggal ini.');
+    if (!hafalanData?.details?.grade && !ummiData?.details?.grade && !tilawahData?.details?.grade) {
+      alert('Belum ada data setoran yang dinilai pada tanggal ini untuk santri ini.');
       return;
     }
 
-    let reportSegments = [];
+    const formattedDate = format(new Date(date), 'dd MMMM yyyy');
+    const sections: string[] = [];
 
-    // Hafalan Segment
-    if (hafalanData && hafalanData.details && hafalanData.details.grade) {
+    // Header Salam
+    sections.push('Assalamualaikum Warahmatullahi Wabarakatuh');
+
+    // 1. Hafalan Segment
+    if (hafalanData?.details?.grade) {
       const d = hafalanData.details;
-      const isGoodGrade = ['L', 'CL'].includes(d.grade);
-      
-      let currentStatus = '';
-      if (d.status === 'Ujian' || d.is_ujian) {
-         currentStatus = '*Ujian Surah*';
-      } else if (d.status === 'Hafalan') {
-         currentStatus = '*Muroja\'ah (Mengulang)*';
-      } else {
-         currentStatus = '*Ziyadah (Menambah)*';
-      }
+      const decision = computeTomorrowTarget({
+        studentName: selectedStudent.name,
+        surah: d.surah,
+        verseStart: d.verse_start,
+        verseEnd: d.verse_end,
+        grade: d.grade,
+        isUjian: d.is_ujian,
+        status: d.status
+      });
 
-      let homework = '';
-      let materiTitle = `Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
-      
       const surahInfo = findSurahByName(d.surah);
-      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
-      
-      if (d.status === 'Ujian' || d.is_ujian) {
-         materiTitle = `*UJIAN SURAH ${d.surah?.toUpperCase() || ''}*`;
-         if (isGoodGrade) {
-            const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-            const nextSurahText = nextSurah ? `\n➡️ *Lanjut ke Surah ${nextSurah.name} (Ayat 1)*` : '';
-            reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: *Ujian Surah*\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (${d.grade === 'L' ? 'Lancar' : 'Cukup Lancar'})\n🎉 *Alhamdulillah, LULUS Ujian Surah ${d.surah}!*${nextSurahText}${noteText}`);
-         } else {
-            homework = `Mengulang Ujian Surah ${d.surah}`;
-            reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: *Ujian Surah*\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (Belum Lancar)\n📝 Tindak Lanjut: ${homework}${noteText}`);
-         }
-      } else {
-         if (isGoodGrade) {
-            const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 0;
-            if (surahInfo && lastEnd >= surahInfo.total_ayat) {
-               homework = `Selesai Surah! Besok Ujian Surah ${d.surah}`;
-            } else {
-               const nextVerse = lastEnd ? lastEnd + 1 : '';
-               homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
-            }
-         } else {
-            homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
-         }
-         reportSegments.push(`📚 *Hafalan Al-Qur'an*\n📌 Status: ${currentStatus}\n📖 Materi: ${materiTitle}\n⭐ Nilai: *${d.grade}* (${d.grade === 'L' ? 'Lancar' : d.grade === 'CL' ? 'Cukup Lancar' : 'Belum Lancar'})\n📝 PR: ${homework}${noteText}`);
-      }
-    }
+      const surahName = surahInfo ? surahInfo.name : (d.surah || '-');
+      const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
+      const juzNum = getSurahJuz(surahInfo ? surahInfo.id : d.surah, lastEnd);
+      const startStr = d.verse_start || '1';
+      const endStr = d.verse_end || d.verse_start || '1';
+      const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
 
-    // Ummi Segment
-    if (ummiData && ummiData.details && ummiData.details.grade) {
+      let hafalanText = `*SETORAN HAFALAN HARI INI*\n` +
+        `Nama   : ${studentName}\n` +
+        `Tanggal: ${formattedDate}\n` +
+        `Surah  : ${surahName} (Juz ${juzNum})\n` +
+        `Ayat   : ${ayatToday}\n` +
+        `Nilai  : ${d.grade}\n\n` +
+        `*TARGET BESOK*\n` +
+        `Surah  : ${decision.targetSurah}\n` +
+        `Ayat   : ${decision.targetVerseText}\n` +
+        `Keterangan: ${decision.keterangan}`;
+
+      if (d.note && d.note.trim()) {
+        hafalanText += `\nCatatan: ${d.note.trim()}`;
+      }
+
+      sections.push(hafalanText);
+    } else if (ummiData?.details?.grade) {
+      // If only Ummi is present
       const d = ummiData.details;
       const isGoodGrade = ['A', 'B'].includes(d.grade);
-      let homework = '';
-      if (isGoodGrade) {
-        const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
-        homework = `Lanjut Jilid ${d.level} hlm ${nextPage}`;
-      } else {
-        homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
+      const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+      let ummiText = `*SETORAN METODE UMMI HARI INI*\n` +
+        `Nama   : ${studentName}\n` +
+        `Tanggal: ${formattedDate}\n` +
+        `Materi : Jilid ${d.level}, Halaman ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}\n` +
+        `Nilai  : ${d.grade}\n\n` +
+        `*TARGET BESOK*\n` +
+        `Target : ${isGoodGrade ? `Lanjut Jilid ${d.level} Hlm ${nextPage}` : `Mengulang Jilid ${d.level} Hlm ${d.page_start}`}\n` +
+        `Keterangan: ${isGoodGrade ? 'Lanjut halaman berikutnya' : 'Belum lulus, ulang'}`;
+
+      if (d.note && d.note.trim()) {
+        ummiText += `\nCatatan: ${d.note.trim()}`;
       }
-      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
-      reportSegments.push(`📚 *Metode Ummi*\n📖 Materi: Jilid ${d.level}, hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}${noteText}`);
+
+      sections.push(ummiText);
     }
 
-    // Tilawah Segment
-    if (tilawahData && tilawahData.details && tilawahData.details.grade) {
+    // Additional segments if both Hafalan and Ummi/Tilawah exist
+    if (hafalanData?.details?.grade && ummiData?.details?.grade) {
+      const d = ummiData.details;
+      const isGoodGrade = ['A', 'B'].includes(d.grade);
+      const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+      sections.push(
+        `*METODE UMMI*\n` +
+        `Materi : Jilid ${d.level}, Hlm ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}\n` +
+        `Nilai  : ${d.grade}\n` +
+        `Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`
+      );
+    }
+
+    if (tilawahData?.details?.grade) {
       const d = tilawahData.details;
       const isGoodGrade = ['A', 'B'].includes(d.grade);
-      let homework = '';
-      if (isGoodGrade) {
-        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-        homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
-      } else {
-        homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
-      }
-      const noteText = d.note ? `\n💬 Catatan: ${d.note}` : '';
-      reportSegments.push(`📚 *Tilawah/BTQ*\n📖 Materi: Juz ${d.juz}, Surah ${d.surah}, ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}\n⭐ Nilai: *${d.grade}*\n📝 PR: ${homework}${noteText}`);
+      const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+      sections.push(
+        `*TILAWAH / BTQ*\n` +
+        `Materi : Juz ${d.juz}, Surah ${d.surah}, Ayat ${d.verse_start}${d.verse_end ? ' – ' + d.verse_end : ''}\n` +
+        `Nilai  : ${d.grade}\n` +
+        `Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}`
+      );
     }
 
-    const message = `*LAPORAN SETORAN HARIAN*
-*${institution.name}*
+    // Footer
+    sections.push('Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh');
 
-Assalamu'alaikum Warahmatullahi Wabarakatuh,
-Ayah/Bunda dari Ananda *${studentName}*, berikut adalah laporan perkembangan hari ini:
-
-📅 Tanggal: ${format(new Date(date), 'dd MMMM yyyy')}
-
-${reportSegments.join('\n\n')}
-
-Mohon bimbingan dan motivasinya di rumah. Syukron, Jazakumullahu Khairan.
-
-Halaqoh: ${selectedStudent.halaqoh_name || '-'}
-Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
-
+    const message = sections.join('\n\n');
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${parentPhone.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleShareHalaqohToWhatsApp = (halaqohName: string, studentsList: any[]) => {
-    const institution = storage.getInstitution();
-    
-    let segments = [];
+    let studentBlocks: string[] = [];
     let hasAnyData = false;
+    const formattedDate = format(new Date(date), 'dd MMMM yyyy');
 
     studentsList.forEach((student, index) => {
       const hafalanData = storage.getDeposit(student.id, 'hafalan', date);
       const ummiData = storage.getDeposit(student.id, 'ummi', date);
       const tilawahData = storage.getDeposit(student.id, 'tilawah', date);
-      
-      let studentText = `${index + 1}. *Ananda ${student.name}*`;
-      let hasData = false;
-      let depositNotes = [];
 
-      if (hafalanData && hafalanData.details && hafalanData.details.grade) {
-        hasData = true;
-        const d = hafalanData.details;
-        const isGoodGrade = ['L', 'CL'].includes(d.grade);
-        
-        let currentStatus = '';
-        if (d.status === 'Ujian' || d.is_ujian) {
-           currentStatus = 'Ujian Surah';
-        } else if (d.status === 'Hafalan') {
-           currentStatus = 'Muroja\'ah';
-        } else {
-           currentStatus = 'Ziyadah';
-        }
-
-        let homework = '';
-        let materiDesc = `${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''})`;
-        const surahInfo = findSurahByName(d.surah);
-
-        if (d.status === 'Ujian' || d.is_ujian) {
-           materiDesc = `UJIAN ${d.surah}`;
-           if (isGoodGrade) {
-              const nextSurah = surahInfo ? getNextSurah(surahInfo.id) : null;
-              homework = nextSurah ? `🎉 Lulus! Lanjut ${nextSurah.name} ayat 1` : '🎉 Lulus!';
-           } else {
-              homework = `Mengulang Ujian ${d.surah}`;
-           }
-        } else {
-           if (isGoodGrade) {
-              const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 0;
-              if (surahInfo && lastEnd >= surahInfo.total_ayat) {
-                 homework = `Selesai! Besok Ujian ${d.surah}`;
-              } else {
-                 const nextVerse = lastEnd ? lastEnd + 1 : '';
-                 homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
-              }
-           } else {
-              homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
-           }
-        }
-
-        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
-        depositNotes.push(`- [${currentStatus}] Hafalan: ${materiDesc} | Nilai: ${d.grade} | ${homework}${noteSnippet}`);
+      if (!hafalanData?.details?.grade && !ummiData?.details?.grade && !tilawahData?.details?.grade) {
+        return;
       }
-      
-      if (ummiData && ummiData.details && ummiData.details.grade) {
-        hasData = true;
+      hasAnyData = true;
+
+      const lines: string[] = [];
+      // Student name clearly at the top
+      lines.push(`*${index + 1}. ${student.name.toUpperCase()}*`);
+      lines.push('');
+
+      if (hafalanData?.details?.grade) {
+        const d = hafalanData.details;
+        const decision = computeTomorrowTarget({
+          studentName: student.name,
+          surah: d.surah,
+          verseStart: d.verse_start,
+          verseEnd: d.verse_end,
+          grade: d.grade,
+          isUjian: d.is_ujian,
+          status: d.status
+        });
+
+        const surahInfo = findSurahByName(d.surah);
+        const surahName = surahInfo ? surahInfo.name : (d.surah || '-');
+        const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
+        const juzNum = getSurahJuz(surahInfo ? surahInfo.id : d.surah, lastEnd);
+        const startStr = d.verse_start || '1';
+        const endStr = d.verse_end || d.verse_start || '1';
+        const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
+
+        lines.push(`*SETORAN HAFALAN HARI INI*`);
+        lines.push(`Tanggal: ${formattedDate}`);
+        lines.push(`Surah  : ${surahName} (Juz ${juzNum})`);
+        lines.push(`Ayat   : ${ayatToday}`);
+        lines.push(`Nilai  : ${d.grade}`);
+        lines.push('');
+        lines.push(`*TARGET BESOK*`);
+        lines.push(`Surah  : ${decision.targetSurah}`);
+        lines.push(`Ayat   : ${decision.targetVerseText}`);
+        lines.push(`Keterangan: ${decision.keterangan}`);
+
+        if (d.note && d.note.trim()) {
+          lines.push(`Catatan: ${d.note.trim()}`);
+        }
+      } else if (ummiData?.details?.grade) {
         const d = ummiData.details;
         const isGoodGrade = ['A', 'B'].includes(d.grade);
-        let homework = '';
-        if (isGoodGrade) {
-          const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
-          homework = `Lanjut Jilid ${d.level} hlm ${nextPage}`;
-        } else {
-          homework = `Mengulang Jilid ${d.level} hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''}`;
+        const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+        lines.push(`*METODE UMMI HARI INI*`);
+        lines.push(`Tanggal: ${formattedDate}`);
+        lines.push(`Materi : Jilid ${d.level}, Hlm ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}`);
+        lines.push(`Nilai  : ${d.grade}`);
+        lines.push('');
+        lines.push(`*TARGET BESOK*`);
+        lines.push(`Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`);
+        lines.push(`Keterangan: ${isGoodGrade ? 'Lanjut halaman berikutnya' : 'Belum lulus, ulang'}`);
+        if (d.note && d.note.trim()) {
+          lines.push(`Catatan: ${d.note.trim()}`);
         }
-        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
-        depositNotes.push(`- Ummi: Jilid ${d.level} Hlm ${d.page_start}${d.page_end ? '-' + d.page_end : ''} | Nilai: ${d.grade} | PR: ${homework}${noteSnippet}`);
       }
-      
-      if (tilawahData && tilawahData.details && tilawahData.details.grade) {
-        hasData = true;
-        const d = tilawahData.details;
+
+      if (hafalanData?.details?.grade && ummiData?.details?.grade) {
+        const d = ummiData.details;
         const isGoodGrade = ['A', 'B'].includes(d.grade);
-        let homework = '';
-        if (isGoodGrade) {
-          const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-          homework = `Lanjut Surah ${d.surah} ayat ${nextVerse}`;
-        } else {
-          homework = `Mengulang Surah ${d.surah} ayat ${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}`;
-        }
-        const noteSnippet = d.note ? ` | Catatan: ${d.note}` : '';
-        depositNotes.push(`- Tilawah: Juz ${d.juz} ${d.surah} (${d.verse_start}${d.verse_end ? '-' + d.verse_end : ''}) | Nilai: ${d.grade} | PR: ${homework}${noteSnippet}`);
+        const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
+        lines.push('');
+        lines.push(`*METODE UMMI*`);
+        lines.push(`Materi : Jilid ${d.level}, Hlm ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}`);
+        lines.push(`Nilai  : ${d.grade}`);
+        lines.push(`Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`);
       }
-      
-      if (hasData) {
-        hasAnyData = true;
-        segments.push(studentText + '\n' + depositNotes.join('\n'));
-      }
+
+      studentBlocks.push(lines.join('\n'));
     });
 
     if (!hasAnyData) {
@@ -607,24 +504,14 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
       return;
     }
 
-    const message = `*LAPORAN SETORAN HARIAN HALAQOH*
-*${institution.name}*
+    const message = `Assalamualaikum Warahmatullahi Wabarakatuh
 
-Assalamu'alaikum Warahmatullahi Wabarakatuh,
+*LAPORAN SETORAN HALAQOH ${halaqohName.toUpperCase()}*
+Tanggal: ${formattedDate}
 
-Ayah/Bunda yang dirahmati Allah, berikut adalah laporan perkembangan setoran ananda di Halaqoh *${halaqohName}* pada hari ini:
+${studentBlocks.join('\n\n----------\n\n')}
 
-📅 Tanggal: ${format(new Date(date), 'dd MMMM yyyy')}
-
-${segments.join('\n\n')}
-
-Mohon bimbingan dan motivasinya di rumah agar ananda semakin semangat dalam menghafal dan belajar Al-Qur'an.
-Semoga Allah memudahkan langkah kita dalam mendidik generasi Qur'ani.
-
-Wassalamu'alaikum Warahmatullahi Wabarakatuh,
-Syukron, Jazakumullahu Khairan.
-
-Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
+Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
@@ -642,16 +529,22 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
       const detailsToSave = { ...details };
       let customAlert = 'Setoran berhasil disimpan!';
 
-      if (type === 'hafalan') {
-        const isExam = details.status === 'Ujian' || details.is_ujian;
-        const isPassed = details.grade === 'L' || details.grade === 'CL';
-        if (isExam && isPassed && details.surah) {
-          const surahObj = findSurahByName(details.surah);
-          const nextSurahObj = surahObj ? getNextSurah(surahObj.id) : null;
-          if (nextSurahObj) {
-            detailsToSave.next_surah = nextSurahObj.name;
-            customAlert = `Alhamdulillah! Nilai ujian ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}) berhasil disimpan.\nSiswa LULUS Ujian Surah ${details.surah} dan otomatis lanjut ke Surah ${nextSurahObj.name}!`;
-          }
+      if (type === 'hafalan' && details.surah && details.grade) {
+        const decision = computeTomorrowTarget({
+          studentName: selectedStudent.name,
+          surah: details.surah,
+          verseStart: details.verse_start,
+          verseEnd: details.verse_end,
+          grade: details.grade,
+          isUjian: details.is_ujian,
+          status: details.status
+        });
+
+        if (decision.action === 'ganti_surah') {
+          detailsToSave.next_surah = decision.targetSurah;
+          customAlert = `Alhamdulillah! Nilai ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}) berhasil disimpan.\nSiswa TUNTAS Surah ${details.surah} dan otomatis lanjut ke Surah ${decision.targetSurah} (Ayat 1)!`;
+        } else if (decision.action === 'ulang_surah') {
+          customAlert = `Setoran tersimpan. Nilai ${details.grade} di ayat terakhir Surah ${details.surah}.\nSesuai aturan kurikulum, besok siswa mengulang Surah ${details.surah} sampai tuntas dan lulus (L/CL).`;
         }
       }
 
@@ -1045,41 +938,45 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                       </div>
                     </div>
 
-                    {/* Auto Next Surah Celebration Banner for Ujian */}
+                    {/* Auto Next Decision Feedback Banner */}
                     {(() => {
-                      const isExam = details.status === 'Ujian' || details.is_ujian;
-                      const isPassed = details.grade === 'L' || details.grade === 'CL';
-                      if (!isExam || !isPassed) return null;
-                      const currentSurah = findSurahByName(details.surah);
-                      const nextSurah = currentSurah ? getNextSurah(currentSurah.id) : null;
-                      return (
-                        <div className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border-2 border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">🎉</span>
-                              <p className="text-xs font-black uppercase tracking-wider text-emerald-800">
-                                Alhamdulillah Siswa Lulus Ujian Surah {details.surah || ''}!
+                      if (!details.surah || !details.grade) return null;
+                      const decision = computeTomorrowTarget({
+                        studentName: selectedStudent?.name,
+                        surah: details.surah,
+                        verseStart: details.verse_start,
+                        verseEnd: details.verse_end,
+                        grade: details.grade,
+                        isUjian: details.is_ujian,
+                        status: details.status
+                      });
+
+                      if (decision.action === 'ganti_surah') {
+                        return (
+                          <div className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border-2 border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">🎉</span>
+                                <p className="text-xs font-black uppercase tracking-wider text-emerald-800">
+                                  Alhamdulillah Siswa Tuntas & Lulus Surah {details.surah || ''}!
+                                </p>
+                              </div>
+                              <p className="text-sm font-bold text-stone-800">
+                                Target Besok: <span className="text-emerald-700 underline font-black">{decision.targetSurah}</span> (Ayat 1)
+                              </p>
+                              <p className="text-[11px] text-stone-500">
+                                Status: Lulus ({details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}). Otomatis terisi di pesan WhatsApp dan setoran besok.
                               </p>
                             </div>
-                            <p className="text-sm font-bold text-stone-800">
-                              Surat Selanjutnya: <span className="text-emerald-700 underline font-black">{nextSurah ? nextSurah.name : 'Surat Berikutnya'}</span> (Ayat 1)
-                            </p>
-                            <p className="text-[11px] text-stone-500">
-                              Otomatis terisi di pesan WhatsApp dan setoran berikutnya.
-                            </p>
-                          </div>
-                          {nextSurah && (
                             <button
                               type="button"
                               onClick={() => {
-                                // Save exam record first
                                 storage.saveDeposit(selectedStudent.id, 'hafalan', date, {
                                   ...details,
-                                  next_surah: nextSurah.name
+                                  next_surah: decision.targetSurah
                                 });
-                                // Transition form directly to next surah
                                 setDetails({
-                                  surah: nextSurah.name,
+                                  surah: decision.targetSurah,
                                   verse_start: '1',
                                   verse_end: '',
                                   status: 'Progressing',
@@ -1087,16 +984,56 @@ Ust/Ustzh: ${institution.halaqoh_teacher_name || '-'}`;
                                   grade: '',
                                   note: ''
                                 });
-                                alert(`Ujian Surah ${details.surah} tersimpan lulus!\nForm otomatis beralih ke Surah ${nextSurah.name} ayat 1.`);
+                                alert(`Surah ${details.surah} tersimpan tuntas!\nForm otomatis beralih ke Surah ${decision.targetSurah} ayat 1.`);
                               }}
                               className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0 flex items-center gap-2"
                             >
                               <Sparkles size={14} />
-                              Lanjut Setor {nextSurah.name}
+                              Lanjut Setor {decision.targetSurah}
                             </button>
-                          )}
-                        </div>
-                      );
+                          </div>
+                        );
+                      }
+
+                      if (decision.action === 'ulang_surah') {
+                        return (
+                          <div className="md:col-span-2 bg-rose-50 border-2 border-rose-200 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in duration-300">
+                            <span className="text-lg mt-0.5">⚠️</span>
+                            <div className="space-y-1">
+                              <p className="text-xs font-black uppercase tracking-wider text-rose-800">
+                                Nilai BL di Ayat Terakhir Surah {details.surah}
+                              </p>
+                              <p className="text-xs text-rose-700 font-medium">
+                                Aturan wajib: Besok santri <span className="font-bold underline">ULANG Surah {details.surah}</span> dan terus mengulang sampai mendapatkan nilai L atau CL, baru otomatis lanjut ke surah berikutnya.
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (decision.action === 'lanjut_ayat') {
+                        return (
+                          <div className="md:col-span-2 bg-emerald-50/80 border border-emerald-200 p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs shadow-sm">
+                            <div className="flex items-center gap-2 text-emerald-800 font-medium">
+                              <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                              <span>Nilai <span className="font-bold">{details.grade}</span>: Target besok otomatis <span className="font-bold text-emerald-900">lanjut ayat berikutnya ({decision.targetVerseText})</span></span>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (decision.action === 'ulang_ayat') {
+                        return (
+                          <div className="md:col-span-2 bg-amber-50 border border-amber-200 p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs shadow-sm">
+                            <div className="flex items-center gap-2 text-amber-800 font-medium">
+                              <span className="text-base shrink-0">🔁</span>
+                              <span>Nilai <span className="font-bold">BL (Belum Lancar)</span>: Target besok <span className="font-bold text-amber-900">mengulang ayat {decision.targetVerseText}</span></span>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return null;
                     })()}
 
                     {/* Catatan Harian Hafalan - Placed directly below Nilai Hafalan */}
