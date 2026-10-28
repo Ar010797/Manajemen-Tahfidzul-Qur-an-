@@ -472,20 +472,22 @@ export function getNextSurah(currentId: number): SurahItem | null {
 }
 
 export interface TomorrowTargetDecision {
-  action: 'lanjut_ayat' | 'ganti_surah' | 'ulang_surah' | 'ulang_ayat';
-  keterangan: 'Lanjut ayat berikutnya' | 'Lulus, ganti surah' | 'Belum lulus, ulang';
+  action: 'lanjut_ayat' | 'ujian_surah' | 'ganti_surah' | 'ulang_surah' | 'ulang_ujian' | 'ulang_ayat';
+  keterangan: string;
   targetSurah: string;
   targetVerseStart: string;
   targetVerseEnd: string;
   targetVerseText: string;
+  isUjian: boolean;
   currentJuz: number;
   auditLog: string;
 }
 
 /**
  * Computes tomorrow's setoran target strictly adhering to the mandatory rule:
- * - Reach last verse of surah AND grade is L/CL -> besok OTOMATIS lanjut ke surah berikutnya (ayat 1).
- * - Reach last verse of surah AND grade is BL -> besok ULANG surah yang sama sampai dapat L/CL.
+ * - Ayat terakhir jika Nilai CL/L -> UJIAN SURAT TERSEBUT DULU dari ayat 1 - terakhir.
+ * - Saat Ujian Surah nilainya sudah CL/L -> BARU LANJUT KE SURAH SELANJUTNYA (ayat 1).
+ * - Saat Ujian Surah nilainya BL -> ULANG UJIAN SURAH yang sama sampai dapat CL/L.
  * - Belum sampai ayat terakhir AND grade is L/CL -> besok lanjut ayat berikutnya.
  * - Belum sampai ayat terakhir AND grade is BL -> besok ulang ayat yang sama.
  * Includes complete audit logging.
@@ -512,18 +514,20 @@ export function computeTomorrowTarget(params: {
   const endNum = extractNum(params.verseEnd) || startNum;
 
   const isPassed = params.grade === 'L' || params.grade === 'CL';
-  const isExam = params.isUjian || params.status === 'Ujian';
-  const isLastVerse = isExam || (totalAyat > 0 && endNum >= totalAyat);
+  const isExam = params.isUjian === true || params.status === 'Ujian';
+  const reachedLastVerse = totalAyat > 0 && endNum >= totalAyat;
 
   const currentJuz = getSurahJuz(surahInfo ? surahInfo.id : params.surah, endNum);
   const student = params.studentName || 'Santri';
   const surahName = surahInfo ? surahInfo.name : params.surah;
 
-  if (isLastVerse) {
+  // Case 1: Currently taking UJIAN SURAH (exam from verse 1 to last verse)
+  if (isExam) {
     if (isPassed) {
+      // Nilai ujian sudah CL/L -> BARU lanjut ke surah selanjutnya!
       const nextSurahObj = surahInfo ? getNextSurah(surahInfo.id) : null;
       const targetSurah = nextSurahObj ? nextSurahObj.name : surahName;
-      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat Terakhir: ${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus) | Keputusan: GANTI SURAH -> ${targetSurah} Ayat 1`;
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | LULUS UJIAN SURAH | Nilai: ${params.grade} | Keputusan: GANTI SURAH -> ${targetSurah} Ayat 1`;
       console.log(auditLog);
       return {
         action: 'ganti_surah',
@@ -532,61 +536,105 @@ export function computeTomorrowTarget(params: {
         targetVerseStart: '1',
         targetVerseEnd: '',
         targetVerseText: '1',
+        isUjian: false,
         currentJuz,
         auditLog
       };
     } else {
-      // Failed at last verse or exam -> repeat the same surah
-      const targetSurah = surahName;
+      // Ujian belum lulus -> ulang ujian surah yang sama dari ayat 1 sampai terakhir
+      const targetVerseStart = '1';
+      const targetVerseEnd = totalAyat ? String(totalAyat) : String(endNum);
+      const targetVerseText = totalAyat > 1 ? `1 – ${targetVerseEnd}` : '1';
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | BELUM LULUS UJIAN SURAH | Nilai: ${params.grade || 'BL'} | Keputusan: ULANG UJIAN SURAH -> Tetap ${surahName} (${targetVerseText})`;
+      console.log(auditLog);
+      return {
+        action: 'ulang_ujian',
+        keterangan: 'Belum lulus, ulang',
+        targetSurah: surahName,
+        targetVerseStart,
+        targetVerseEnd,
+        targetVerseText,
+        isUjian: true,
+        currentJuz,
+        auditLog
+      };
+    }
+  }
+
+  // Case 2: Regular setoran reaches the LAST VERSE of the surah
+  if (reachedLastVerse) {
+    if (isPassed) {
+      // Ayat terakhir jika Nilai CL/L maka UJIAN SURAT TERSEBUT DULU dari ayat 1-terakhir!
+      const targetVerseStart = '1';
+      const targetVerseEnd = totalAyat ? String(totalAyat) : String(endNum);
+      const targetVerseText = totalAyat > 1 ? `1 – ${targetVerseEnd}` : '1';
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Selesai Ayat Terakhir: ${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus Setoran) | Keputusan: UJIAN SURAH DULU -> ${surahName} (${targetVerseText})`;
+      console.log(auditLog);
+      return {
+        action: 'ujian_surah',
+        keterangan: 'Lulus, besok Ujian Surah',
+        targetSurah: surahName,
+        targetVerseStart,
+        targetVerseEnd,
+        targetVerseText,
+        isUjian: true,
+        currentJuz,
+        auditLog
+      };
+    } else {
+      // Regular setoran reached last verse but BL -> repeat the surah/verse
       const targetVerseStart = String(startNum);
       const targetVerseEnd = String(endNum);
       const targetVerseText = startNum === endNum ? String(startNum) : `${startNum} – ${endNum}`;
-      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat Terakhir: ${endNum}/${totalAyat} | Nilai: ${params.grade || 'BL'} (Belum Lulus) | Keputusan: ULANG SURAH -> Tetap ${targetSurah} (${targetVerseText})`;
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat Terakhir: ${endNum}/${totalAyat} | Nilai: ${params.grade || 'BL'} (Belum Lulus) | Keputusan: ULANG SURAH -> Tetap ${surahName} (${targetVerseText})`;
       console.log(auditLog);
       return {
         action: 'ulang_surah',
         keterangan: 'Belum lulus, ulang',
-        targetSurah,
+        targetSurah: surahName,
         targetVerseStart,
         targetVerseEnd,
         targetVerseText,
+        isUjian: false,
         currentJuz,
         auditLog
       };
     }
+  }
+
+  // Case 3: Regular setoran NOT yet at last verse
+  if (isPassed) {
+    const nextVerse = endNum + 1;
+    const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat: ${startNum}-${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus) | Keputusan: LANJUT AYAT BERIKUTNYA -> ${surahName} Ayat ${nextVerse}`;
+    console.log(auditLog);
+    return {
+      action: 'lanjut_ayat',
+      keterangan: 'Lanjut ayat berikutnya',
+      targetSurah: surahName,
+      targetVerseStart: String(nextVerse),
+      targetVerseEnd: '',
+      targetVerseText: String(nextVerse),
+      isUjian: false,
+      currentJuz,
+      auditLog
+    };
   } else {
-    // Belum sampai ayat terakhir
-    if (isPassed) {
-      const nextVerse = endNum + 1;
-      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat: ${startNum}-${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus) | Keputusan: LANJUT AYAT BERIKUTNYA -> ${surahName} Ayat ${nextVerse}`;
-      console.log(auditLog);
-      return {
-        action: 'lanjut_ayat',
-        keterangan: 'Lanjut ayat berikutnya',
-        targetSurah: surahName,
-        targetVerseStart: String(nextVerse),
-        targetVerseEnd: '',
-        targetVerseText: String(nextVerse),
-        currentJuz,
-        auditLog
-      };
-    } else {
-      // Failed before last verse -> repeat same verses
-      const targetVerseStart = String(startNum);
-      const targetVerseEnd = String(endNum);
-      const targetVerseText = startNum === endNum ? String(startNum) : `${startNum} – ${endNum}`;
-      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat: ${startNum}-${endNum}/${totalAyat} | Nilai: ${params.grade || 'BL'} (Belum Lulus) | Keputusan: ULANG AYAT -> Tetap ${surahName} (${targetVerseText})`;
-      console.log(auditLog);
-      return {
-        action: 'ulang_ayat',
-        keterangan: 'Belum lulus, ulang',
-        targetSurah: surahName,
-        targetVerseStart,
-        targetVerseEnd,
-        targetVerseText,
-        currentJuz,
-        auditLog
-      };
-    }
+    // Regular setoran BL -> repeat same verses
+    const targetVerseStart = String(startNum);
+    const targetVerseEnd = String(endNum);
+    const targetVerseText = startNum === endNum ? String(startNum) : `${startNum} – ${endNum}`;
+    const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat: ${startNum}-${endNum}/${totalAyat} | Nilai: ${params.grade || 'BL'} (Belum Lulus) | Keputusan: ULANG AYAT -> Tetap ${surahName} (${targetVerseText})`;
+    console.log(auditLog);
+    return {
+      action: 'ulang_ayat',
+      keterangan: 'Belum lulus, ulang',
+      targetSurah: surahName,
+      targetVerseStart,
+      targetVerseEnd,
+      targetVerseText,
+      isUjian: false,
+      currentJuz,
+      auditLog
+    };
   }
 }

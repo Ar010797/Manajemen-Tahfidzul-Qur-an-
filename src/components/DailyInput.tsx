@@ -171,24 +171,25 @@ export default function DailyInput() {
 
           const isExam = lastDetails.is_ujian || lastDetails.status === 'Ujian';
 
-          if (decision.action === 'ganti_surah') {
+          if (decision.action === 'ujian_surah' || decision.action === 'ulang_ujian') {
+            // Selesai ayat terakhir -> masuk Ujian Surah ayat 1 - terakhir
+            setDetails({
+              surah: decision.targetSurah,
+              verse_start: '1',
+              verse_end: decision.targetVerseEnd,
+              is_ujian: true,
+              status: 'Ujian',
+              grade: '',
+              note: ''
+            });
+          } else if (decision.action === 'ganti_surah') {
+            // Lulus Ujian Surah -> baru lanjut ke surah selanjutnya ayat 1
             setDetails({
               surah: decision.targetSurah,
               verse_start: '1',
               verse_end: '',
               is_ujian: false,
               status: 'Progressing',
-              grade: '',
-              note: ''
-            });
-          } else if (decision.action === 'ulang_surah') {
-            // Repeat same surah until passed L/CL
-            setDetails({
-              surah: decision.targetSurah,
-              verse_start: decision.targetVerseStart || '1',
-              verse_end: decision.targetVerseEnd || '',
-              is_ujian: isExam,
-              status: lastDetails.status || 'Progressing',
               grade: '',
               note: ''
             });
@@ -203,7 +204,7 @@ export default function DailyInput() {
               note: ''
             });
           } else {
-            // ulang_ayat
+            // ulang_surah atau ulang_ayat
             setDetails({
               surah: decision.targetSurah,
               verse_start: decision.targetVerseStart || '1',
@@ -343,14 +344,18 @@ export default function DailyInput() {
       const endStr = d.verse_end || d.verse_start || '1';
       const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
 
+      const isExamToday = d.status === 'Ujian' || d.is_ujian;
+      const todaySurahLabel = isExamToday ? `${surahName} [Ujian Surah]` : surahName;
+      const targetSurahLabel = decision.isUjian ? `${decision.targetSurah} (Ujian Surah)` : decision.targetSurah;
+
       let hafalanText = `*SETORAN HAFALAN HARI INI*\n` +
         `Nama   : ${studentName}\n` +
         `Tanggal: ${formattedDate}\n` +
-        `Surah  : ${surahName} (Juz ${juzNum})\n` +
+        `Surah  : ${todaySurahLabel} (Juz ${juzNum})\n` +
         `Ayat   : ${ayatToday}\n` +
         `Nilai  : ${d.grade}\n\n` +
         `*TARGET BESOK*\n` +
-        `Surah  : ${decision.targetSurah}\n` +
+        `Surah  : ${targetSurahLabel}\n` +
         `Ayat   : ${decision.targetVerseText}\n` +
         `Keterangan: ${decision.keterangan}`;
 
@@ -454,14 +459,18 @@ export default function DailyInput() {
         const endStr = d.verse_end || d.verse_start || '1';
         const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
 
+        const isExamToday = d.status === 'Ujian' || d.is_ujian;
+        const todaySurahLabel = isExamToday ? `${surahName} [Ujian Surah]` : surahName;
+        const targetSurahLabel = decision.isUjian ? `${decision.targetSurah} (Ujian Surah)` : decision.targetSurah;
+
         lines.push(`*SETORAN HAFALAN HARI INI*`);
         lines.push(`Tanggal: ${formattedDate}`);
-        lines.push(`Surah  : ${surahName} (Juz ${juzNum})`);
+        lines.push(`Surah  : ${todaySurahLabel} (Juz ${juzNum})`);
         lines.push(`Ayat   : ${ayatToday}`);
         lines.push(`Nilai  : ${d.grade}`);
         lines.push('');
         lines.push(`*TARGET BESOK*`);
-        lines.push(`Surah  : ${decision.targetSurah}`);
+        lines.push(`Surah  : ${targetSurahLabel}`);
         lines.push(`Ayat   : ${decision.targetVerseText}`);
         lines.push(`Keterangan: ${decision.keterangan}`);
 
@@ -540,9 +549,13 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
           status: details.status
         });
 
-        if (decision.action === 'ganti_surah') {
+        if (decision.action === 'ujian_surah') {
+          customAlert = `Alhamdulillah! Siswa selesai ayat terakhir Surah ${details.surah} dengan nilai ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}).\nSesuai aturan, besok siswa UJIAN SURAH ${details.surah} (Ayat 1 – ${decision.targetVerseEnd})!`;
+        } else if (decision.action === 'ganti_surah') {
           detailsToSave.next_surah = decision.targetSurah;
-          customAlert = `Alhamdulillah! Nilai ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}) berhasil disimpan.\nSiswa TUNTAS Surah ${details.surah} dan otomatis lanjut ke Surah ${decision.targetSurah} (Ayat 1)!`;
+          customAlert = `Alhamdulillah! Siswa LULUS Ujian Surah ${details.surah} dengan nilai ${details.grade} (${details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'})!\nBesok otomatis lanjut ke Surah ${decision.targetSurah} (Ayat 1)!`;
+        } else if (decision.action === 'ulang_ujian') {
+          customAlert = `Setoran tersimpan. Nilai ${details.grade} pada Ujian Surah ${details.surah}.\nSesuai aturan kurikulum, besok siswa mengulang Ujian Surah ${details.surah} sampai lulus (L/CL).`;
         } else if (decision.action === 'ulang_surah') {
           customAlert = `Setoran tersimpan. Nilai ${details.grade} di ayat terakhir Surah ${details.surah}.\nSesuai aturan kurikulum, besok siswa mengulang Surah ${details.surah} sampai tuntas dan lulus (L/CL).`;
         }
@@ -951,6 +964,50 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
                         status: details.status
                       });
 
+                      if (decision.action === 'ujian_surah') {
+                        return (
+                          <div className="md:col-span-2 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/10 border-2 border-indigo-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">📋</span>
+                                <p className="text-xs font-black uppercase tracking-wider text-indigo-900">
+                                  Tuntas Ayat Terakhir Surah {details.surah || ''}!
+                                </p>
+                              </div>
+                              <p className="text-sm font-bold text-stone-800">
+                                Target Besok: <span className="text-indigo-700 underline font-black">UJIAN SURAH {decision.targetSurah}</span> (Ayat 1 – {decision.targetVerseEnd})
+                              </p>
+                              <p className="text-[11px] text-stone-500">
+                                Sesuai aturan: Santri wajib Ujian Surah dari ayat 1 – terakhir dulu. Jika nilai ujian L/CL, baru lanjut ke surah berikutnya.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                storage.saveDeposit(selectedStudent.id, 'hafalan', date, {
+                                  ...details,
+                                  is_ujian: false
+                                });
+                                setDetails({
+                                  surah: decision.targetSurah,
+                                  verse_start: '1',
+                                  verse_end: decision.targetVerseEnd,
+                                  status: 'Ujian',
+                                  is_ujian: true,
+                                  grade: '',
+                                  note: ''
+                                });
+                                alert(`Setoran ayat terakhir Surah ${details.surah} tersimpan!\nForm otomatis dialihkan ke Mode Ujian Surah ${decision.targetSurah} (Ayat 1 – ${decision.targetVerseEnd}).`);
+                              }}
+                              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0 flex items-center gap-2"
+                            >
+                              <Sparkles size={14} />
+                              Mulai Ujian {decision.targetSurah}
+                            </button>
+                          </div>
+                        );
+                      }
+
                       if (decision.action === 'ganti_surah') {
                         return (
                           <div className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border-2 border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
@@ -958,14 +1015,14 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
                               <div className="flex items-center gap-2">
                                 <span className="text-lg">🎉</span>
                                 <p className="text-xs font-black uppercase tracking-wider text-emerald-800">
-                                  Alhamdulillah Siswa Tuntas & Lulus Surah {details.surah || ''}!
+                                  Alhamdulillah Siswa LULUS UJIAN Surah {details.surah || ''}!
                                 </p>
                               </div>
                               <p className="text-sm font-bold text-stone-800">
                                 Target Besok: <span className="text-emerald-700 underline font-black">{decision.targetSurah}</span> (Ayat 1)
                               </p>
                               <p className="text-[11px] text-stone-500">
-                                Status: Lulus ({details.grade === 'L' ? 'Lancar' : 'Cukup Lancar'}). Otomatis terisi di pesan WhatsApp dan setoran besok.
+                                Nilai Ujian: {details.grade === 'L' ? 'Lancar (L)' : 'Cukup Lancar (CL)'}. Otomatis lanjut ke surah selanjutnya.
                               </p>
                             </div>
                             <button
@@ -984,13 +1041,29 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
                                   grade: '',
                                   note: ''
                                 });
-                                alert(`Surah ${details.surah} tersimpan tuntas!\nForm otomatis beralih ke Surah ${decision.targetSurah} ayat 1.`);
+                                alert(`Ujian Surah ${details.surah} tersimpan lulus!\nForm otomatis beralih ke Surah ${decision.targetSurah} ayat 1.`);
                               }}
                               className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0 flex items-center gap-2"
                             >
                               <Sparkles size={14} />
                               Lanjut Setor {decision.targetSurah}
                             </button>
+                          </div>
+                        );
+                      }
+
+                      if (decision.action === 'ulang_ujian') {
+                        return (
+                          <div className="md:col-span-2 bg-rose-50 border-2 border-rose-200 p-4 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in duration-300">
+                            <span className="text-lg mt-0.5">⚠️</span>
+                            <div className="space-y-1">
+                              <p className="text-xs font-black uppercase tracking-wider text-rose-800">
+                                Ujian Surah {details.surah} Belum Lulus (Nilai BL)
+                              </p>
+                              <p className="text-xs text-rose-700 font-medium">
+                                Aturan wajib: Besok santri <span className="font-bold underline">ULANG Ujian Surah {details.surah} (Ayat 1 – {decision.targetVerseEnd})</span> dan terus mengulang sampai mendapatkan nilai L atau CL, baru otomatis lanjut ke surah berikutnya.
+                              </p>
+                            </div>
                           </div>
                         );
                       }
@@ -1004,7 +1077,7 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
                                 Nilai BL di Ayat Terakhir Surah {details.surah}
                               </p>
                               <p className="text-xs text-rose-700 font-medium">
-                                Aturan wajib: Besok santri <span className="font-bold underline">ULANG Surah {details.surah}</span> dan terus mengulang sampai mendapatkan nilai L atau CL, baru otomatis lanjut ke surah berikutnya.
+                                Aturan wajib: Besok santri <span className="font-bold underline">ULANG Surah {details.surah}</span> dan terus mengulang sampai mendapatkan nilai L atau CL, baru dapat menempuh Ujian Surah.
                               </p>
                             </div>
                           </div>
