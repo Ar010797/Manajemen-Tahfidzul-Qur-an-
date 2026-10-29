@@ -159,6 +159,20 @@ export default function DailyInput() {
       if (lastDeposit && lastDeposit.details) {
         const lastDetails = lastDeposit.details;
         if (type === 'hafalan') {
+          // If the last deposit was already completed with next_surah and a passing grade:
+          if (lastDetails.next_surah && (lastDetails.grade === 'L' || lastDetails.grade === 'CL')) {
+            setDetails({
+              surah: lastDetails.next_surah,
+              verse_start: '1',
+              verse_end: '',
+              is_ujian: false,
+              status: 'Progressing',
+              grade: '',
+              note: ''
+            });
+            return;
+          }
+
           const decision = computeTomorrowTarget({
             studentName: selectedStudent.name,
             surah: lastDetails.surah,
@@ -166,23 +180,11 @@ export default function DailyInput() {
             verseEnd: lastDetails.verse_end,
             grade: lastDetails.grade,
             isUjian: lastDetails.is_ujian,
-            status: lastDetails.status
+            status: lastDetails.status,
+            nextSurah: lastDetails.next_surah
           });
 
-          const isExam = lastDetails.is_ujian || lastDetails.status === 'Ujian';
-
-          if (decision.action === 'ujian_surah' || decision.action === 'ulang_ujian') {
-            // Selesai ayat terakhir -> masuk Ujian Surah ayat 1 - terakhir
-            setDetails({
-              surah: decision.targetSurah,
-              verse_start: '1',
-              verse_end: decision.targetVerseEnd,
-              is_ujian: true,
-              status: 'Ujian',
-              grade: '',
-              note: ''
-            });
-          } else if (decision.action === 'ganti_surah') {
+          if (decision.action === 'ganti_surah') {
             // Lulus Ujian Surah -> baru lanjut ke surah selanjutnya ayat 1
             setDetails({
               surah: decision.targetSurah,
@@ -190,6 +192,17 @@ export default function DailyInput() {
               verse_end: '',
               is_ujian: false,
               status: 'Progressing',
+              grade: '',
+              note: ''
+            });
+          } else if (decision.action === 'ujian_surah' || decision.action === 'ulang_ujian') {
+            // Selesai ayat terakhir -> masuk Ujian Surah ayat 1 - terakhir
+            setDetails({
+              surah: decision.targetSurah,
+              verse_start: '1',
+              verse_end: decision.targetVerseEnd,
+              is_ujian: true,
+              status: 'Ujian',
               grade: '',
               note: ''
             });
@@ -923,11 +936,19 @@ Jazakumullah khairan wassalamualaikum warahmatullahi wabarakatuh`;
                     <div className="space-y-4 md:col-span-2 mt-2">
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">Pencapaian Nilai</label>
-                        {(details.status === 'Ujian' || details.is_ujian) && (
-                          <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
-                            Mode Ujian Surah
-                          </span>
-                        )}
+                        {(() => {
+                          const surahInfo = findSurahByName(details.surah);
+                          const totalAyat = surahInfo ? surahInfo.total_ayat : 0;
+                          const isFull = details.verse_start === '1' && totalAyat > 0 && parseInt(details.verse_end) >= totalAyat;
+                          if (details.status === 'Ujian' || details.is_ujian || isFull) {
+                            return (
+                              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-200 flex items-center gap-1 shadow-xs">
+                                <Sparkles size={11} className="text-indigo-500" /> Mode Ujian Surah
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                          {(['L', 'CL', 'BL'] as const).map(g => (

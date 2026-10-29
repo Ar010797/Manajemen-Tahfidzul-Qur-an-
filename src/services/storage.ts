@@ -1,12 +1,14 @@
 // src/services/storage.ts
 import { safeJsonParse } from '../utils/jsonUtils';
 
-let CURRENT_USER = localStorage.getItem('current_username') || 'default';
+let CURRENT_USER = typeof localStorage !== 'undefined' ? (localStorage.getItem('current_username') || 'default') : 'default';
 const getStorageKey = () => `tahfidz_data_${CURRENT_USER}`;
 
 export const setCurrentUser = (username: string) => {
   CURRENT_USER = username;
-  localStorage.setItem('current_username', username);
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('current_username', username);
+  }
 };
 
 export interface DataSchema {
@@ -71,6 +73,7 @@ const defaultData: DataSchema = {
 };
 
 const getRawData = (): DataSchema => {
+  if (typeof localStorage === 'undefined') return JSON.parse(JSON.stringify(defaultData));
   const data = localStorage.getItem(getStorageKey());
   if (!data) return JSON.parse(JSON.stringify(defaultData));
   try {
@@ -81,6 +84,7 @@ const getRawData = (): DataSchema => {
 };
 
 const saveRawData = (data: DataSchema) => {
+  if (typeof localStorage === 'undefined') return true;
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(data));
     return true;

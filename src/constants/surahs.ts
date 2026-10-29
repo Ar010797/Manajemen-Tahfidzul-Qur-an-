@@ -500,33 +500,46 @@ export function computeTomorrowTarget(params: {
   grade?: string;
   isUjian?: boolean;
   status?: string;
+  nextSurah?: string;
 }): TomorrowTargetDecision {
   const surahInfo = findSurahByName(params.surah);
   const totalAyat = surahInfo ? surahInfo.total_ayat : 0;
 
   const extractNum = (val: any): number => {
-    if (!val) return 0;
+    if (val === null || val === undefined || val === '') return 0;
     const match = String(val).match(/(\d+)(?!.*\d)/);
     return match ? parseInt(match[1]) : 0;
   };
 
   const startNum = extractNum(params.verseStart) || 1;
-  const endNum = extractNum(params.verseEnd) || startNum;
+  const rawEnd = extractNum(params.verseEnd);
 
-  const isPassed = params.grade === 'L' || params.grade === 'CL';
-  const isExam = params.isUjian === true || params.status === 'Ujian';
+  const isExplicitExam = params.isUjian === true || 
+                         params.status === 'Ujian' || 
+                         /ujian/i.test(params.status || '');
+
+  // If explicit exam and verseEnd was empty, assume the full surah was tested
+  const endNum = rawEnd || (isExplicitExam && totalAyat > 0 ? totalAyat : (params.verseStart ? startNum : 1));
+
   const reachedLastVerse = totalAyat > 0 && endNum >= totalAyat;
+  const isPassed = params.grade === 'L' || params.grade === 'CL';
+
+  // An exam is active if explicitly set OR if the student recited the full surah (from verse 1 to last verse)
+  const isExam = isExplicitExam || (startNum === 1 && reachedLastVerse);
 
   const currentJuz = getSurahJuz(surahInfo ? surahInfo.id : params.surah, endNum);
   const student = params.studentName || 'Santri';
   const surahName = surahInfo ? surahInfo.name : params.surah;
 
-  // Case 1: Currently taking UJIAN SURAH (exam from verse 1 to last verse)
+  // Case 1: Currently taking UJIAN SURAH / FULL SURAH TEST
   if (isExam) {
     if (isPassed) {
       // Nilai ujian sudah CL/L -> BARU lanjut ke surah selanjutnya!
-      const nextSurahObj = surahInfo ? getNextSurah(surahInfo.id) : null;
-      const targetSurah = nextSurahObj ? nextSurahObj.name : surahName;
+      let targetSurah = params.nextSurah || '';
+      if (!targetSurah) {
+        const nextSurahObj = surahInfo ? getNextSurah(surahInfo.id) : null;
+        targetSurah = nextSurahObj ? nextSurahObj.name : surahName;
+      }
       const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | LULUS UJIAN SURAH | Nilai: ${params.grade} | Keputusan: GANTI SURAH -> ${targetSurah} Ayat 1`;
       console.log(auditLog);
       return {
@@ -561,10 +574,10 @@ export function computeTomorrowTarget(params: {
     }
   }
 
-  // Case 2: Regular setoran reaches the LAST VERSE of the surah
+  // Case 2: Regular setoran reaches the LAST VERSE of the surah (started after verse 1)
   if (reachedLastVerse) {
     if (isPassed) {
-      // Ayat terakhir jika Nilai CL/L maka UJIAN SURAT TERSEBUT DULU dari ayat 1-terakhir!
+      // Selesai ayat terakhir dalam setoran reguler -> UJIAN SURAT TERSEBUT DULU dari ayat 1-terakhir!
       const targetVerseStart = '1';
       const targetVerseEnd = totalAyat ? String(totalAyat) : String(endNum);
       const targetVerseText = totalAyat > 1 ? `1 – ${targetVerseEnd}` : '1';
@@ -638,3 +651,4 @@ export function computeTomorrowTarget(params: {
     };
   }
 }
+
