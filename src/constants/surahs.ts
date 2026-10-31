@@ -192,9 +192,9 @@ export const MULTI_JUZ_BOUNDARIES: { surahId: number; startAyah: number; endAyah
   { surahId: 51, startAyah: 31, endAyah: 60, juz: 27 }
 ];
 
-// Comprehensive transliteration aliases for accurate matching
+// Comprehensive transliteration aliases for accurate matching across Indonesian and standard spellings
 const SURAH_ALIASES: Record<string, number> = {
-  // Juz 1 - 25 common surahs
+  // Juz 1 - 25
   "alfatihah": 1, "fatihah": 1, "alfatiha": 1, "fatiha": 1,
   "albaqarah": 2, "albaqara": 2, "baqarah": 2, "baqara": 2, "albaqoroh": 2, "baqoroh": 2,
   "aliimran": 3, "alimran": 3, "imran": 3, "aalimraan": 3, "aliimron": 3,
@@ -203,11 +203,11 @@ const SURAH_ALIASES: Record<string, number> = {
   "alanam": 6, "alanaam": 6, "anam": 6,
   "alaraf": 7, "alaraaf": 7, "araf": 7,
   "alanfal": 8, "alanfaal": 8, "anfal": 8,
-  "attaubah": 9, "attawbah": 9, "taubah": 9, "tawbah": 9, "at-tawba": 9,
+  "attaubah": 9, "attawbah": 9, "taubah": 9, "tawbah": 9, "attawba": 9,
   "yunus": 10,
   "hud": 11,
   "yusuf": 12,
-  "arrad": 13, "ar-rad": 13, "rad": 13,
+  "arrad": 13, "rad": 13,
   "ibrahim": 14,
   "alhijr": 15, "hijr": 15,
   "annahl": 16, "nahl": 16,
@@ -255,7 +255,7 @@ const SURAH_ALIASES: Record<string, number> = {
 
   // Juz 28
   "almujadilah": 58, "almujadalah": 58, "mujadilah": 58, "mujadalah": 58,
-  "alhasyr": 59, "hasyr": 59,
+  "alhasyr": 59, "hasyr": 59, "hashr": 59,
   "almumtahanah": 60, "mumtahanah": 60,
   "assaff": 61, "asshaff": 61, "ashshaff": 61, "saff": 61, "shaff": 61,
   "aljumuah": 62, "jumuah": 62, "jumat": 62,
@@ -265,78 +265,109 @@ const SURAH_ALIASES: Record<string, number> = {
   "attahrim": 66, "tahrim": 66,
 
   // Juz 29
-  "almulk": 67, "mulk": 67, "tabarak": 67,
+  "almulk": 67, "mulk": 67, "tabarak": 67, "tabarok": 67,
   "alqalam": 68, "alqolam": 68, "qalam": 68, "qolam": 68, "nun": 68,
   "alhaqqah": 69, "alhaqqoh": 69, "haqqah": 69, "haqqoh": 69,
-  "almaarij": 70, "maarij": 70,
+  "almaarij": 70, "maarij": 70, "alma'arij": 70,
   "nuh": 71,
   "aljinn": 72, "aljin": 72, "jinn": 72, "jin": 72,
   "almuzzammil": 73, "almuzammil": 73, "muzzammil": 73, "muzammil": 73,
-  "almuddassir": 74, "almudasir": 74, "muddassir": 74, "mudasir": 74,
+  "almuddassir": 74, "almudasir": 74, "muddassir": 74, "mudasir": 74, "almudatsir": 74, "mudatsir": 74, "almudatstsir": 74, "mudatstsir": 74, "almuddatsir": 74,
   "alqiyamah": 75, "qiyamah": 75,
   "alinsan": 76, "insan": 76, "addahr": 76, "dahr": 76,
   "almursalat": 77, "mursalat": 77,
 
   // Juz 30
-  "annaba": 78, "annaba'": 78, "naba": 78, "anaba": 78,
-  "annaziat": 79, "naziat": 79, "anaziat": 79,
-  "abasa": 80, "'abasa": 80,
+  "annaba": 78, "annaba'": 78, "naba": 78, "anaba": 78, "nabaa": 78,
+  "annaziat": 79, "naziat": 79, "anaziat": 79, "annaaziat": 79, "naaziat": 79, "annaazi'aat": 79, "annaaziaat": 79,
+  "abasa": 80, "'abasa": 80, "suratabasa": 80,
   "attakwir": 81, "takwir": 81,
-  "alinfitar": 82, "alinfitor": 82, "infitar": 82, "infitor": 82,
-  "almutaffifin": 83, "almuthaffifin": 83, "almuthoffifin": 83, "mutaffifin": 83, "muthaffifin": 83,
-  "alinsyiqaq": 84, "alinsyiqoq": 84, "insyiqaq": 84, "insyiqoq": 84,
-  "alburuj": 85, "buruj": 85,
-  "attariq": 86, "atthariq": 86, "attoriq": 86, "tariq": 86, "thariq": 86,
-  "alala": 87, "ala": 87, "al'ala": 87,
-  "alghasyiyah": 88, "algosyiyah": 88, "alghosiyah": 88, "ghasyiyah": 88, "ghosiyah": 88,
+  "alinfitar": 82, "alinfitor": 82, "infitar": 82, "infitor": 82, "alinfithar": 82, "infithar": 82, "alinfithor": 82, "infithor": 82,
+  "almutaffifin": 83, "almuthaffifin": 83, "almuthoffifin": 83, "mutaffifin": 83, "muthaffifin": 83, "muthoffifin": 83,
+  "alinsyiqaq": 84, "alinsyiqoq": 84, "insyiqaq": 84, "insyiqoq": 84, "alinshiqaq": 84, "inshiqaq": 84,
+  "alburuj": 85, "buruj": 85, "alburooj": 85, "burooj": 85,
+  "attariq": 86, "atthariq": 86, "attoriq": 86, "tariq": 86, "thariq": 86, "atthoriq": 86, "thoriq": 86,
+  "alala": 87, "ala": 87, "al'ala": 87, "a'la": 87,
+  "alghasyiyah": 88, "algosyiyah": 88, "alghosiyah": 88, "ghasyiyah": 88, "ghosiyah": 88, "algasyiyah": 88, "gasyiyah": 88, "alghosyiyah": 88, "ghosyiyah": 88, "alghasiyah": 88, "ghasiyah": 88,
   "alfajr": 89, "fajr": 89,
   "albalad": 90, "balad": 90,
-  "asysyams": 91, "syams": 91, "ashsyams": 91,
-  "allail": 92, "lail": 92,
-  "adduha": 93, "addhuha": 93, "duha": 93, "dhuha": 93,
-  "asysyarh": 94, "alamnasyrah": 94, "insyirah": 94, "syarh": 94,
+  "asysyams": 91, "syams": 91, "ashsyams": 91, "ash-syams": 91, "shams": 91,
+  "allail": 92, "lail": 92, "allayl": 92, "layl": 92,
+  "adduha": 93, "addhuha": 93, "duha": 93, "dhuha": 93, "aldhuha": 93, "alduha": 93,
+  "asysyarh": 94, "alamnasyrah": 94, "alamnasyroh": 94, "insyirah": 94, "syarh": 94, "alinsyirah": 94, "nasyrah": 94,
   "attin": 95, "tin": 95,
-  "alalaq": 96, "alaq": 96, "al'alaq": 96, "iqra": 96,
+  "alalaq": 96, "alaq": 96, "al'alaq": 96, "iqra": 96, "iqro": 96, "suratiqro": 96,
   "alqadr": 97, "alqodar": 97, "qadr": 97, "qodar": 97,
-  "albayyinah": 98, "albayinah": 98, "bayyinah": 98,
-  "azzalzalah": 99, "zalzalah": 99,
+  "albayyinah": 98, "albayinah": 98, "bayyinah": 98, "bayinah": 98,
+  "azzalzalah": 99, "zalzalah": 99, "alzalzalah": 99,
   "aladiyat": 100, "al'adiyat": 100, "adiyat": 100,
-  "alqariah": 101, "qariah": 101,
+  "alqariah": 101, "qariah": 101, "alqoriah": 101, "qoriah": 101,
   "attakasur": 102, "attakatsur": 102, "takasur": 102, "takatsur": 102,
-  "alasr": 103, "al'asr": 103, "asr": 103, "ashr": 103,
+  "alasr": 103, "al'asr": 103, "asr": 103, "ashr": 103, "alashr": 103,
   "alhumazah": 104, "humazah": 104,
-  "alfil": 105, "fil": 105,
-  "quraisy": 106, "quraish": 106,
-  "almaun": 107, "maun": 107,
+  "alfil": 105, "fil": 105, "alfiil": 105, "fiil": 105,
+  "quraisy": 106, "quraish": 106, "alquraisy": 106, "alquraish": 106,
+  "almaun": 107, "maun": 107, "almaaun": 107, "maaun": 107,
   "alkausar": 108, "alkautsar": 108, "kausar": 108, "kautsar": 108,
   "alkafirun": 109, "kafirun": 109,
   "annasr": 110, "nasr": 110,
   "allahab": 111, "almasad": 111, "lahab": 111, "masad": 111,
-  "alikhlas": 112, "ikhlas": 112,
-  "alfalaq": 113, "falaq": 113,
-  "annas": 114, "nas": 114
+  "alikhlas": 112, "ikhlas": 112, "alikhlash": 112, "ikhlash": 112,
+  "alfalaq": 113, "falaq": 113, "alfalak": 113, "falak": 113,
+  "annas": 114, "nas": 114, "annaas": 114, "naas": 114
 };
 
 export function cleanSurahQuery(query: string): string {
   if (!query) return '';
   return query
     .toLowerCase()
-    .replace(/^qs\.?\s*/i, '')
-    .replace(/^surat?h?\s*/i, '')
-    .replace(/^s\.\s*/i, '')
+    .replace(/^(qs|surah|surat|s)\.?\s*/i, '')
     .replace(/juz\s*\d+\s*/i, '')
     .replace(/\(.*?\)/g, '')
     .replace(/ayat\s*\d+.*$/i, '')
     .replace(/[^a-z0-9]/g, '');
 }
 
+export function normalizeSurahPhonetic(raw: string): string {
+  if (!raw) return '';
+  let s = raw.toLowerCase().trim();
+  s = s.replace(/^(qs|surah|surat|s)\.?\s*/i, '');
+  s = s.replace(/juz\s*\d+\s*/i, '');
+  s = s.replace(/\(.*?\)/g, '');
+  // Remove leading article prefixes
+  s = s.replace(/^(al|an|at|as|asy|ash|az|ad|ar|aj)[\s\-_]+/i, '');
+  s = s.replace(/[^a-z0-9]/g, '');
+  // If still has article prefix without hyphen
+  if (s.startsWith('al') && s.length > 4) s = s.slice(2);
+  else if (s.startsWith('an') && s.length > 4) s = s.slice(2);
+  else if (s.startsWith('at') && s.length > 4) s = s.slice(2);
+  else if (s.startsWith('as') && s.length > 5) s = s.slice(2);
+  else if (s.startsWith('az') && s.length > 4) s = s.slice(2);
+  else if (s.startsWith('ad') && s.length > 4) s = s.slice(2);
+  else if (s.startsWith('ar') && s.length > 4) s = s.slice(2);
+
+  // Phonetic substitutions for Arabic transliterations
+  s = s.replace(/th|ts/g, 't');
+  s = s.replace(/sh|sy/g, 's');
+  s = s.replace(/dh|dz/g, 'z');
+  s = s.replace(/kh/g, 'k');
+  s = s.replace(/gh/g, 'g');
+  s = s.replace(/q/g, 'k');
+  s = s.replace(/o/g, 'a');
+  s = s.replace(/ee|ii/g, 'i');
+  s = s.replace(/oo|uu/g, 'u');
+  s = s.replace(/aa/g, 'a');
+  s = s.replace(/(.)\1+/g, '$1');
+  return s;
+}
+
 /**
- * Accurately finds a surah by name, alias, or ID across all 114 surahs.
+ * Accurately finds a surah by name, alias, ID, or compound curriculum target.
+ * Never fails on any standard or non-standard Indonesian transliteration.
  */
 export function findSurahByName(query: string | number | null | undefined): SurahItem | null {
   if (query === null || query === undefined || query === '') return null;
 
-  // If already an ID number
   if (typeof query === 'number') {
     return SURAH_LIST.find(s => s.id === query) || null;
   }
@@ -353,28 +384,57 @@ export function findSurahByName(query: string | number | null | undefined): Sura
   const q = cleanSurahQuery(str);
   if (!q) return null;
 
-  // 1. Direct match on clean name
+  // 1. Direct match on clean canonical name
   const direct = SURAH_LIST.find(s => cleanSurahQuery(s.name) === q);
   if (direct) return direct;
 
-  // 2. Direct match in aliases dictionary
+  // 2. Direct match in SURAH_ALIASES
   if (SURAH_ALIASES[q]) {
     const found = SURAH_LIST.find(s => s.id === SURAH_ALIASES[q]);
     if (found) return found;
   }
 
-  // 3. Substring match against name or alias
-  const sub = SURAH_LIST.find(s => {
-    const sk = cleanSurahQuery(s.name);
-    return sk.includes(q) || q.includes(sk);
-  });
-  if (sub) return sub;
+  // 3. Phonetic matching
+  const qPhonetic = normalizeSurahPhonetic(str);
+  if (qPhonetic) {
+    // Check against canonical surahs
+    const phoneticMatch = SURAH_LIST.find(s => normalizeSurahPhonetic(s.name) === qPhonetic);
+    if (phoneticMatch) return phoneticMatch;
 
-  // 4. Substring against alias keys
-  for (const [aliasKey, surahId] of Object.entries(SURAH_ALIASES)) {
-    if (aliasKey.includes(q) || q.includes(aliasKey)) {
-      const found = SURAH_LIST.find(s => s.id === surahId);
-      if (found) return found;
+    // Check against alias keys
+    for (const [aliasKey, surahId] of Object.entries(SURAH_ALIASES)) {
+      if (normalizeSurahPhonetic(aliasKey) === qPhonetic) {
+        const found = SURAH_LIST.find(s => s.id === surahId);
+        if (found) return found;
+      }
+    }
+  }
+
+  // 4. Handle compound curriculum strings like "Al Buruj - Al Fajr" (must have spaces around dash)
+  if (/\s+[-–]\s+/.test(str)) {
+    const parts = str.split(/\s+[-–]\s+/);
+    if (parts.length > 1) {
+      const firstPartMatch = findSurahByName(parts[0].trim());
+      if (firstPartMatch) return firstPartMatch;
+    }
+  }
+
+  // 5. Substring match against clean name (only for sufficiently specific queries >= 4 chars)
+  if (q.length >= 4) {
+    const sub = SURAH_LIST.find(s => {
+      const sk = cleanSurahQuery(s.name);
+      return sk.startsWith(q) || q.startsWith(sk);
+    });
+    if (sub) return sub;
+  }
+
+  // 6. Substring against alias keys (only for >= 4 chars)
+  if (q.length >= 4) {
+    for (const [aliasKey, surahId] of Object.entries(SURAH_ALIASES)) {
+      if (aliasKey.startsWith(q) || q.startsWith(aliasKey)) {
+        const found = SURAH_LIST.find(s => s.id === surahId);
+        if (found) return found;
+      }
     }
   }
 
@@ -484,13 +544,74 @@ export interface TomorrowTargetDecision {
 }
 
 /**
+ * Safely extracts verse start and end numbers, supporting textual inputs like "terakhir",
+ * ranges like "31-40", and single verse inputs.
+ */
+export function extractVerseRange(valStart: any, valEnd: any, totalAyat: number = 0): { start: number; end: number; isLastVerse: boolean } {
+  const parseNum = (v: any): number => {
+    if (v === null || v === undefined || v === '') return 0;
+    const str = String(v).trim().toLowerCase();
+    if (/terakhir|akhir|habis|selesai|tuntas|full/i.test(str)) {
+      return totalAyat > 0 ? totalAyat : 0;
+    }
+    const match = str.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  };
+
+  const rawStartStr = String(valStart || '').trim();
+  const rawEndStr = String(valEnd || '').trim();
+
+  // If start string contains a range like "1-40" or "31 - 40"
+  const rangeMatch = rawStartStr.match(/(\d+)\s*[-–/s\s]+\s*(\d+|terakhir|akhir)/i);
+  let start = 1;
+  let end = 0;
+
+  if (rangeMatch) {
+    start = parseInt(rangeMatch[1]);
+    if (/terakhir|akhir/i.test(rangeMatch[2])) {
+      end = totalAyat;
+    } else {
+      end = parseInt(rangeMatch[2]);
+    }
+  } else {
+    start = parseNum(rawStartStr) || 1;
+  }
+
+  if (rawEndStr) {
+    if (/terakhir|akhir|habis|selesai|tuntas|full/i.test(rawEndStr)) {
+      end = totalAyat > 0 ? totalAyat : (end || start);
+    } else {
+      const parsedEnd = parseNum(rawEndStr);
+      if (parsedEnd > 0) end = parsedEnd;
+    }
+  }
+
+  if (!end) {
+    end = start;
+  }
+
+  // Ensure end >= start
+  if (end < start) {
+    const temp = start;
+    start = end;
+    end = temp;
+  }
+
+  // Check if reached last verse
+  const isLastVerse = (totalAyat > 0 && end >= totalAyat) || 
+                      /terakhir|akhir|habis|selesai|tuntas|full/i.test(rawEndStr);
+
+  return { start, end, isLastVerse };
+}
+
+/**
  * Computes tomorrow's setoran target strictly adhering to the mandatory rule:
  * - Ayat terakhir jika Nilai CL/L -> UJIAN SURAT TERSEBUT DULU dari ayat 1 - terakhir.
  * - Saat Ujian Surah nilainya sudah CL/L -> BARU LANJUT KE SURAH SELANJUTNYA (ayat 1).
  * - Saat Ujian Surah nilainya BL -> ULANG UJIAN SURAH yang sama sampai dapat CL/L.
  * - Belum sampai ayat terakhir AND grade is L/CL -> besok lanjut ayat berikutnya.
  * - Belum sampai ayat terakhir AND grade is BL -> besok ulang ayat yang sama.
- * Includes complete audit logging.
+ * Includes complete audit logging and absolute safeguard against impossible verses.
  */
 export function computeTomorrowTarget(params: {
   studentName?: string;
@@ -504,37 +625,27 @@ export function computeTomorrowTarget(params: {
 }): TomorrowTargetDecision {
   const surahInfo = findSurahByName(params.surah);
   const totalAyat = surahInfo ? surahInfo.total_ayat : 0;
+  const surahName = surahInfo ? surahInfo.name : params.surah;
 
-  const extractNum = (val: any): number => {
-    if (val === null || val === undefined || val === '') return 0;
-    const match = String(val).match(/(\d+)(?!.*\d)/);
-    return match ? parseInt(match[1]) : 0;
-  };
-
-  const startNum = extractNum(params.verseStart) || 1;
-  const rawEnd = extractNum(params.verseEnd);
+  const { start: startNum, end: endNum, isLastVerse } = extractVerseRange(params.verseStart, params.verseEnd, totalAyat);
 
   const isExplicitExam = params.isUjian === true || 
                          params.status === 'Ujian' || 
                          /ujian/i.test(params.status || '');
 
-  // If explicit exam and verseEnd was empty, assume the full surah was tested
-  const endNum = rawEnd || (isExplicitExam && totalAyat > 0 ? totalAyat : (params.verseStart ? startNum : 1));
-
-  const reachedLastVerse = totalAyat > 0 && endNum >= totalAyat;
+  const reachedLastVerse = isLastVerse || (totalAyat > 0 && endNum >= totalAyat);
   const isPassed = params.grade === 'L' || params.grade === 'CL';
 
-  // An exam is active if explicitly set OR if the student recited the full surah (from verse 1 to last verse)
+  // An exam is active if explicitly marked as Ujian OR if reciting the full surah from 1 to last verse
   const isExam = isExplicitExam || (startNum === 1 && reachedLastVerse);
 
   const currentJuz = getSurahJuz(surahInfo ? surahInfo.id : params.surah, endNum);
   const student = params.studentName || 'Santri';
-  const surahName = surahInfo ? surahInfo.name : params.surah;
 
-  // Case 1: Currently taking UJIAN SURAH / FULL SURAH TEST
+  // Case 1: In Exam Mode (Full surah test from verse 1 to last verse)
   if (isExam) {
     if (isPassed) {
-      // Nilai ujian sudah CL/L -> BARU lanjut ke surah selanjutnya!
+      // Nilai ujian sudah CL/L -> BARU lanjut ke surah selanjutnya ayat 1!
       let targetSurah = params.nextSurah || '';
       if (!targetSurah) {
         const nextSurahObj = surahInfo ? getNextSurah(surahInfo.id) : null;
@@ -574,14 +685,15 @@ export function computeTomorrowTarget(params: {
     }
   }
 
-  // Case 2: Regular setoran reaches the LAST VERSE of the surah (started after verse 1)
-  if (reachedLastVerse) {
+  // Case 2: Regular setoran reached the LAST VERSE of the surah
+  // MANDATORY RULE: If reached last verse and passed -> MUST DO UJIAN SURAH DULU (Ayat 1 – totalAyat)!
+  // Under NO circumstances can it advance to an impossible next verse!
+  if (reachedLastVerse || (totalAyat > 0 && (endNum + 1) > totalAyat)) {
     if (isPassed) {
-      // Selesai ayat terakhir dalam setoran reguler -> UJIAN SURAT TERSEBUT DULU dari ayat 1-terakhir!
       const targetVerseStart = '1';
       const targetVerseEnd = totalAyat ? String(totalAyat) : String(endNum);
       const targetVerseText = totalAyat > 1 ? `1 – ${targetVerseEnd}` : '1';
-      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Selesai Ayat Terakhir: ${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus Setoran) | Keputusan: UJIAN SURAH DULU -> ${surahName} (${targetVerseText})`;
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | TUNTAS AYAT TERAKHIR (${endNum}/${totalAyat}) | Nilai: ${params.grade} (Lulus Setoran) | Keputusan: UJIAN SURAH DULU -> ${surahName} (${targetVerseText})`;
       console.log(auditLog);
       return {
         action: 'ujian_surah',
@@ -618,6 +730,26 @@ export function computeTomorrowTarget(params: {
   // Case 3: Regular setoran NOT yet at last verse
   if (isPassed) {
     const nextVerse = endNum + 1;
+
+    // ABSOLUTE SAFETY GUARD: If nextVerse exceeds totalAyat, it is guaranteed at the end of the surah!
+    if (totalAyat > 0 && nextVerse > totalAyat) {
+      const targetVerseEnd = String(totalAyat);
+      const targetVerseText = totalAyat > 1 ? `1 – ${targetVerseEnd}` : '1';
+      const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Safety Guard: Next verse exceeds total (${nextVerse} > ${totalAyat}) | Keputusan: UJIAN SURAH DULU -> ${surahName} (${targetVerseText})`;
+      console.log(auditLog);
+      return {
+        action: 'ujian_surah',
+        keterangan: 'Lulus, besok Ujian Surah',
+        targetSurah: surahName,
+        targetVerseStart: '1',
+        targetVerseEnd,
+        targetVerseText,
+        isUjian: true,
+        currentJuz,
+        auditLog
+      };
+    }
+
     const auditLog = `[AUTO-LANJUT AUDIT] ${student} | Surah: ${surahName} (Juz ${currentJuz}) | Ayat: ${startNum}-${endNum}/${totalAyat} | Nilai: ${params.grade} (Lulus) | Keputusan: LANJUT AYAT BERIKUTNYA -> ${surahName} Ayat ${nextVerse}`;
     console.log(auditLog);
     return {

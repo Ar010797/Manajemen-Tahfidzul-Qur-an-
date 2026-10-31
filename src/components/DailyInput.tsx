@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { motion, Reorder, useDragControls } from 'motion/react';
 import { cn } from '../lib/utils';
 import { storage } from '../services/storage';
-import { SURAH_LIST, findSurahByName, getNextSurah, getSurahJuz, computeTomorrowTarget } from '../constants/surahs';
+import { SURAH_LIST, findSurahByName, getNextSurah, getSurahJuz, computeTomorrowTarget, extractVerseRange } from '../constants/surahs';
 import ConfirmModal from './ConfirmModal';
 
 function StudentReorderItem({ s, selectedStudent, theme, handleSelectStudent }: any) {
@@ -351,11 +351,11 @@ export default function DailyInput() {
 
       const surahInfo = findSurahByName(d.surah);
       const surahName = surahInfo ? surahInfo.name : (d.surah || '-');
-      const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
+      const totalAyat = surahInfo ? surahInfo.total_ayat : 0;
+      const { start: parsedStart, end: parsedEnd } = extractVerseRange(d.verse_start, d.verse_end, totalAyat);
+      const lastEnd = parsedEnd || parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
       const juzNum = getSurahJuz(surahInfo ? surahInfo.id : d.surah, lastEnd);
-      const startStr = d.verse_start || '1';
-      const endStr = d.verse_end || d.verse_start || '1';
-      const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
+      const ayatToday = parsedStart === parsedEnd ? `${parsedStart}` : `${parsedStart} – ${parsedEnd}`;
 
       const isExamToday = d.status === 'Ujian' || d.is_ujian;
       const todaySurahLabel = isExamToday ? `${surahName} [Ujian Surah]` : surahName;
@@ -466,11 +466,11 @@ export default function DailyInput() {
 
         const surahInfo = findSurahByName(d.surah);
         const surahName = surahInfo ? surahInfo.name : (d.surah || '-');
-        const lastEnd = parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
+        const totalAyat = surahInfo ? surahInfo.total_ayat : 0;
+        const { start: parsedStart, end: parsedEnd } = extractVerseRange(d.verse_start, d.verse_end, totalAyat);
+        const lastEnd = parsedEnd || parseInt(d.verse_end) || parseInt(d.verse_start) || 1;
         const juzNum = getSurahJuz(surahInfo ? surahInfo.id : d.surah, lastEnd);
-        const startStr = d.verse_start || '1';
-        const endStr = d.verse_end || d.verse_start || '1';
-        const ayatToday = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
+        const ayatToday = parsedStart === parsedEnd ? `${parsedStart}` : `${parsedStart} – ${parsedEnd}`;
 
         const isExamToday = d.status === 'Ujian' || d.is_ujian;
         const todaySurahLabel = isExamToday ? `${surahName} [Ujian Surah]` : surahName;

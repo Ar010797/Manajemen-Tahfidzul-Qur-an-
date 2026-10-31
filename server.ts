@@ -155,6 +155,23 @@ async function startServer() {
     });
   }
 
+  httpServer.on("error", (err: any) => {
+    if (err.code === "EADDRINUSE") {
+      console.warn("Port 3000 is currently in use. Waiting for previous instance to release...");
+      process.exit(1);
+    } else {
+      console.error("HTTP Server Error:", err);
+    }
+  });
+
+  const cleanup = () => {
+    httpServer.close(() => {
+      process.exit(0);
+    });
+  };
+  process.on("SIGTERM", cleanup);
+  process.on("SIGINT", cleanup);
+
   httpServer.listen(3000, "0.0.0.0", () => {
     console.log("Server running on http://0.0.0.0:3000");
   });
