@@ -378,7 +378,7 @@ export default function DailyInput() {
 
       sections.push(hafalanText);
     } else if (ummiData?.details?.grade) {
-      // If only Ummi is present
+      // If only Ummi is present as the primary setoran
       const d = ummiData.details;
       const isGoodGrade = ['A', 'B'].includes(d.grade);
       const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
@@ -396,6 +396,25 @@ export default function DailyInput() {
       }
 
       sections.push(ummiText);
+    } else if (tilawahData?.details?.grade) {
+      // If only Tilawah is present as the primary setoran
+      const d = tilawahData.details;
+      const isGoodGrade = ['A', 'B'].includes(d.grade);
+      const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+      let tilawahText = `*SETORAN TILAWAH / BTQ HARI INI*\n` +
+        `Nama   : ${studentName}\n` +
+        `Tanggal: ${formattedDate}\n` +
+        `Materi : Juz ${d.juz}, Surah ${d.surah}, Ayat ${d.verse_start}${d.verse_end ? ' – ' + d.verse_end : ''}\n` +
+        `Nilai  : ${d.grade}\n\n` +
+        `*TARGET BESOK*\n` +
+        `Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}\n` +
+        `Keterangan: ${isGoodGrade ? 'Lanjut ayat berikutnya' : 'Belum lulus, ulang'}`;
+
+      if (d.note && d.note.trim()) {
+        tilawahText += `\nCatatan: ${d.note.trim()}`;
+      }
+
+      sections.push(tilawahText);
     }
 
     // Additional segments if both Hafalan and Ummi/Tilawah exist
@@ -403,24 +422,28 @@ export default function DailyInput() {
       const d = ummiData.details;
       const isGoodGrade = ['A', 'B'].includes(d.grade);
       const nextPage = d.page_end ? parseInt(d.page_end) + 1 : (parseInt(d.page_start) + 1 || '');
-      sections.push(
-        `*METODE UMMI*\n` +
+      let ummiBlock = `*METODE UMMI*\n` +
         `Materi : Jilid ${d.level}, Hlm ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}\n` +
         `Nilai  : ${d.grade}\n` +
-        `Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`
-      );
+        `Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`;
+      if (d.note && d.note.trim()) {
+        ummiBlock += `\nCatatan: ${d.note.trim()}`;
+      }
+      sections.push(ummiBlock);
     }
 
-    if (tilawahData?.details?.grade) {
+    if (tilawahData?.details?.grade && (hafalanData?.details?.grade || ummiData?.details?.grade)) {
       const d = tilawahData.details;
       const isGoodGrade = ['A', 'B'].includes(d.grade);
       const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
-      sections.push(
-        `*TILAWAH / BTQ*\n` +
+      let tilawahBlock = `*TILAWAH / BTQ*\n` +
         `Materi : Juz ${d.juz}, Surah ${d.surah}, Ayat ${d.verse_start}${d.verse_end ? ' – ' + d.verse_end : ''}\n` +
         `Nilai  : ${d.grade}\n` +
-        `Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}`
-      );
+        `Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}`;
+      if (d.note && d.note.trim()) {
+        tilawahBlock += `\nCatatan: ${d.note.trim()}`;
+      }
+      sections.push(tilawahBlock);
     }
 
     // Footer
@@ -505,6 +528,21 @@ export default function DailyInput() {
         if (d.note && d.note.trim()) {
           lines.push(`Catatan: ${d.note.trim()}`);
         }
+      } else if (tilawahData?.details?.grade) {
+        const d = tilawahData.details;
+        const isGoodGrade = ['A', 'B'].includes(d.grade);
+        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+        lines.push(`*TILAWAH / BTQ HARI INI*`);
+        lines.push(`Tanggal: ${formattedDate}`);
+        lines.push(`Materi : Juz ${d.juz}, Surah ${d.surah}, Ayat ${d.verse_start}${d.verse_end ? ' – ' + d.verse_end : ''}`);
+        lines.push(`Nilai  : ${d.grade}`);
+        lines.push('');
+        lines.push(`*TARGET BESOK*`);
+        lines.push(`Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}`);
+        lines.push(`Keterangan: ${isGoodGrade ? 'Lanjut ayat berikutnya' : 'Belum lulus, ulang'}`);
+        if (d.note && d.note.trim()) {
+          lines.push(`Catatan: ${d.note.trim()}`);
+        }
       }
 
       if (hafalanData?.details?.grade && ummiData?.details?.grade) {
@@ -516,6 +554,23 @@ export default function DailyInput() {
         lines.push(`Materi : Jilid ${d.level}, Hlm ${d.page_start}${d.page_end ? ' – ' + d.page_end : ''}`);
         lines.push(`Nilai  : ${d.grade}`);
         lines.push(`Target : ${isGoodGrade ? `Lanjut Hlm ${nextPage}` : `Mengulang Hlm ${d.page_start}`}`);
+        if (d.note && d.note.trim()) {
+          lines.push(`Catatan: ${d.note.trim()}`);
+        }
+      }
+
+      if (tilawahData?.details?.grade && (hafalanData?.details?.grade || ummiData?.details?.grade)) {
+        const d = tilawahData.details;
+        const isGoodGrade = ['A', 'B'].includes(d.grade);
+        const nextVerse = d.verse_end ? parseInt(d.verse_end) + 1 : (parseInt(d.verse_start) + 1 || '');
+        lines.push('');
+        lines.push(`*TILAWAH / BTQ*`);
+        lines.push(`Materi : Juz ${d.juz}, Surah ${d.surah}, Ayat ${d.verse_start}${d.verse_end ? ' – ' + d.verse_end : ''}`);
+        lines.push(`Nilai  : ${d.grade}`);
+        lines.push(`Target : ${isGoodGrade ? `Lanjut Ayat ${nextVerse}` : `Mengulang Ayat ${d.verse_start}`}`);
+        if (d.note && d.note.trim()) {
+          lines.push(`Catatan: ${d.note.trim()}`);
+        }
       }
 
       studentBlocks.push(lines.join('\n'));
