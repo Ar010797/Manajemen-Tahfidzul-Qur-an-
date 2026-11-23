@@ -42,7 +42,30 @@ export interface DataSchema {
   students: Array<{ id: string; name: string; halaqoh_id: string | null; parent_phone?: string; order_index: number }>;
   daily_deposits: Array<{ student_id: string; type: string; date: string; details: any }>;
   exams_ummi: Array<{ id: string; student_id: string; level: number; scores: any; date: string; semester: string; target?: string }>;
-  exams_hafalan: Array<{ id: string; student_id: string; surahs: any; note: string; date: string; days_progress: any; status: string; semester: string; target?: string }>;
+  exams_hafalan: Array<{
+    id: string;
+    student_id: string;
+    surahs: any;
+    note: string;
+    date: string;
+    days_progress: any;
+    day_records?: Array<{
+      id: string;
+      day_number: number;
+      date: string;
+      grade: string;
+      predicate: string;
+      surah_tested: string;
+      attendance: 'Hadir' | 'Izin' | 'Sakit' | 'Alpa';
+      note: string;
+      saved_at: string;
+    }>;
+    status: string;
+    semester: string;
+    target?: string;
+    completed_at?: string;
+    updated_at?: string;
+  }>;
   monthly_recaps: Array<{ student_id: string; month: string; total_hafalan: string; notes: string }>;
   report_notes: Array<{ student_id: string; semester: string; note: string }>;
   active_days: Record<string, number>; // key: YYYY-MM, value: number of active days
@@ -265,21 +288,33 @@ export const storage = {
     const data = getRawData();
     const newExam = { ...exam, id: generateId() };
     data.exams_hafalan.push(newExam);
-    saveRawData(data);
+    const saved = saveRawData(data);
+    if (!saved) {
+      throw new Error('Gagal menyimpan data ujian hafalan ke penyimpanan perangkat.');
+    }
     return newExam;
   },
   updateHafalanExam: (id: string, updates: Partial<DataSchema['exams_hafalan'][0]>) => {
     const data = getRawData();
     const index = data.exams_hafalan.findIndex(e => e.id === id);
-    if (index !== -1) {
-      data.exams_hafalan[index] = { ...data.exams_hafalan[index], ...updates };
-      saveRawData(data);
+    if (index === -1) return false;
+    const existingStudentId = data.exams_hafalan[index].student_id;
+    if (updates.student_id && updates.student_id !== existingStudentId) {
+      return false;
     }
+    data.exams_hafalan[index] = {
+      ...data.exams_hafalan[index],
+      ...updates,
+      student_id: existingStudentId
+    };
+    return saveRawData(data);
   },
   deleteHafalanExam: (id: string) => {
     const data = getRawData();
+    const prevLen = data.exams_hafalan.length;
     data.exams_hafalan = data.exams_hafalan.filter(e => e.id !== id);
-    saveRawData(data);
+    if (data.exams_hafalan.length === prevLen) return false;
+    return saveRawData(data);
   },
   getStudentExams: (student_id: string) => {
     const data = getRawData();
