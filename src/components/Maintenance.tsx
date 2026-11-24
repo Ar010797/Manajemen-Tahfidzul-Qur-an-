@@ -195,7 +195,9 @@ export default function Maintenance() {
       if (rawJsonString) {
         const success = storage.importData(rawJsonString);
         if (success) {
-          localStorage.setItem('localUpdatedAt', data.updatedAt || new Date().toISOString());
+          const ts = data.updatedAt || new Date().toISOString();
+          localStorage.setItem('localUpdatedAt', ts);
+          localStorage.setItem(`localUpdatedAt_${usernameId}`, ts);
           alert('Berhasil mengunduh dan menerapkan perubahan data dari Admin. Halaman akan dimuat ulang.');
           window.location.reload();
         } else {
@@ -246,6 +248,7 @@ export default function Maintenance() {
       // Save metadata document AFTER chunks are successfully uploaded
       const updatedAtStr = new Date().toISOString();
       localStorage.setItem('localUpdatedAt', updatedAtStr);
+      localStorage.setItem(`localUpdatedAt_${usernameId}`, updatedAtStr);
 
       batch.set(doc(db, 'syncs', usernameId), {
         username,
@@ -253,7 +256,7 @@ export default function Maintenance() {
         isChunked: true,
         numChunks,
         updatedAt: updatedAtStr
-      });
+      }, { merge: true });
       
       await batch.commit();
 

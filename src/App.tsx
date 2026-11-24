@@ -88,16 +88,18 @@ export default function App() {
     // Only auto-pull on the original teacher's device (admin impersonation acts as 'guru', 
     // but the actual URL or user object might be enough. We allow admin to auto-pull too 
     // while impersonating so they see live changes if someone else edits? Mostly for the teacher's app).
-    const usernameId = (user.username || 'guru').replace(/\s+/g, '_').toLowerCase();
+    const usernameId = (user.username || 'guru').trim().replace(/\s+/g, '_').toLowerCase();
     
     const unsubscribe = onSnapshot(doc(db, 'syncs', usernameId), async (docSnap) => {
        if (docSnap.exists()) {
            const data = docSnap.data();
            const serverUpdatedAt = data.updatedAt;
-           const localUpdatedAt = localStorage.getItem('localUpdatedAt');
+           const userLocalUpdatedAt = localStorage.getItem(`localUpdatedAt_${usernameId}`);
+           const hasLocalData = Boolean(localStorage.getItem(`tahfidz_data_${user.username}`));
+           const effectiveLocalUpdatedAt = userLocalUpdatedAt || (hasLocalData ? localStorage.getItem('localUpdatedAt') : null);
            
-           if (serverUpdatedAt && (!localUpdatedAt || serverUpdatedAt > localUpdatedAt)) {
-               console.log("Newer data or first login found. Auto-pulling...");
+           if (serverUpdatedAt && (!hasLocalData || !effectiveLocalUpdatedAt || serverUpdatedAt > effectiveLocalUpdatedAt)) {
+               console.log("Newer data or first/recovered login found. Auto-pulling...");
                setIsPullingData(true);
                try {
                   let rawJsonString = data.data || '';
@@ -131,7 +133,12 @@ export default function App() {
                   if (rawJsonString) {
                      if (storage.importData(rawJsonString)) {
                         localStorage.setItem('localUpdatedAt', serverUpdatedAt);
-                        alert('Pemberitahuan: Data di perangkat Anda telah diperbarui otomatis dengan perubahan terbaru dari Admin. Halaman akan menyegarkan data.');
+                        localStorage.setItem(`localUpdatedAt_${usernameId}`, serverUpdatedAt);
+                        alert(
+                          !hasLocalData
+                            ? 'Data terakhir Anda berhasil dipulihkan otomatis dari server. Halaman akan menyegarkan data.'
+                            : 'Pemberitahuan: Data di perangkat Anda telah diperbarui otomatis dengan perubahan terbaru dari server. Halaman akan menyegarkan data.'
+                        );
                         window.location.reload();
                      }
                   }
@@ -422,24 +429,30 @@ export default function App() {
                              });
                            }
 
+                           const nowIso = new Date().toISOString();
+                           localStorage.setItem('localUpdatedAt', nowIso);
+                           localStorage.setItem(`localUpdatedAt_${usernameId}`, nowIso);
+
                            // Save metadata
                            batch.set(doc(db, 'syncs', usernameId), {
                              username,
                              isCompressed: true,
                              isChunked: true,
                              numChunks,
-                             updatedAt: new Date().toISOString()
-                           });
+                             updatedAt: nowIso
+                           }, { merge: true });
 
                            await batch.commit();
                         } catch (e) {
                            console.error(e);
                         }
                         
-                        localStorage.setItem('current_username', 'admin');
+                        const returnAdminName = localStorage.getItem('admin_return_username') || 'admin';
+                        localStorage.removeItem('admin_return_username');
+                        localStorage.setItem('current_username', returnAdminName);
                         localStorage.setItem('user', JSON.stringify({
                           id: Date.now().toString(),
-                          username: 'admin',
+                          username: returnAdminName,
                           role: 'admin'
                         }));
                         window.location.reload();

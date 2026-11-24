@@ -110,6 +110,8 @@ const saveRawData = (data: DataSchema) => {
   if (typeof localStorage === 'undefined') return true;
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(data));
+    const uid = CURRENT_USER.trim().replace(/\s+/g, '_').toLowerCase();
+    localStorage.setItem(`localUpdatedAt_${uid}`, new Date().toISOString());
     return true;
   } catch (e) {
     console.error('Storage error:', e);
