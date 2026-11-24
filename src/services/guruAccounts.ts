@@ -12,7 +12,8 @@ export interface GuruAccount {
   recoveredAt?: string;
 }
 
-const REGISTRY_DOC_ID = '__guru_accounts__';
+export const GURU_REGISTRY_DOC_ID = 'guru_accounts_registry';
+const REGISTRY_DOC_ID = GURU_REGISTRY_DOC_ID;
 const LOCAL_CACHE_KEY = 'tahfidz_guru_accounts_cache';
 
 export const normalizeUsernameId = (username: string): string =>

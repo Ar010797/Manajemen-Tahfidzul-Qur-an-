@@ -18,7 +18,7 @@ export default function AdminSyncNotifications() {
       
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'modified' || change.type === 'added') {
-          if (change.doc.id === '__guru_accounts__') return;
+          if (change.doc.id === 'guru_accounts_registry' || change.doc.id === '__guru_accounts__') return;
           const data = change.doc.data();
           if (data?.isRegistry || !data?.username) return;
           const username = data.username || change.doc.id;

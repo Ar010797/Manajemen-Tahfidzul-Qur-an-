@@ -103,7 +103,7 @@ export const AdminDashboard: React.FC = () => {
       const newMetadata: Record<string, any> = {};
 
       for (const document of querySnapshot.docs) {
-        if (document.id === '__guru_accounts__') continue;
+        if (document.id === 'guru_accounts_registry' || document.id === '__guru_accounts__') continue;
         const data = document.data();
         if (data?.isRegistry) continue;
 
