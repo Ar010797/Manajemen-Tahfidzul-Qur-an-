@@ -5,7 +5,6 @@ import {
   Save,
   CheckCircle2,
   Clock,
-  Calendar,
   GraduationCap,
   Search,
   ChevronLeft,
@@ -231,10 +230,6 @@ export default function ExamHafalan() {
     isJustSaved: boolean;
   } | null>(null);
 
-  // Inline Day Edit state
-  const [editingDayId, setEditingDayId] = useState<string | null>(null);
-  const [editDayForm, setEditDayForm] = useState<ExamDayRecord | null>(null);
-
   // Inline Surah Add/Edit state
   const [isAddingSurah, setIsAddingSurah] = useState(false);
   const [newSurahForm, setNewSurahForm] = useState({ name: '', grade: 'A+' });
@@ -249,7 +244,6 @@ export default function ExamHafalan() {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   // Confirm Modals
-  const [dayToDelete, setDayToDelete] = useState<ExamDayRecord | null>(null);
   const [surahToDelete, setSurahToDelete] = useState<ExamSurahItem | null>(null);
   const [examToDeleteId, setExamToDeleteId] = useState<string | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
@@ -378,11 +372,9 @@ export default function ExamHafalan() {
     setTodayAttendance('Hadir');
     setTodayNote('');
     setAutoSyncSurah(true);
-    setEditingDayId(null);
-    setEditDayForm(null);
     setEditingSurahId(null);
     setIsAddingSurah(false);
-    // Automatically open Hari ke-1 if no days recorded yet; otherwise show history + Lanjutkan Ujian button
+    // Automatically open Hari ke-1 if no days recorded yet
     setIsAddingNewDay(existingRecords.length === 0);
   };
 
@@ -653,8 +645,6 @@ export default function ExamHafalan() {
     setTodayAttendance('Hadir');
     setTodayNote('');
     setAutoSyncSurah(true);
-    setEditingDayId(null);
-    setEditDayForm(null);
     setIsAddingNewDay(true);
 
     setFeedback({
@@ -665,187 +655,6 @@ export default function ExamHafalan() {
     setTimeout(() => {
       dayFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 80);
-  };
-
-  // Action: Edit individual Day Card
-  const startEditDay = (day: ExamDayRecord) => {
-    setEditingDayId(day.id);
-    setEditDayForm({ ...day });
-  };
-
-  const handleSaveEditedDay = () => {
-    if (!editDayForm || !editingDayId) return;
-    if (!editDayForm.date) {
-      setFeedback({ type: 'error', message: 'Tanggal pelaksanaan ujian tidak boleh kosong.' });
-      return;
-    }
-
-    const previousDay = dayRecords.find(d => d.id === editingDayId);
-    const updatedPredicate = getPredicateForGrade(editDayForm.grade);
-    const updatedRecord: ExamDayRecord = {
-      ...editDayForm,
-      predicate: updatedPredicate,
-      surah_tested: editDayForm.surah_tested.trim(),
-      note: editDayForm.note.trim()
-    };
-
-    const nextRecords = dayRecords.map(d => (d.id === editingDayId ? updatedRecord : d));
-
-    // Sinkronkan nilai dan nama surat ke Daftar Surat yang Diujikan yang bersangkutan
-    const oldDaySurahKey = normalizeSurahKey(previousDay?.surah_tested);
-    const oldBaseKey = extractBaseSurahKey(previousDay?.surah_tested);
-    const newDaySurahName = updatedRecord.surah_tested;
-    const newDaySurahKey = normalizeSurahKey(newDaySurahName);
-    const newBaseKey = extractBaseSurahKey(newDaySurahName);
-
-    let nextSurahs = [...surahs];
-    let syncedSurahCount = 0;
-
-    if (newDaySurahKey) {
-      const exactIdx = nextSurahs.findIndex(s => normalizeSurahKey(s.name) === newDaySurahKey);
-      const oldIdx = oldDaySurahKey
-        ? nextSurahs.findIndex(s => normalizeSurahKey(s.name) === oldDaySurahKey)
-        : -1;
-      const otherDayStillUsesOld =
-        oldDaySurahKey !== '' &&
-        nextRecords.some(d => d.id !== editingDayId && normalizeSurahKey(d.surah_tested) === oldDaySurahKey);
-
-      if (exactIdx !== -1) {
-        nextSurahs[exactIdx] = {
-          ...nextSurahs[exactIdx],
-          name: newDaySurahName,
-          grade: updatedRecord.grade,
-          predicate: updatedPredicate
-        };
-        syncedSurahCount = 1;
-      } else if (oldIdx !== -1 && !otherDayStillUsesOld) {
-        nextSurahs[oldIdx] = {
-          ...nextSurahs[oldIdx],
-          name: newDaySurahName,
-          grade: updatedRecord.grade,
-          predicate: updatedPredicate
-        };
-        syncedSurahCount = 1;
-      } else {
-        const oldBaseMatches = oldBaseKey
-          ? nextSurahs.filter(s => extractBaseSurahKey(s.name) === oldBaseKey)
-          : [];
-        const otherDayStillUsesOldBase =
-          oldBaseKey !== '' &&
-          nextRecords.some(d => d.id !== editingDayId && extractBaseSurahKey(d.surah_tested) === oldBaseKey);
-
-        if (oldBaseMatches.length === 1 && !otherDayStillUsesOldBase) {
-          nextSurahs = nextSurahs.map(s =>
-            s.id === oldBaseMatches[0].id
-              ? {
-                  ...s,
-                  name: newDaySurahName,
-                  grade: updatedRecord.grade,
-                  predicate: updatedPredicate
-                }
-              : s
-          );
-          syncedSurahCount = 1;
-        } else {
-          const baseMatches = newBaseKey
-            ? nextSurahs.filter(s => extractBaseSurahKey(s.name) === newBaseKey)
-            : [];
-          if (baseMatches.length === 1) {
-            nextSurahs = nextSurahs.map(s =>
-              s.id === baseMatches[0].id
-                ? {
-                    ...s,
-                    name: newDaySurahName,
-                    grade: updatedRecord.grade,
-                    predicate: updatedPredicate
-                  }
-                : s
-            );
-            syncedSurahCount = 1;
-          } else if (oldDaySurahKey === '' && nextRecords.length === 1 && nextSurahs.length === 1) {
-            nextSurahs[0] = {
-              ...nextSurahs[0],
-              name: newDaySurahName,
-              grade: updatedRecord.grade,
-              predicate: updatedPredicate
-            };
-            syncedSurahCount = 1;
-          } else if (autoSyncSurah) {
-            nextSurahs = mergeSurahIntoList(nextSurahs, newDaySurahName, updatedRecord.grade);
-            syncedSurahCount = 1;
-          }
-        }
-      }
-    } else if (nextRecords.length === 1 && nextSurahs.length === 1) {
-      nextSurahs[0] = {
-        ...nextSurahs[0],
-        grade: updatedRecord.grade,
-        predicate: updatedPredicate
-      };
-      syncedSurahCount = 1;
-    }
-
-    const res = persistExamRecord({ dayRecordsVal: nextRecords, surahsVal: nextSurahs });
-    if (!res.success) return;
-
-    setDayRecords(nextRecords);
-    setSurahs(nextSurahs);
-    if (lastSavedStatus && lastSavedStatus.dayNumber === updatedRecord.day_number) {
-      setLastSavedStatus({
-        ...lastSavedStatus,
-        date: updatedRecord.date,
-        grade: updatedRecord.grade,
-        predicate: updatedRecord.predicate,
-        surahTested: updatedRecord.surah_tested
-      });
-    }
-    setEditingDayId(null);
-    setEditDayForm(null);
-    setFeedback({
-      type: 'success',
-      message:
-        syncedSurahCount > 0
-          ? `Perubahan pada Hari ke-${updatedRecord.day_number}${newDaySurahName ? ` (${newDaySurahName} · Nilai ${updatedRecord.grade})` : ` (Nilai ${updatedRecord.grade})`} dan daftar surat terkait berhasil disimpan.`
-          : `Perubahan pada Hari ke-${updatedRecord.day_number} berhasil disimpan.`
-    });
-  };
-
-  // Action: Delete individual Day Card (with confirmation)
-  const confirmDeleteDay = () => {
-    if (!dayToDelete) return;
-    const filtered = dayRecords
-      .filter(d => d.id !== dayToDelete.id)
-      .sort((a, b) => (a.day_number || 0) - (b.day_number || 0))
-      .map((d, idx) => ({
-        ...d,
-        day_number: idx + 1
-      }));
-
-    const res = persistExamRecord({ dayRecordsVal: filtered });
-    if (!res.success) return;
-
-    setDayRecords(filtered);
-    if (filtered.length > 0) {
-      const last = filtered[filtered.length - 1];
-      setLastSavedStatus({
-        dayNumber: last.day_number,
-        date: last.date,
-        savedAt: last.saved_at,
-        grade: last.grade,
-        predicate: last.predicate,
-        surahTested: last.surah_tested,
-        isJustSaved: false
-      });
-    } else {
-      setLastSavedStatus(null);
-      setIsAddingNewDay(true);
-    }
-
-    setFeedback({
-      type: 'success',
-      message: `Penilaian Hari ke-${dayToDelete.day_number} (${formatDisplayDate(dayToDelete.date)}) dihapus. Hari lainnya tetap aman.`
-    });
-    setDayToDelete(null);
   };
 
   // Action: Add / Edit / Delete Surah in Daftar Surat yang Diujikan
@@ -914,8 +723,7 @@ export default function ExamHafalan() {
       newBase !== '' &&
       surahs.some(s => s.id !== editingSurahId && extractBaseSurahKey(s.name) === newBase);
 
-    let syncedDaysCount = 0;
-    const updatedDayNumbers: number[] = [];
+    let updatedDayNumbers: number[] = [];
 
     const nextRecords = dayRecords.map(day => {
       const dayKey = normalizeSurahKey(day.surah_tested);
@@ -940,7 +748,6 @@ export default function ExamHafalan() {
         isNewBaseMatch ||
         isSingleLegacyMatch
       ) {
-        syncedDaysCount += 1;
         updatedDayNumbers.push(day.day_number);
         const nameChanged = Boolean(previousSurah && clean !== previousSurah.name);
         return {
@@ -962,13 +769,6 @@ export default function ExamHafalan() {
     setSurahs(nextSurahs);
     setDayRecords(nextRecords);
 
-    if (editingDayId && editDayForm) {
-      const matchedActiveEdit = nextRecords.find(d => d.id === editingDayId);
-      if (matchedActiveEdit && updatedDayNumbers.includes(matchedActiveEdit.day_number)) {
-        setEditDayForm({ ...matchedActiveEdit });
-      }
-    }
-
     if (lastSavedStatus && updatedDayNumbers.includes(lastSavedStatus.dayNumber)) {
       const latestMatch = nextRecords.find(d => d.day_number === lastSavedStatus.dayNumber);
       if (latestMatch) {
@@ -984,10 +784,7 @@ export default function ExamHafalan() {
     setEditingSurahId(null);
     setFeedback({
       type: 'success',
-      message:
-        syncedDaysCount > 0
-          ? `Data surat "${clean}" dan ${syncedDaysCount} riwayat penilaian terkait berhasil diperbarui ke Nilai ${editSurahForm.grade} (${updatedPredicate}).`
-          : `Data surat "${clean}" berhasil diperbarui.`
+      message: `Data surat "${clean}" berhasil diperbarui ke Nilai ${editSurahForm.grade} (${updatedPredicate}).`
     });
   };
 
@@ -1087,17 +884,20 @@ export default function ExamHafalan() {
     }, 100);
   };
 
-  // Compute Overall Recap Stats (uses surah grades + day grades)
+  // Compute Overall Recap Stats (uses surah grades primarily, falling back to day grades)
   const overallSummary = useMemo(() => {
     const scoreItems: number[] = [];
-    dayRecords.forEach(d => {
-      const s = getScoreForGrade(d.grade);
-      if (s > 0) scoreItems.push(s);
-    });
-    surahs.forEach(sr => {
-      const s = getScoreForGrade(sr.grade);
-      if (s > 0) scoreItems.push(s);
-    });
+    if (surahs.length > 0) {
+      surahs.forEach(sr => {
+        const s = getScoreForGrade(sr.grade);
+        if (s > 0) scoreItems.push(s);
+      });
+    } else {
+      dayRecords.forEach(d => {
+        const s = getScoreForGrade(d.grade);
+        if (s > 0) scoreItems.push(s);
+      });
+    }
 
     const avg = scoreItems.length > 0 ? scoreItems.reduce((a, b) => a + b, 0) / scoreItems.length : 0;
     const summaryGrade = getGradeFromAverage(avg);
@@ -1169,14 +969,6 @@ export default function ExamHafalan() {
       `Status  : ${activeExamStatus === 'completed' ? 'Selesai' : 'Berlangsung'}`,
       `Lama Ujian: ${overallSummary.totalDays} Hari`,
       `Predikat Akhir: ${overallSummary.grade} (${overallSummary.label})`,
-      '',
-      `*RIWAYAT PENILAIAN HARIAN*`,
-      ...dayRecords.map(
-        d =>
-          `Hari ke-${d.day_number} (${formatDisplayDate(d.date)}): ${d.grade} - ${d.predicate}` +
-          (d.surah_tested ? ` [${d.surah_tested}]` : '') +
-          (d.note ? ` · ${d.note}` : '')
-      ),
       '',
       `*DAFTAR SURAT YANG DIUJIKAN*`,
       ...(surahs.length > 0
@@ -1756,244 +1548,7 @@ export default function ExamHafalan() {
               )}
             </div>
 
-            {/* C. RIWAYAT PENILAIAN (Per-Day Cards) */}
-            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-base font-display font-bold text-stone-900 flex items-center gap-2">
-                    <Calendar size={18} className={theme.text} />
-                    Riwayat Penilaian Harian
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5 tabular-nums">
-                    {dayRecords.length === 0
-                      ? 'Belum ada hari ujian yang disimpan.'
-                      : `${dayRecords.length} hari tercatat — setiap hari dapat diedit atau dihapus secara terpisah.`}
-                  </p>
-                </div>
-
-                {activeExamStatus === 'ongoing' && (
-                  <button
-                    type="button"
-                    onClick={handleContinueExam}
-                    className={cn(
-                      'min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 whitespace-nowrap',
-                      theme.lightBg,
-                      theme.border,
-                      theme.lightText
-                    )}
-                  >
-                    <Plus size={15} />
-                    <span>Tambah Hari Ujian</span>
-                  </button>
-                )}
-              </div>
-
-              {dayRecords.length > 0 ? (
-                <div className="space-y-3">
-                  {dayRecords.map(day => {
-                    const isEditing = editingDayId === day.id && editDayForm !== null;
-
-                    return (
-                      <div
-                        key={day.id}
-                        className={cn(
-                          'rounded-2xl border p-4 transition-all',
-                          isEditing
-                            ? 'bg-stone-50 border-stone-300'
-                            : 'bg-white border-stone-200/80 hover:border-stone-300'
-                        )}
-                      >
-                        {!isEditing ? (
-                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                            <div className="space-y-1.5 min-w-0 flex-1">
-                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                <span className="text-sm font-bold text-stone-900 tabular-nums">
-                                  Hari ke-{day.day_number} – {formatDisplayDate(day.date)}
-                                </span>
-                                <span aria-hidden="true" className="text-stone-300">·</span>
-                                <span className="text-xs font-medium text-stone-500">
-                                  {day.attendance}
-                                </span>
-                              </div>
-
-                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                                <span className={cn('font-bold', theme.text)}>
-                                  Nilai {day.grade} ({day.predicate})
-                                </span>
-                                {day.surah_tested && (
-                                  <>
-                                    <span aria-hidden="true" className="text-stone-300">·</span>
-                                    <span className="text-stone-700 font-medium">{day.surah_tested}</span>
-                                  </>
-                                )}
-                              </div>
-
-                              {day.note && (
-                                <p className="text-xs text-stone-600 leading-relaxed pt-0.5">
-                                  {day.note}
-                                </p>
-                              )}
-                            </div>
-
-                            <div className="flex items-center gap-2 shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => startEditDay(day)}
-                                className="min-h-[40px] px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors inline-flex items-center gap-1.5"
-                              >
-                                <Edit2 size={14} />
-                                <span>Edit</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setDayToDelete(day)}
-                                className="min-h-[40px] px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-colors inline-flex items-center gap-1.5"
-                              >
-                                <Trash2 size={14} />
-                                <span>Hapus</span>
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-bold text-stone-900">
-                                Edit Penilaian Hari ke-{day.day_number}
-                              </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <div>
-                                <label className="block text-xs font-semibold text-stone-600 mb-1">
-                                  Tanggal Ujian
-                                </label>
-                                <input
-                                  type="date"
-                                  value={editDayForm.date}
-                                  onChange={e =>
-                                    setEditDayForm({ ...editDayForm, date: e.target.value })
-                                  }
-                                  className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm tabular-nums"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-xs font-semibold text-stone-600 mb-1">
-                                  Kehadiran
-                                </label>
-                                <select
-                                  value={editDayForm.attendance}
-                                  onChange={e =>
-                                    setEditDayForm({
-                                      ...editDayForm,
-                                      attendance: e.target.value as ExamDayRecord['attendance']
-                                    })
-                                  }
-                                  className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-medium"
-                                >
-                                  {ATTENDANCES.map(att => (
-                                    <option key={att} value={att}>
-                                      {att}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <div>
-                                <label className="block text-xs font-semibold text-stone-600 mb-1">
-                                  Surat / Materi yang Diuji
-                                </label>
-                                <input
-                                  type="text"
-                                  list="hafalan-surah-list"
-                                  value={editDayForm.surah_tested}
-                                  onChange={e =>
-                                    setEditDayForm({ ...editDayForm, surah_tested: e.target.value })
-                                  }
-                                  placeholder="Nama surat / bagian hafalan"
-                                  className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-sm"
-                                />
-                              </div>
-
-                              <div>
-                                <label className="block text-xs font-semibold text-stone-600 mb-1">
-                                  Nilai & Predikat
-                                </label>
-                                <select
-                                  value={editDayForm.grade}
-                                  onChange={e =>
-                                    setEditDayForm({
-                                      ...editDayForm,
-                                      grade: e.target.value,
-                                      predicate: getPredicateForGrade(e.target.value)
-                                    })
-                                  }
-                                  className="w-full min-h-[44px] bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-sm font-semibold"
-                                >
-                                  {GRADES.map(g => (
-                                    <option key={g.value} value={g.value}>
-                                      {g.value} — {g.label}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-semibold text-stone-600 mb-1">
-                                Keterangan Penilaian
-                              </label>
-                              <textarea
-                                rows={2}
-                                value={editDayForm.note}
-                                onChange={e =>
-                                  setEditDayForm({ ...editDayForm, note: e.target.value })
-                                }
-                                placeholder="Catatan atau keterangan untuk hari ini..."
-                                className="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-sm resize-none"
-                              />
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-2 justify-end">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setEditingDayId(null);
-                                  setEditDayForm(null);
-                                }}
-                                className="min-h-[42px] px-4 py-2 bg-white border border-stone-200 text-stone-700 text-xs font-semibold rounded-xl hover:bg-stone-100"
-                              >
-                                Batal
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleSaveEditedDay}
-                                className={cn(
-                                  'min-h-[42px] px-5 py-2 text-white text-xs font-semibold rounded-xl inline-flex items-center justify-center gap-1.5',
-                                  theme.bg,
-                                  theme.hover
-                                )}
-                              >
-                                <Check size={15} />
-                                <span>Simpan Perubahan</span>
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 bg-stone-50 rounded-2xl border border-dashed border-stone-200 text-stone-500 text-sm">
-                  Belum ada riwayat harian tersimpan. Mulai isi Penilaian Hari ke-1 di atas lalu klik Simpan Hari Ini.
-                </div>
-              )}
-            </div>
-
-            {/* D. DAFTAR SURAT YANG DIUJIKAN */}
+            {/* C. DAFTAR SURAT YANG DIUJIKAN */}
             <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -2262,38 +1817,6 @@ export default function ExamHafalan() {
                   </div>
                 </div>
 
-                {/* Recap Daily Grades */}
-                {dayRecords.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-stone-600">
-                      Ringkasan Penilaian Per Hari
-                    </h4>
-                    <div className="divide-y divide-stone-100 border border-stone-200/80 rounded-xl overflow-hidden">
-                      {dayRecords.map(d => (
-                        <div
-                          key={d.id}
-                          className="px-4 py-2.5 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm"
-                        >
-                          <div className="flex flex-wrap items-center gap-x-2">
-                            <span className="font-semibold text-stone-800 tabular-nums">
-                              Hari ke-{d.day_number} ({formatDisplayDate(d.date)})
-                            </span>
-                            {d.surah_tested && (
-                              <>
-                                <span className="text-stone-300">·</span>
-                                <span className="text-stone-600">{d.surah_tested}</span>
-                              </>
-                            )}
-                          </div>
-                          <span className={cn('font-bold shrink-0', theme.text)}>
-                            {d.grade} ({d.predicate})
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Recap Surahs */}
                 {surahs.length > 0 && (
                   <div className="space-y-2">
@@ -2457,20 +1980,6 @@ export default function ExamHafalan() {
       </section>
 
       {/* CONFIRMATION MODALS */}
-      <ConfirmModal
-        isOpen={Boolean(dayToDelete)}
-        onClose={() => setDayToDelete(null)}
-        onConfirm={confirmDeleteDay}
-        title={dayToDelete ? `Hapus Penilaian Hari ke-${dayToDelete.day_number}?` : 'Hapus Penilaian?'}
-        message={
-          dayToDelete
-            ? `Data penilaian tanggal ${formatDisplayDate(dayToDelete.date)} (Nilai ${dayToDelete.grade} · ${dayToDelete.predicate}) akan dihapus. Hari penilaian lainnya tidak akan terpengaruh.`
-            : ''
-        }
-        confirmText="Hapus Hari Ini"
-        themeColor={themeColor}
-        variant="danger"
-      />
 
       <ConfirmModal
         isOpen={Boolean(surahToDelete)}
