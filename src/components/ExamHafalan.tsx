@@ -691,8 +691,9 @@ export default function ExamHafalan() {
 
     const nextRecords = dayRecords.map(d => (d.id === editingDayId ? updatedRecord : d));
 
-    // Sinkronkan nilai ke Daftar Surat yang Diujikan yang bersangkutan
+    // Sinkronkan nilai dan nama surat ke Daftar Surat yang Diujikan yang bersangkutan
     const oldDaySurahKey = normalizeSurahKey(previousDay?.surah_tested);
+    const oldBaseKey = extractBaseSurahKey(previousDay?.surah_tested);
     const newDaySurahName = updatedRecord.surah_tested;
     const newDaySurahKey = normalizeSurahKey(newDaySurahName);
     const newBaseKey = extractBaseSurahKey(newDaySurahName);
@@ -702,28 +703,48 @@ export default function ExamHafalan() {
 
     if (newDaySurahKey) {
       const exactIdx = nextSurahs.findIndex(s => normalizeSurahKey(s.name) === newDaySurahKey);
+      const oldIdx = oldDaySurahKey
+        ? nextSurahs.findIndex(s => normalizeSurahKey(s.name) === oldDaySurahKey)
+        : -1;
+      const otherDayStillUsesOld =
+        oldDaySurahKey !== '' &&
+        nextRecords.some(d => d.id !== editingDayId && normalizeSurahKey(d.surah_tested) === oldDaySurahKey);
+
       if (exactIdx !== -1) {
         nextSurahs[exactIdx] = {
           ...nextSurahs[exactIdx],
+          name: newDaySurahName,
+          grade: updatedRecord.grade,
+          predicate: updatedPredicate
+        };
+        syncedSurahCount = 1;
+      } else if (oldIdx !== -1 && !otherDayStillUsesOld) {
+        nextSurahs[oldIdx] = {
+          ...nextSurahs[oldIdx],
+          name: newDaySurahName,
           grade: updatedRecord.grade,
           predicate: updatedPredicate
         };
         syncedSurahCount = 1;
       } else {
-        const oldIdx = oldDaySurahKey
-          ? nextSurahs.findIndex(s => normalizeSurahKey(s.name) === oldDaySurahKey)
-          : -1;
-        const otherDayStillUsesOld =
-          oldDaySurahKey !== '' &&
-          nextRecords.some(d => d.id !== editingDayId && normalizeSurahKey(d.surah_tested) === oldDaySurahKey);
+        const oldBaseMatches = oldBaseKey
+          ? nextSurahs.filter(s => extractBaseSurahKey(s.name) === oldBaseKey)
+          : [];
+        const otherDayStillUsesOldBase =
+          oldBaseKey !== '' &&
+          nextRecords.some(d => d.id !== editingDayId && extractBaseSurahKey(d.surah_tested) === oldBaseKey);
 
-        if (oldIdx !== -1 && !otherDayStillUsesOld) {
-          nextSurahs[oldIdx] = {
-            ...nextSurahs[oldIdx],
-            name: newDaySurahName,
-            grade: updatedRecord.grade,
-            predicate: updatedPredicate
-          };
+        if (oldBaseMatches.length === 1 && !otherDayStillUsesOldBase) {
+          nextSurahs = nextSurahs.map(s =>
+            s.id === oldBaseMatches[0].id
+              ? {
+                  ...s,
+                  name: newDaySurahName,
+                  grade: updatedRecord.grade,
+                  predicate: updatedPredicate
+                }
+              : s
+          );
           syncedSurahCount = 1;
         } else {
           const baseMatches = newBaseKey
@@ -732,9 +753,22 @@ export default function ExamHafalan() {
           if (baseMatches.length === 1) {
             nextSurahs = nextSurahs.map(s =>
               s.id === baseMatches[0].id
-                ? { ...s, grade: updatedRecord.grade, predicate: updatedPredicate }
+                ? {
+                    ...s,
+                    name: newDaySurahName,
+                    grade: updatedRecord.grade,
+                    predicate: updatedPredicate
+                  }
                 : s
             );
+            syncedSurahCount = 1;
+          } else if (oldDaySurahKey === '' && nextRecords.length === 1 && nextSurahs.length === 1) {
+            nextSurahs[0] = {
+              ...nextSurahs[0],
+              name: newDaySurahName,
+              grade: updatedRecord.grade,
+              predicate: updatedPredicate
+            };
             syncedSurahCount = 1;
           } else if (autoSyncSurah) {
             nextSurahs = mergeSurahIntoList(nextSurahs, newDaySurahName, updatedRecord.grade);
@@ -771,7 +805,7 @@ export default function ExamHafalan() {
       type: 'success',
       message:
         syncedSurahCount > 0
-          ? `Perubahan pada Hari ke-${updatedRecord.day_number} (Nilai ${updatedRecord.grade}) dan daftar surat terkait berhasil disimpan.`
+          ? `Perubahan pada Hari ke-${updatedRecord.day_number}${newDaySurahName ? ` (${newDaySurahName} · Nilai ${updatedRecord.grade})` : ` (Nilai ${updatedRecord.grade})`} dan daftar surat terkait berhasil disimpan.`
           : `Perubahan pada Hari ke-${updatedRecord.day_number} berhasil disimpan.`
     });
   };
@@ -865,7 +899,7 @@ export default function ExamHafalan() {
         : s
     );
 
-    // Sinkronkan nilai ke Riwayat Penilaian Harian yang bersangkutan
+    // Sinkronkan nilai dan nama surat ke Riwayat Penilaian Harian yang bersangkutan
     const oldKey = normalizeSurahKey(previousSurah?.name);
     const newKey = normalizeSurahKey(clean);
     const oldBase = extractBaseSurahKey(previousSurah?.name);
@@ -873,6 +907,12 @@ export default function ExamHafalan() {
     const isUniqueBaseInSurahs =
       oldBase !== '' &&
       surahs.filter(s => extractBaseSurahKey(s.name) === oldBase).length === 1;
+    const anotherSurahHasNewKey = surahs.some(
+      s => s.id !== editingSurahId && normalizeSurahKey(s.name) === newKey
+    );
+    const anotherSurahHasNewBase =
+      newBase !== '' &&
+      surahs.some(s => s.id !== editingSurahId && extractBaseSurahKey(s.name) === newBase);
 
     let syncedDaysCount = 0;
     const updatedDayNumbers: number[] = [];
@@ -881,25 +921,33 @@ export default function ExamHafalan() {
       const dayKey = normalizeSurahKey(day.surah_tested);
       const dayBase = extractBaseSurahKey(day.surah_tested);
 
-      const isExactMatch = dayKey !== '' && (dayKey === oldKey || dayKey === newKey);
-      const isUniqueBaseMatch =
+      const isOldExactMatch = dayKey !== '' && dayKey === oldKey;
+      const isNewExactMatch = dayKey !== '' && !anotherSurahHasNewKey && dayKey === newKey;
+      const isOldBaseMatch = isUniqueBaseInSurahs && dayKey !== '' && dayBase === oldBase;
+      const isNewBaseMatch =
         isUniqueBaseInSurahs &&
+        !anotherSurahHasNewBase &&
         dayKey !== '' &&
-        (dayBase === oldBase || (newBase !== '' && dayBase === newBase));
+        newBase !== '' &&
+        dayBase === newBase;
       const isSingleLegacyMatch =
         dayRecords.length === 1 && surahs.length === 1 && dayKey === '';
 
-      if (isExactMatch || isUniqueBaseMatch || isSingleLegacyMatch) {
+      if (
+        isOldExactMatch ||
+        isNewExactMatch ||
+        isOldBaseMatch ||
+        isNewBaseMatch ||
+        isSingleLegacyMatch
+      ) {
         syncedDaysCount += 1;
         updatedDayNumbers.push(day.day_number);
+        const nameChanged = Boolean(previousSurah && clean !== previousSurah.name);
         return {
           ...day,
           grade: editSurahForm.grade,
           predicate: updatedPredicate,
-          surah_tested:
-            dayKey === oldKey && previousSurah && clean !== previousSurah.name
-              ? clean
-              : day.surah_tested
+          surah_tested: nameChanged || isSingleLegacyMatch ? clean : day.surah_tested
         };
       }
       return day;
