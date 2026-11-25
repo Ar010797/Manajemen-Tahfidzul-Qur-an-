@@ -105,6 +105,15 @@ const formatDisplayDateTime = (isoStr?: string) => {
   }
 };
 
+const normalizeSurahKey = (name?: string) =>
+  (name || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+const extractBaseSurahKey = (name?: string) => {
+  const cleaned = normalizeSurahKey(name);
+  if (!cleaned) return '';
+  return cleaned.split(/[:(\d]|ayat/i)[0].replace(/[-–—]+$/g, '').trim();
+};
+
 const normalizeSurahList = (rawSurahs: any): ExamSurahItem[] => {
   let list: any[] = [];
   if (Array.isArray(rawSurahs)) {
@@ -671,6 +680,7 @@ export default function ExamHafalan() {
       return;
     }
 
+    const previousDay = dayRecords.find(d => d.id === editingDayId);
     const updatedPredicate = getPredicateForGrade(editDayForm.grade);
     const updatedRecord: ExamDayRecord = {
       ...editDayForm,
@@ -680,10 +690,72 @@ export default function ExamHafalan() {
     };
 
     const nextRecords = dayRecords.map(d => (d.id === editingDayId ? updatedRecord : d));
-    const res = persistExamRecord({ dayRecordsVal: nextRecords });
+
+    // Sinkronkan nilai ke Daftar Surat yang Diujikan yang bersangkutan
+    const oldDaySurahKey = normalizeSurahKey(previousDay?.surah_tested);
+    const newDaySurahName = updatedRecord.surah_tested;
+    const newDaySurahKey = normalizeSurahKey(newDaySurahName);
+    const newBaseKey = extractBaseSurahKey(newDaySurahName);
+
+    let nextSurahs = [...surahs];
+    let syncedSurahCount = 0;
+
+    if (newDaySurahKey) {
+      const exactIdx = nextSurahs.findIndex(s => normalizeSurahKey(s.name) === newDaySurahKey);
+      if (exactIdx !== -1) {
+        nextSurahs[exactIdx] = {
+          ...nextSurahs[exactIdx],
+          grade: updatedRecord.grade,
+          predicate: updatedPredicate
+        };
+        syncedSurahCount = 1;
+      } else {
+        const oldIdx = oldDaySurahKey
+          ? nextSurahs.findIndex(s => normalizeSurahKey(s.name) === oldDaySurahKey)
+          : -1;
+        const otherDayStillUsesOld =
+          oldDaySurahKey !== '' &&
+          nextRecords.some(d => d.id !== editingDayId && normalizeSurahKey(d.surah_tested) === oldDaySurahKey);
+
+        if (oldIdx !== -1 && !otherDayStillUsesOld) {
+          nextSurahs[oldIdx] = {
+            ...nextSurahs[oldIdx],
+            name: newDaySurahName,
+            grade: updatedRecord.grade,
+            predicate: updatedPredicate
+          };
+          syncedSurahCount = 1;
+        } else {
+          const baseMatches = newBaseKey
+            ? nextSurahs.filter(s => extractBaseSurahKey(s.name) === newBaseKey)
+            : [];
+          if (baseMatches.length === 1) {
+            nextSurahs = nextSurahs.map(s =>
+              s.id === baseMatches[0].id
+                ? { ...s, grade: updatedRecord.grade, predicate: updatedPredicate }
+                : s
+            );
+            syncedSurahCount = 1;
+          } else if (autoSyncSurah) {
+            nextSurahs = mergeSurahIntoList(nextSurahs, newDaySurahName, updatedRecord.grade);
+            syncedSurahCount = 1;
+          }
+        }
+      }
+    } else if (nextRecords.length === 1 && nextSurahs.length === 1) {
+      nextSurahs[0] = {
+        ...nextSurahs[0],
+        grade: updatedRecord.grade,
+        predicate: updatedPredicate
+      };
+      syncedSurahCount = 1;
+    }
+
+    const res = persistExamRecord({ dayRecordsVal: nextRecords, surahsVal: nextSurahs });
     if (!res.success) return;
 
     setDayRecords(nextRecords);
+    setSurahs(nextSurahs);
     if (lastSavedStatus && lastSavedStatus.dayNumber === updatedRecord.day_number) {
       setLastSavedStatus({
         ...lastSavedStatus,
@@ -697,7 +769,10 @@ export default function ExamHafalan() {
     setEditDayForm(null);
     setFeedback({
       type: 'success',
-      message: `Perubahan pada Hari ke-${updatedRecord.day_number} berhasil disimpan.`
+      message:
+        syncedSurahCount > 0
+          ? `Perubahan pada Hari ke-${updatedRecord.day_number} (Nilai ${updatedRecord.grade}) dan daftar surat terkait berhasil disimpan.`
+          : `Perubahan pada Hari ke-${updatedRecord.day_number} berhasil disimpan.`
     });
   };
 
@@ -776,23 +851,96 @@ export default function ExamHafalan() {
       return;
     }
 
+    const previousSurah = surahs.find(s => s.id === editingSurahId);
+    const updatedPredicate = getPredicateForGrade(editSurahForm.grade);
+
     const nextSurahs = surahs.map(s =>
       s.id === editingSurahId
         ? {
             ...s,
             name: clean,
             grade: editSurahForm.grade,
-            predicate: getPredicateForGrade(editSurahForm.grade)
+            predicate: updatedPredicate
           }
         : s
     );
 
-    const res = persistExamRecord({ surahsVal: nextSurahs });
+    // Sinkronkan nilai ke Riwayat Penilaian Harian yang bersangkutan
+    const oldKey = normalizeSurahKey(previousSurah?.name);
+    const newKey = normalizeSurahKey(clean);
+    const oldBase = extractBaseSurahKey(previousSurah?.name);
+    const newBase = extractBaseSurahKey(clean);
+    const isUniqueBaseInSurahs =
+      oldBase !== '' &&
+      surahs.filter(s => extractBaseSurahKey(s.name) === oldBase).length === 1;
+
+    let syncedDaysCount = 0;
+    const updatedDayNumbers: number[] = [];
+
+    const nextRecords = dayRecords.map(day => {
+      const dayKey = normalizeSurahKey(day.surah_tested);
+      const dayBase = extractBaseSurahKey(day.surah_tested);
+
+      const isExactMatch = dayKey !== '' && (dayKey === oldKey || dayKey === newKey);
+      const isUniqueBaseMatch =
+        isUniqueBaseInSurahs &&
+        dayKey !== '' &&
+        (dayBase === oldBase || (newBase !== '' && dayBase === newBase));
+      const isSingleLegacyMatch =
+        dayRecords.length === 1 && surahs.length === 1 && dayKey === '';
+
+      if (isExactMatch || isUniqueBaseMatch || isSingleLegacyMatch) {
+        syncedDaysCount += 1;
+        updatedDayNumbers.push(day.day_number);
+        return {
+          ...day,
+          grade: editSurahForm.grade,
+          predicate: updatedPredicate,
+          surah_tested:
+            dayKey === oldKey && previousSurah && clean !== previousSurah.name
+              ? clean
+              : day.surah_tested
+        };
+      }
+      return day;
+    });
+
+    const res = persistExamRecord({
+      surahsVal: nextSurahs,
+      dayRecordsVal: nextRecords
+    });
     if (!res.success) return;
 
     setSurahs(nextSurahs);
+    setDayRecords(nextRecords);
+
+    if (editingDayId && editDayForm) {
+      const matchedActiveEdit = nextRecords.find(d => d.id === editingDayId);
+      if (matchedActiveEdit && updatedDayNumbers.includes(matchedActiveEdit.day_number)) {
+        setEditDayForm({ ...matchedActiveEdit });
+      }
+    }
+
+    if (lastSavedStatus && updatedDayNumbers.includes(lastSavedStatus.dayNumber)) {
+      const latestMatch = nextRecords.find(d => d.day_number === lastSavedStatus.dayNumber);
+      if (latestMatch) {
+        setLastSavedStatus({
+          ...lastSavedStatus,
+          grade: latestMatch.grade,
+          predicate: latestMatch.predicate,
+          surahTested: latestMatch.surah_tested
+        });
+      }
+    }
+
     setEditingSurahId(null);
-    setFeedback({ type: 'success', message: `Data surat "${clean}" berhasil diperbarui.` });
+    setFeedback({
+      type: 'success',
+      message:
+        syncedDaysCount > 0
+          ? `Data surat "${clean}" dan ${syncedDaysCount} riwayat penilaian terkait berhasil diperbarui ke Nilai ${editSurahForm.grade} (${updatedPredicate}).`
+          : `Data surat "${clean}" berhasil diperbarui.`
+    });
   };
 
   const confirmDeleteSurah = () => {
